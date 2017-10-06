@@ -1,5 +1,4 @@
 #include "main.h"
-using namespace std;
 
 void loadRom(string path) {
     ifstream ROM;
@@ -26,7 +25,7 @@ void loadRom(string path) {
     persistentMemory    = flags6 & 0b00000010;
     trainer             = flags6 & 0b00000100;
     fourScreenVRAM      = flags6 & 0b00001000;
-    mapper              = flags6 & 0b11110000 + ((flags7 & 0b11110000) >> 4);
+    mapper              =(flags6 & 0b11110000) + ((flags7 & 0b11110000) >> 4); // Mappers not supported
     NES2                =(flags7 & 0b00001100) == 0b1000; // NES 2.0 not fully supported
     playchoice10        = flags7 & 0b00000010;
     VS_unisystem        = flags7 & 0b00000001;
@@ -47,7 +46,32 @@ void loadRom(string path) {
     ROM.close();
 }
 
-void initStorage() {}
+void readFromMemory(int index) { // Handles memory mirroring
+    if (index < 0x2000) {
+        return memory[index % 0x800];
+    }
+    else if (index < 0x4000) {
+        return memory[(index % 0x8) + 0x2000];
+    }
+    else if (index < 0xC000) {
+        return memory[index];
+    }
+    else if (PRG_ROM_size == 1) { // Mirrors 0x8000-0xBFFF to 0xC000-0xFFFF
+        return memory[index - 0x4000];
+    }
+    else { // PRG ROM is not mirrored
+        return memory[index];
+    }
+}
+
+void writeToMemory() { // Handles memory mirroring
+
+}
+
+void initStorage() {
+    memset(memory, 0, sizeof(memory)); // Set array elements to zero
+
+}
 
 int main(int argc, char* argv[]) {
     cout << "Hello world!\n";
@@ -60,5 +84,6 @@ int main(int argc, char* argv[]) {
         path = "mario.nes";
         cout << "Defaulting to " << path << endl;
     }
-    loadRom(path);
+    loadRom(path); // Decode header into ROM object, parse header
+    initStorage(); // Initialize main NES memory
 }
