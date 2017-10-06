@@ -11,10 +11,13 @@
 #include <iostream>
 #include <cstdio>
 #include <fstream>
-#include <string>
+#include <string.h>
 #include <iomanip>
 #include <assert.h>
+using namespace std;
 
-char PRG_ROM_size, CHR_ROM_size, flags6, flags7, PRG_RAM_size, flags9, flags10, mapper;
-std::string mirroring;
+char header[16], memory[0x10000], PRG_ROM_size, CHR_ROM_size,
+    flags6, flags7, PRG_RAM_size, flags9, flags10, mapper;
+string mirroring;
 bool persistentMemory, trainer, fourScreenVRAM, NES2, playchoice10, VS_unisystem;
+ifstream ROM;
