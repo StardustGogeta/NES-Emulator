@@ -28,7 +28,7 @@ void loadRom(std::string path) {
     }
 
     // Check that the first 4 characters are "NES\n"
-    if (strncmp(header, "NES\n", 4) != 4) {
+    if (strncmp(header, "NES\x1A", 4) != 0) {
         std::cerr << "The NES file header is invalid.\n";
     }
 
