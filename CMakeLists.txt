@@ -4,4 +4,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../bin")
 
 project("NES Emulator")
 
-add_executable(main src/main.cpp)
+add_executable(
+    main
+    src/main.cpp
+    src/rom.cpp
+)
