@@ -1,3 +1,6 @@
 # Files generated during build process
 build
 bin
+
+# Editor files
+.vscode
