@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.24.0)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../bin")
+
+project("NES Emulator")
+
+add_executable(main src/main.cpp)
