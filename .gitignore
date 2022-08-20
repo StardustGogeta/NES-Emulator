@@ -1,6 +1,3 @@
-# Compilation files
-*.o
-
-# Code::Blocks config files
-*.depend
-*.layout
+# Files generated during build process
+build
+bin

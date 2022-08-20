@@ -46,7 +46,7 @@ void loadRom(string path) {
     ROM.close();
 }
 
-void readFromMemory(int index) { // Handles memory mirroring
+char readFromMemory(int index) { // Handles memory mirroring
     if (index < 0x2000) {
         return memory[index % 0x800];
     }
