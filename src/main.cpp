@@ -1,19 +1,29 @@
-#include "main.h"
+#include <iostream>
+#include <cstdio>
+#include <fstream>
+#include <cstring>
+#include <iomanip>
 
-void loadRom(string path) {
-    ifstream ROM;
-    ROM.open(path, ifstream::ate | ifstream::binary);
+char header[16], memory[0x10000], PRG_ROM_size, CHR_ROM_size,
+    flags6, flags7, PRG_RAM_size, flags9, flags10, mapper;
+std::string mirroring;
+bool persistentMemory, trainer, fourScreenVRAM, NES2, playchoice10, VS_unisystem;
+std::ifstream ROM;
+
+void loadRom(std::string path) {
+    std::ifstream ROM;
+    ROM.open(path, std::ifstream::ate | std::ifstream::binary);
     int ROMsize = ROM.tellg(); // Find file length
-    cout << "The file size is " << ROMsize << " bytes.\n";
+    std::cout << "The file size is " << ROMsize << " bytes.\n";
     ROM.seekg(0); // Reset to start of file
     char header[16];
     for (int x=0; x<16; x++) {
-        ROM >> hex >> header[x];
+        ROM >> std::hex >> header[x];
         // cout << setfill('0') << setw(2) << hex << (int)header[x] << " Byte" << endl;
     }
 
     if (!(header[0] == 0x4e && header[1] == 0x45 && header[2] == 0x53 && header[3] == 0x1a)) {
-        cout << "The NES file header is invalid.\n";
+        std::cout << "The NES file header is invalid.\n";
     } // Check that the first 4 characters are "NES\n"
 
     PRG_ROM_size = header[4], CHR_ROM_size = header[5],
@@ -74,15 +84,15 @@ void initStorage() {
 }
 
 int main(int argc, char* argv[]) {
-    cout << "Hello world!\n";
-    string path;
+    std::cout << "Hello world!\n";
+    std::string path;
     if (argc > 1) {
         path = argv[1];
-        cout << "File argument: " << path << endl;
+        std::cout << "File argument: " << path << std::endl;
     }
     else {
         path = "mario.nes";
-        cout << "Defaulting to " << path << endl;
+        std::cout << "Defaulting to " << path << std::endl;
     }
     loadRom(path); // Decode header into ROM object, parse header
     initStorage(); // Initialize main NES memory
