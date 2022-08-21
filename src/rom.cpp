@@ -18,8 +18,10 @@ std::ifstream ROM;
 
 void loadRom(std::string path) {
     ROM.open(path, std::ifstream::ate | std::ifstream::binary);
+
     int ROMsize = ROM.tellg(); // Find file length
     std::cout << "The file size is " << ROMsize << " bytes.\n";
+    
     ROM.seekg(0); // Reset to start of file
     for (int x = 0; x < 16; x++) {
         ROM >> std::hex >> header[x];

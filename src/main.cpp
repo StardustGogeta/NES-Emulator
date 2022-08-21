@@ -15,5 +15,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Defaulting to " << path << std::endl;
     }
     loadRom(path); // Decode header into ROM object, parse header
-    clearMemory(); // Initialize main NES memory
+    
+    Memory* memory = new Memory(); // Initialize main NES memory
+    memory->clear();
 }

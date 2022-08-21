@@ -1,12 +1,19 @@
 #pragma once
 #include <cstdint>
 
-// Data
+typedef uint16_t addr_t;
 
-extern uint8_t memory[0x10000];
+/*
+    This class is designed to encapsulate memory access to prevent
+    simple mistakes with memory mirroring and other easy errors.
+*/
+class Memory {
+    public:
+        uint8_t read(addr_t address);
+        void write(addr_t address, uint8_t data);
+        void clear();
 
-// Functions
-
-uint8_t readFromMemory(int);
-
-void clearMemory();
+    private:
+        uint8_t memory[0x10000];
+        addr_t mapAddress(addr_t address);
+};
