@@ -1,11 +1,11 @@
+#include "rom.h"
 #include <cstring>
 #include <iostream>
 #include <fstream>
-#include "rom.h"
 
 // Data
 
-char header[16], memory[0x10000], PRG_ROM_size, CHR_ROM_size,
+uint8_t header[16], PRG_ROM_size, CHR_ROM_size,
     flags6, flags7, PRG_RAM_size, flags9, flags10, mapper;
 
 std::string mirroring;
@@ -21,14 +21,13 @@ void loadRom(std::string path) {
     int ROMsize = ROM.tellg(); // Find file length
     std::cout << "The file size is " << ROMsize << " bytes.\n";
     ROM.seekg(0); // Reset to start of file
-    char header[16];
-    for (int x=0; x<16; x++) {
+    for (int x = 0; x < 16; x++) {
         ROM >> std::hex >> header[x];
         // cout << setfill('0') << setw(2) << hex << (int)header[x] << " Byte" << endl;
     }
 
     // Check that the first 4 characters are "NES\n"
-    if (strncmp(header, "NES\x1A", 4) != 0) {
+    if (strncmp((const char *)header, "NES\x1A", 4) != 0) {
         std::cerr << "The NES file header is invalid.\n";
     }
 

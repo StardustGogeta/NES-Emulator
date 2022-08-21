@@ -8,4 +8,5 @@ add_executable(
     main
     src/main.cpp
     src/rom.cpp
+    src/memory.cpp
 )
