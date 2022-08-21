@@ -1,4 +1,8 @@
 # NES-Emulator
+
+[![CodeFactor](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator/badge)](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator)
+
+
 An incomplete NES emulator made using SDL2 and C++.
 
 #### Prerequisites
