@@ -28,5 +28,4 @@ uint8_t readFromMemory(int index) { // Handles memory mirroring
 
 void clearMemory() {
     memset(memory, 0, sizeof(memory)); // Set array elements to zero
-
 }
