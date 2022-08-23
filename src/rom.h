@@ -1,18 +1,20 @@
 #pragma once
-#include <cstring>
-#include <fstream>
+#include "memory.h"
+#include <string>
+#include <cstdint>
 
-// Data
+class ROM {
+    public:
+        std::string mirroring;
+        bool persistentMemory, trainer, fourScreenVRAM, nes2,
+            playchoice10, VS_unisystem;
+        uint8_t mapper, PRG_ROM_size, CHR_ROM_size, PRG_RAM_size;
 
-extern uint8_t header[16], PRG_ROM_size, CHR_ROM_size,
-    flags6, flags7, PRG_RAM_size, flags9, flags10, mapper;
+        void setPath(std::string path);
+        void parseHeader();
+        void loadIntoMemory(Memory* memory);
 
-extern std::string mirroring;
-
-extern bool persistentMemory, trainer, fourScreenVRAM, NES2, playchoice10, VS_unisystem;
-
-extern std::ifstream ROM;
-
-// Functions
-
-void loadRom(std::string);
+    private:
+        uint8_t flags6, flags7, flags9, flags10;
+        std::string path;
+};

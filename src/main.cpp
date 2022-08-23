@@ -14,8 +14,13 @@ int main(int argc, char* argv[]) {
         path = "mario.nes";
         std::cout << "Defaulting to " << path << std::endl;
     }
-    loadRom(path); // Decode header into ROM object, parse header
+
+    ROM* rom = new ROM(); // Prepare to load ROM file
+    rom->setPath(path); // Decode header into ROM object, parse header
+    rom->parseHeader();
     
-    Memory* memory = new Memory(); // Initialize main NES memory
+    Memory* memory = new Memory(rom->PRG_ROM_size); // Initialize main NES memory
     memory->clear();
+
+    rom->loadIntoMemory(memory);
 }
