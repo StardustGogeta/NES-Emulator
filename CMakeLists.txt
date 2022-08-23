@@ -9,4 +9,6 @@ add_executable(
     src/main.cpp
     src/rom.cpp
     src/memory.cpp
+    src/cpu.cpp
+    src/nes.cpp
 )
