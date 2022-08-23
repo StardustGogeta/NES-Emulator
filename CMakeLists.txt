@@ -12,3 +12,5 @@ add_executable(
     src/cpu.cpp
     src/nes.cpp
 )
+
+target_include_directories(main PRIVATE src/include)
