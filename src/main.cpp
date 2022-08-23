@@ -2,6 +2,7 @@
 #include <cstring>
 #include "memory.h"
 #include "rom.h"
+#include "nes.h"
 
 int main(int argc, char* argv[]) {
     std::cout << "Hello world!\n";
@@ -17,10 +18,7 @@ int main(int argc, char* argv[]) {
 
     ROM* rom = new ROM(); // Prepare to load ROM file
     rom->setPath(path); // Decode header into ROM object, parse header
-    rom->parseHeader();
     
-    Memory* memory = new Memory(rom->PRG_ROM_size); // Initialize main NES memory
-    memory->clear();
-
-    rom->loadIntoMemory(memory);
+    NES* nes = new NES();
+    nes->loadROM(rom);
 }

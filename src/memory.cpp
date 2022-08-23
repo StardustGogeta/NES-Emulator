@@ -3,10 +3,17 @@
 #include <cstring>
 
 /*
-    Create a new memory object and store the PRG ROM size (in 16 KB units)
+    Create a new memory object, assuming 16 KB of PRG-ROM
+*/
+Memory::Memory() {
+    Memory(1);
+}
+
+/*
+    Create a new memory object and store the PRG-ROM size (in 16 KB units)
 */
 Memory::Memory(uint8_t PRG_ROM_size) {
-    this->PRG_ROM_size = PRG_ROM_size;
+    set_PRG_ROM_size(PRG_ROM_size);
     clear();
 }
 
@@ -36,6 +43,13 @@ void Memory::writeBlock(addr_t address, uint8_t *src, uint16_t numBytes) {
 */
 void Memory::clear() {
     memset(memory, 0, sizeof(memory)); // Set array elements to zero
+}
+
+/*
+    Sets the PRG-ROM size (in 16 KB units).
+*/
+void Memory::set_PRG_ROM_size(uint8_t PRG_ROM_size) {
+    this->PRG_ROM_size = PRG_ROM_size;
 }
 
 /*

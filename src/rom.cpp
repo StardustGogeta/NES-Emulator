@@ -63,7 +63,12 @@ void ROM::parseHeader() {
     rom.close();
 }
 
+/*
+    Loads PRG-ROM from a file into memory.
+*/
 void ROM::loadIntoMemory(Memory* memory) {
+    this->parseHeader();
+
     std::ifstream rom;
     rom.open(path, std::ifstream::ate | std::ifstream::binary);
 
@@ -78,4 +83,6 @@ void ROM::loadIntoMemory(Memory* memory) {
     }
 
     rom.close();
+
+    memory->set_PRG_ROM_size(PRG_ROM_size);
 }

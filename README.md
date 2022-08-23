@@ -27,3 +27,4 @@ This will create a `bin` folder in the repository and build the project from the
 - 6502 addressing modes: https://web.archive.org/web/20150128022425/http://www.obelisk.demon.co.uk/6502/addressing.html (no longer active)
 - iNES file format: https://www.nesdev.org/wiki/INES
 - List of games by mapper: https://nesdir.github.io/mapper0.html
+- NES addressing modes: https://www.nesdev.org/wiki/CPU_addressing_modes
