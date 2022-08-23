@@ -1,6 +1,14 @@
 #include "memory.h"
 #include "rom.h"
-#include <cstdint>
+#include <cstring>
+
+/*
+    Create a new memory object and store the PRG ROM size (in 16 KB units)
+*/
+Memory::Memory(uint8_t PRG_ROM_size) {
+    this->PRG_ROM_size = PRG_ROM_size;
+    clear();
+}
 
 /*
     Reads a byte of data from a given memory address.
@@ -14,6 +22,13 @@ uint8_t Memory::read(addr_t address) {
 */
 void Memory::write(addr_t address, uint8_t data) {
     memory[mapAddress(address)] = data;
+}
+
+/*
+    Writes a block of data from a source to a given memory address.
+*/
+void Memory::writeBlock(addr_t address, uint8_t *src, uint16_t numBytes) {
+    memcpy(&memory[mapAddress(address)], src, numBytes);
 }
 
 /*
@@ -44,7 +59,7 @@ void Memory::clear() {
         - 0xfffe-0xffff: Break handler
 
 */
-addr_t Memory::mapAddress(addr_t address) {
+Memory::addr_t Memory::mapAddress(addr_t address) {
     if (address < 0x2000) {
         address %= 0x800;
     }
