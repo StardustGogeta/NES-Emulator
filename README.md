@@ -28,3 +28,5 @@ This will create a `bin` folder in the repository and build the project from the
 - iNES file format: https://www.nesdev.org/wiki/INES
 - List of games by mapper: https://nesdir.github.io/mapper0.html
 - NES addressing modes: https://www.nesdev.org/wiki/CPU_addressing_modes
+- 6502 opcodes: http://www.6502.org/tutorials/6502opcodes.html
+- More 6502 opcodes: http://www.oxyron.de/html/opcodes02.html
