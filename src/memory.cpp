@@ -25,6 +25,13 @@ uint8_t Memory::read(addr_t address) {
 }
 
 /*
+    Reads two consecutive bytes of data from a given memory address.
+*/
+uint16_t Memory::readWord(addr_t address) {
+    return (read(address + 1) << 8) | read(address); 
+}
+
+/*
     Writes a byte of data to a given memory address.
 */
 void Memory::write(addr_t address, uint8_t data) {
