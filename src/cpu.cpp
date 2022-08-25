@@ -197,29 +197,37 @@ void CPU::runOpcode(uint8_t opcode) {
             break;
         case DEX:
             x--;
+            setNZ(x);
             break;
         case DEY:
             y--;
+            setNZ(y);
             break;
         case INX:
             x++;
+            setNZ(x);
             break;
         case INY:
             y++;
+            setNZ(y);
             break;
         case NOP:
             break;
         case TAX:
             x = a;
+            setNZ(x);
             break;
         case TAY:
             y = a;
+            setNZ(y);
             break;
         case TXA:
             a = x;
+            setNZ(a);
             break;
         case TYA:
             a = y;
+            setNZ(a);
             break;
     }
 
