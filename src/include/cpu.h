@@ -3,11 +3,12 @@
 #include <cstdint>
 
 enum addressingMode {
-    IMM, ZP, ZPX, ZPY, IZX, IZY, ABS, ABX, ABY, IND, REL
+    // NUL is for opcodes that take no arguments
+    IMM, ZP, ZPX, ZPY, IZX, IZY, ABS, ABX, ABY, IND, REL, NUL
 };
 
 enum instruction {
-    ADC, AND, ASL, BIT, BRK // TODO: Add the rest
+    AND, ASL, BIT, DEC, DEX, DEY, INX, INY, NOP, TAX, TAY, TXA, TYA // TODO: Add the rest
 };
 
 class CPU {
@@ -25,9 +26,10 @@ class CPU {
             Accumulator is used for arithmetic
             X and Y registers used for storage
             P register stores processor flags
-            From left to right:
+            From right to left:
                 Carry, zero, interrupt disable, BCD mode,
-                BRK command, unused, overflow, negative
+                BRK command (unused), unused, overflow, negative
+            Also written: NVbbDIZC
         */
         Memory::addr_t pc;
         uint8_t sp, a, x, y, p;
@@ -38,7 +40,8 @@ class CPU {
         uint8_t readNext();
         uint16_t readNextWord();
         addressingMode getAddressingMode(uint8_t opcode);
-        uint8_t getArgument(addressingMode mode);
+        Memory::addr_t getAddress(addressingMode mode);
         instruction getInstruction(uint8_t opcode);
+        void setNZ(uint8_t val);
         void runOpcode(uint8_t opcode);
 };
