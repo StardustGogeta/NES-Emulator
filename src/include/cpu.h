@@ -8,7 +8,7 @@ enum addressingMode {
 };
 
 enum instruction {
-    AND, ASL, BIT, DEC, DEX, DEY, INX, INY, NOP, TAX, TAY, TXA, TYA // TODO: Add the rest
+    ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BVC, BVS, DEC, DEX, DEY, INX, INY, NOP, TAX, TAY, TXA, TYA // TODO: Add the rest
 };
 
 class CPU {
@@ -32,7 +32,10 @@ class CPU {
             Also written: NVbbDIZC
         */
         Memory::addr_t pc;
-        uint8_t sp, a, x, y, p;
+        uint8_t sp, a, x, y;
+        struct processorFlags {
+            bool n, v, b1, b2, d, i, z, c;
+        } p;
         int cycles; // Cycles left in instruction
         // Current instruction
         // Addressing mode
