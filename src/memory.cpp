@@ -1,19 +1,13 @@
 #include "memory.h"
 #include "rom.h"
 #include <cstring>
+#include <iostream>
 
 /*
-    Create a new memory object, assuming 16 KB of PRG-ROM
+    Create a new memory object and store the PRG-ROM size (in 16 KB units).
+    Assumes 16 KB of PRG-ROM if not provided.
 */
-Memory::Memory() {
-    Memory(1);
-}
-
-/*
-    Create a new memory object and store the PRG-ROM size (in 16 KB units)
-*/
-Memory::Memory(uint8_t PRG_ROM_size) {
-    set_PRG_ROM_size(PRG_ROM_size);
+Memory::Memory(uint8_t PRG_ROM_size /* = 1 */) : PRG_ROM_size(PRG_ROM_size) {
     clear();
 }
 
@@ -21,6 +15,9 @@ Memory::Memory(uint8_t PRG_ROM_size) {
     Reads a byte of data from a given memory address.
 */
 uint8_t Memory::read(addr_t address) {
+    #ifdef DEBUG
+    std::cout << "Reading from address 0x" << std::hex << mapAddress(address) << std::dec << std::endl;
+    #endif
     return memory[mapAddress(address)];
 }
 
@@ -87,7 +84,7 @@ Memory::addr_t Memory::mapAddress(addr_t address) {
     else if (address < 0x4000) {
         address = (address % 0x8) + 0x2000;
     }
-    else if (address >= 0xC000 && PRG_ROM_size == 1) { // Mirrors 0x8000-0xBFFF to 0xC000-0xFFFF
+    else if (address >= 0xc000 && PRG_ROM_size == 1) { // Mirrors 0x8000-0xBFFF to 0xC000-0xFFFF
         address -= 0x4000;
     }
     return address;

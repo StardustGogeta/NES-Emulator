@@ -6,7 +6,7 @@ class NES {
     public:
         NES();
         void loadROM(ROM* rom);
-    private:
+
         Memory* memory;
         CPU* cpu;
 };

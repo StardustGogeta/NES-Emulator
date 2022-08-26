@@ -16,8 +16,12 @@ class CPU {
         Memory* memory;
 
         CPU();
-        void reset();
+        void reset(Memory::addr_t pc=0xfffc);
         void cycle();
+        uint8_t peek();
+        uint16_t peekWord();
+        uint8_t read();
+        uint16_t readWord();
 
     private:
         /*
@@ -40,8 +44,6 @@ class CPU {
         // Current instruction
         // Addressing mode
 
-        uint8_t readNext();
-        uint16_t readNextWord();
         addressingMode getAddressingMode(uint8_t opcode);
         Memory::addr_t getAddress(addressingMode mode);
         instruction getInstruction(uint8_t opcode);

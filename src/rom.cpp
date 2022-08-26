@@ -9,16 +9,17 @@ void ROM::setPath(std::string path) {
 }
 
 void ROM::parseHeader() {
-    std::ifstream rom;
-    rom.open(path, std::ifstream::ate | std::ifstream::binary);
+    std::ifstream romFile;
+    // Open the file and go straight to the end
+    romFile.open(path, std::ifstream::ate | std::ifstream::binary);
 
-    int romSize = rom.tellg(); // Find file length
+    int romSize = romFile.tellg(); // Find file length
     std::cout << "The file size is " << romSize << " bytes.\n";
     
     uint8_t header[16];
-    rom.seekg(0); // Reset to start of file
+    romFile.seekg(0); // Reset to start of file
     for (int x = 0; x < 16; x++) {
-        rom >> std::hex >> header[x];
+        romFile >> std::hex >> header[x];
         // cout << setfill('0') << setw(2) << hex << (int)header[x] << " Byte" << endl;
     }
 
@@ -57,10 +58,10 @@ void ROM::parseHeader() {
         nes2                = (flags7 & 0b00001100) == 0b1000; // NES 2.0 not fully supported
         playchoice10        = flags7 & 0b00000010 > 0;
         VS_unisystem        = flags7 & 0b00000001 > 0;
-        std::cout << std::hex << (int)PRG_ROM_size << " PRGROM\n" << (int)PRG_RAM_size << " PRGRAM\n" << (int)mapper << " Mapper\n";
+        std::cout << (int)PRG_ROM_size << " PRGROM\n" << (int)PRG_RAM_size << " PRGRAM\n" << (int)mapper << " Mapper\n";
     }
 
-    rom.close();
+    romFile.close();
 }
 
 /*
@@ -69,20 +70,20 @@ void ROM::parseHeader() {
 void ROM::loadIntoMemory(Memory* memory) {
     this->parseHeader();
 
-    std::ifstream rom;
-    rom.open(path, std::ifstream::ate | std::ifstream::binary);
+    std::ifstream romFile;
+    romFile.open(path, std::ifstream::binary);
 
-    rom.seekg(0); // Reset to start of file
+    romFile.seekg(16); // Skip to the end of the header
 
     // Load PRG-ROM into memory
     int PRG_ROM_size_bytes = PRG_ROM_size * 16384;
     uint8_t byte;
     for (int i = 0; i < PRG_ROM_size_bytes; i++) {
-        rom >> byte;
+        romFile >> byte;
         memory->write(0x8000 + i, byte);
     }
 
-    rom.close();
+    romFile.close();
 
     memory->set_PRG_ROM_size(PRG_ROM_size);
 }

@@ -7,3 +7,4 @@ bin
 
 # ROM files
 *.nes
+!nestest.nes

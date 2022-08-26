@@ -35,3 +35,4 @@ This will create a `bin` folder in the repository and build the project from the
 - Reference implementation: https://github.com/fogleman/nes
 - NES overflow flag: http://www.righto.com/2012/12/the-6502-overflow-flag-explained.html
 - NES opcode timing: http://atarihq.com/danb/files/64doc.txt
+- nestest CPU test: http://www.qmtpro.com/~nes/misc/nestest.txt
