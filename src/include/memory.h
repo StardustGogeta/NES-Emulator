@@ -9,8 +9,7 @@ class Memory {
     public:
         typedef uint16_t addr_t;
         
-        Memory();
-        Memory(uint8_t PRG_ROM_size);
+        Memory(uint8_t PRG_ROM_size=1);
         uint8_t read(addr_t address);
         uint16_t readWord(addr_t address);
         void write(addr_t address, uint8_t data);

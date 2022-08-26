@@ -3,6 +3,7 @@
 NES::NES() {
     memory = new Memory();
     cpu = new CPU();
+    cpu->memory = memory;
 }
 
 void NES::loadROM(ROM* rom) {

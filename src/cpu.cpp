@@ -1,26 +1,41 @@
 #include "cpu.h"
 #include <bit>
+#include <stdexcept>
 
 CPU::CPU() {
     reset();
 }
 
-void CPU::reset() {
-    pc = 0xfffc;
+void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
+    this->pc = pc;
     cycles = 0;
+}
+
+/*
+    Reads the next byte at the program counter.
+*/
+uint8_t CPU::peek() {
+    return memory->read(pc);
+}
+
+/*
+    Reads the next word at the program counter.
+*/
+uint16_t CPU::peekWord() {
+    return memory->readWord(pc);
 }
 
 /*
     Reads the next byte at the program counter and increments the PC.
 */
-uint8_t CPU::readNext() {
+uint8_t CPU::read() {
     return memory->read(pc++);
 }
 
 /*
-    Reads the next byte at the program counter and increments the PC twice.
+    Reads the next word at the program counter and increments the PC twice.
 */
-uint16_t CPU::readNextWord() {
+uint16_t CPU::readWord() {
     uint16_t word = memory->readWord(pc);
     pc += 2;
     return word;
@@ -85,7 +100,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xea:
             return NUL;
         default:
-            throw;
+            throw std::runtime_error("Unsupported opcode in getAddressingMode.");
     }
 }
 
@@ -100,26 +115,26 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
         case IND:
             return pc;
         case ZP:
-            return readNext();
+            return read();
         case ZPX:
-            return (readNext() + x) % 0x100;
+            return (read() + x) % 0x100;
         case ZPY:
-            return (readNext() + y) % 0x100;
+            return (read() + y) % 0x100;
         case IZX:
-            return memory->readWord((readNext() + x) % 0x100);
+            return memory->readWord((read() + x) % 0x100);
         case IZY:
-            return (memory->readWord(readNext()) << 8) | y;
+            return (memory->readWord(read()) << 8) | y;
         case ABS:
-            return readNextWord();
+            return readWord();
         case ABX:
-            return readNextWord() + x;
+            return readWord() + x;
         case ABY:
-            return readNextWord() + y;
+            return readWord() + y;
         case REL:
             // TODO: Check if this has a small error with the PC
-            return std::bit_cast<int8_t>(readNext()) + pc;
+            return std::bit_cast<int8_t>(read()) + pc;
         default:
-            throw;
+            throw std::runtime_error("Unsupported opcode in getAddress.");
     }
 }
 
@@ -193,7 +208,7 @@ instruction CPU::getInstruction(uint8_t opcode) {
         case 0x98:
             return TYA;
         default:
-            throw;
+            throw std::runtime_error("Unsupported opcode in getInstruction.");
     }
 }
 
@@ -336,7 +351,7 @@ void CPU::runOpcode(uint8_t opcode) {
 void CPU::cycle() {
     if (cycles == 0) {
         // New opcode begins
-        runOpcode(readNext());
+        runOpcode(read());
     }
     cycles--;
 }
