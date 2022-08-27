@@ -1,24 +1,27 @@
-#include <iostream>
-#include <cstring>
 #include "memory.h"
 #include "rom.h"
 #include "nes.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstring>
 
 bool runNesTest() {
     std::cout << "Running nestest...\n";
 
     ROM* rom = new ROM();
-    rom->setPath("../nestest.nes");
+    rom->setPath("../test/nestest.nes");
 
     NES* nes = new NES();
     nes->loadROM(rom);
     nes->cpu->reset(0xc000); // Set initial program counter
+    nes->cpu->startLogging("../test/cpuLog.txt");
 
-    for (int i = 0; i < 20; i++) {
-        uint8_t val = nes->cpu->peek();
-        // std::cout << "Byte: " << std::hex << (int)val << std::dec << std::endl;
+    for (int i = 0; i < 120; i++) {
         nes->cpu->cycle();
     }
+
+    nes->cpu->stopLogging();
 
     return true;
 }

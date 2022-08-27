@@ -1,6 +1,7 @@
 #pragma once
 #include "memory.h"
 #include <cstdint>
+#include <fstream>
 
 enum addressingMode {
     // NUL is for opcodes that take no arguments
@@ -18,6 +19,8 @@ class CPU {
         CPU();
         void reset(Memory::addr_t pc=0xfffc);
         void cycle();
+        void startLogging(std::string path);
+        void stopLogging();
         uint8_t peek();
         uint16_t peekWord();
         uint8_t read();
@@ -41,8 +44,8 @@ class CPU {
             bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
         int cycles; // Cycles left in instruction
-        // Current instruction
-        // Addressing mode
+        bool logging;
+        std::ofstream logFile;
 
         addressingMode getAddressingMode(uint8_t opcode);
         Memory::addr_t getAddress(addressingMode mode);

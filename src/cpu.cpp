@@ -2,6 +2,7 @@
 #include <bit>
 #include <stdexcept>
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 
 CPU::CPU() {
@@ -14,6 +15,19 @@ void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
     cycles = 0;
     memset(&p, 0, sizeof(p));
     p.d = p.b2 = 1;
+    logging = false;
+}
+
+void CPU::startLogging(std::string path) {
+    logFile.open(path, std::ios::out);
+    logFile << std::hex << std::uppercase;
+    logging = true;
+    std::cout << "Started CPU logging." << std::endl;
+}
+
+void CPU::stopLogging() {
+    logFile.close();
+    std::cout << "Stopped CPU logging." << std::endl;
 }
 
 /*
@@ -318,7 +332,7 @@ instruction CPU::getInstruction(uint8_t opcode) {
 }
 
 void CPU::setNZ(uint8_t val) {
-    p.n = val & 0x80 > 0;
+    p.n = (val & 0x80) > 0;
     p.z = val == 0;
 }
 
@@ -335,18 +349,23 @@ void CPU::runOpcode(uint8_t opcode) {
     std::cout << "Trying to run opcode 0x" << std::hex << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
     #endif
 
+    // Write opcodes to a log file
+    if (logging) {
+        logFile << std::setfill('0') << std::setw(4) << pc - 1 << "  " << std::setfill('0') << std::setw(2) << (int)opcode << std::endl;
+    }
+
     addressingMode mode = getAddressingMode(opcode);
     instruction inst = getInstruction(opcode);
     
-    Memory::addr_t addr;
-    uint8_t argument, arg_word;
+    Memory::addr_t addr = 0;
+    uint8_t argument; // , arg_word;
     
     if (mode != NUL) {
         addr = getAddress(mode);
         // Read up to two bytes at the given address
         // TODO: Optimize by only reading argument if specific instruction requires it
         argument = memory->read(addr);
-        arg_word = (memory->read(addr + 1) << 8) | argument;
+        // arg_word = (memory->read(addr + 1) << 8) | argument;
     } else {
         // If an opcode normally takes arguments, then the no-arg instruction uses the accumulator
         argument = a;

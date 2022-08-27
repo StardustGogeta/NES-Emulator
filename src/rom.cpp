@@ -9,10 +9,8 @@ void ROM::setPath(std::string path) {
 }
 
 void ROM::parseHeader() {
-    std::ifstream romFile;
     // Open the file and go straight to the end
-    romFile.open(path, std::ios::ate | std::ios::binary);
-
+    std::ifstream romFile(path, std::ios::ate | std::ios::binary);
     int romSize = romFile.tellg(); // Find file length
     std::cout << "The file size is " << romSize << " bytes.\n";
     
@@ -51,13 +49,13 @@ void ROM::parseHeader() {
 
         // Decode flags 6 and 7
         mirroring           = flags6 & 0b00000001 ? "vertical" : "horizontal";
-        persistentMemory    = flags6 & 0b00000010 > 0;
-        trainer             = flags6 & 0b00000100 > 0;
-        fourScreenVRAM      = flags6 & 0b00001000 > 0;
+        persistentMemory    = (flags6 & 0b00000010) > 0;
+        trainer             = (flags6 & 0b00000100) > 0;
+        fourScreenVRAM      = (flags6 & 0b00001000) > 0;
         mapper              = (flags6 >> 4) + (flags7 & 0b11110000); // Mappers not supported
         nes2                = (flags7 & 0b00001100) == 0b1000; // NES 2.0 not fully supported
-        playchoice10        = flags7 & 0b00000010 > 0;
-        VS_unisystem        = flags7 & 0b00000001 > 0;
+        playchoice10        = (flags7 & 0b00000010) > 0;
+        VS_unisystem        = (flags7 & 0b00000001) > 0;
         std::cout << (int)PRG_ROM_size << " PRGROM\n" << (int)PRG_RAM_size << " PRGRAM\n" << (int)mapper << " Mapper\n";
     }
 

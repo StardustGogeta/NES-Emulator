@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 3.24.0)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O0")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Og -Wall -Wextra")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "../bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 project("NES Emulator")
 
@@ -18,5 +20,6 @@ add_executable(
 
 target_include_directories(main PRIVATE src/include)
 
-# enable_testing()
-add_test(NAME nestest COMMAND main nestest)
+enable_testing()
+add_test(NAME nestest_execute COMMAND main nestest)
+add_test(NAME nestest_match COMMAND python ${CMAKE_SOURCE_DIR}/test/nestestCompare.py)
