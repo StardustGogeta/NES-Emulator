@@ -239,7 +239,6 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
             cache = readWord();
             return memory->readWord(cache);
         case REL:
-            // TODO: Check if this has a small error with the PC
             return std::bit_cast<int8_t>(read()) + pc;
         default:
             throw std::runtime_error("Unsupported opcode in getAddress.");
@@ -511,8 +510,12 @@ void CPU::runOpcode(uint8_t opcode) {
                 logFile << "  ";
                 break;
             case ABS:
-                logFile << "$" << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "                  ";
+                logFile << "$" << ZPAD4 << addr;
+                if (inst == JMP || inst == JSR) {
+                    logFile << "                       ";
+                } else {
+                    logFile << " = " << ZPAD2 << (int)argument << "                  ";
+                }
                 break;
             case ABX:
                 logFile << "$" << ZPAD4 << cache << ",X @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
@@ -701,18 +704,26 @@ void CPU::runOpcode(uint8_t opcode) {
             stackPush(a);
             break;
         case PHP:
-            stackPush(processorStatus());
+            // The B and I flags must be set to 1 in the copy on the stack
+            // See https://www.masswerk.at/6502/6502_instruction_set.html#PHP
+            stackPush(processorStatus() | 0x34);
             break;
         case PLA:
             a = stackPop();
             setNZ(a);
             break;
-        case PLP:
+        case PLP: {
+            // We ignore changes to the B and I flags
+            // See https://www.masswerk.at/6502/6502_instruction_set.html#PLP
+            processorFlags oldP = p;
             setProcessorStatus(stackPop());
-            break;
-        case RTS:{
-            pc = (stackPop() | (stackPop() << 8)) + 1;
+            p.b1 = oldP.b1;
+            p.b2 = oldP.b2;
+            p.i = oldP.i;
             }
+            break;
+        case RTS:
+            pc = (stackPop() | (stackPop() << 8)) + 1;
             break;
         case SEC:
             p.c = 1;

@@ -11,7 +11,13 @@ with open(path + "/nestest.log") as nestest:
             ref_addr, ref_opc = ref_line.split()[:2]
             emu_addr, emu_opc = emu_line.split()[:2]
 
-            assert ref_addr == emu_addr, f"Address mismatch on line {i}: {ref_addr} expected, but saw {emu_addr}."
-            assert ref_opc == emu_opc, f"Opcode mismatch on line {i}: {ref_opc} expected, but saw {emu_opc}."
+            assert ref_addr == emu_addr, f"Address mismatch on line {i + 1}: {ref_addr} expected, but saw {emu_addr}."
+            assert ref_opc == emu_opc, f"Opcode mismatch on line {i + 1}: {ref_opc} expected, but saw {emu_opc}."
+
+            assert ref_line[:73] == emu_line[:73], f"Line mismatch on line {i + 1}:\nExpected: {ref_line[:74]}\nSaw:      {emu_line[:74]}"
+
+
+
+
 
 print("All checks completed successfully.")
