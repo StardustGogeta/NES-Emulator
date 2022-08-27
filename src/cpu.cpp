@@ -595,7 +595,6 @@ void CPU::runOpcode(uint8_t opcode) {
             }
             break;
         case BEQ:
-            std::cout << "PROCESSOR STATUS " << std::hex << (int)processorStatus() << std::dec << std::endl;
             if (p.z) {
                 pc = addr;
             }
@@ -654,7 +653,6 @@ void CPU::runOpcode(uint8_t opcode) {
             p.v = 0;
             break;
         case CMP: {
-            std::cout << "ACC " << std::hex << (int)a << std::dec << std::endl;
             uint8_t result = a - argument;
             p.n = (result & 0x80) > 0;
             p.z = result == 0;
