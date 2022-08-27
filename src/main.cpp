@@ -17,7 +17,7 @@ bool runNesTest() {
     nes->cpu->reset(0xc000); // Set initial program counter
     nes->cpu->startLogging("../test/cpuLog.txt");
 
-    for (int i = 0; i < 150; i++) {
+    for (int i = 0; i < 300; i++) {
         nes->cpu->cycle();
     }
 
