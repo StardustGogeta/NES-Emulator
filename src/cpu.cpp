@@ -145,16 +145,22 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xd0:
         case 0xf0:
             return REL;
+        case 0x08:
         case 0x0a:
         case 0x18:
+        case 0x28:
         case 0x38:
+        case 0x48:
         case 0x58:
         case 0x60:
+        case 0x68:
         case 0x78:
         case 0x88:
         case 0x98:
+        case 0x9a:
         case 0xaa:
         case 0xb8:
+        case 0xba:
         case 0xc8:
         case 0xca:
         case 0xd8:
@@ -297,6 +303,14 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return LDY;
         case 0xea:
             return NOP;
+        case 0x48:
+            return PHA;
+        case 0x08:
+            return PHP;
+        case 0x68:
+            return PLA;
+        case 0x28:
+            return PLP;
         case 0x60:
             return RTS;
         case 0x38:
@@ -325,8 +339,12 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return TAX;
         case 0xa8:
             return TAY;
+        case 0xba:
+            return TSX;
         case 0x8a:
             return TXA;
+        case 0x9a:
+            return TXS;
         case 0x98:
             return TYA;
         default:
@@ -349,6 +367,17 @@ uint8_t CPU::stackPop() {
 
 uint8_t CPU::processorStatus() {
     return (((((((((((((p.n << 1) | p.v) << 1) | p.b1) << 1) | p.b2) << 1) | p.d) << 1) | p.i) << 1) | p.z) << 1) | p.c;
+}
+
+void CPU::setProcessorStatus(uint8_t status) {
+    p.n = (status & 0x80) > 0;
+    p.v = (status & 0x40) > 0;
+    p.b1= (status & 0x20) > 0;
+    p.b2= (status & 0x10) > 0;
+    p.d = (status & 0x08) > 0;
+    p.i = (status & 0x04) > 0;
+    p.z = (status & 0x02) > 0;
+    p.c = (status & 0x01) > 0;
 }
 
 void CPU::runOpcode(uint8_t opcode) {
@@ -509,6 +538,19 @@ void CPU::runOpcode(uint8_t opcode) {
             break;
         case NOP:
             break;
+        case PHA:
+            stackPush(a);
+            break;
+        case PHP:
+            stackPush(processorStatus());
+            break;
+        case PLA:
+            a = stackPop();
+            setNZ(a);
+            break;
+        case PLP:
+            setProcessorStatus(stackPop());
+            break;
         case RTS:{
             pc = (stackPop() | (stackPop() << 8)) + 1;
             }
@@ -539,9 +581,16 @@ void CPU::runOpcode(uint8_t opcode) {
             y = a;
             setNZ(y);
             break;
+        case TSX:
+            x = sp;
+            setNZ(x);
+            break;
         case TXA:
             a = x;
             setNZ(a);
+            break;
+        case TXS:
+            sp = x;
             break;
         case TYA:
             a = y;
