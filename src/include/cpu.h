@@ -8,7 +8,7 @@ enum addressingMode {
 };
 
 enum instruction {
-    ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BVC, BVS, DEC, DEX, DEY, INX, INY, JMP, JSR, LDA, LDX, LDY, NOP, STA, STX, STY, TAX, TAY, TXA, TYA // TODO: Add the rest
+    ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BVC, BVS, CLC, CLD, CLI, CLV, DEC, DEX, DEY, INX, INY, JMP, JSR, LDA, LDX, LDY, NOP, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TXA, TYA // TODO: Add the rest
 };
 
 class CPU {

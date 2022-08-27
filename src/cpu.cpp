@@ -129,13 +129,20 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xf0:
             return REL;
         case 0x0a:
+        case 0x18:
+        case 0x38:
+        case 0x58:
+        case 0x78:
         case 0x88:
         case 0x98:
         case 0xaa:
+        case 0xb8:
         case 0xc8:
         case 0xca:
+        case 0xd8:
         case 0xe8:
         case 0xea:
+        case 0xf8:
             return NUL;
         default:
             throw std::runtime_error("Unsupported opcode in getAddressingMode.");
@@ -223,6 +230,14 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return BVC;
         case 0x70:
             return BVS;
+        case 0x18:
+            return CLC;
+        case 0xd8:
+            return CLD;
+        case 0x58:
+            return CLI;
+        case 0xb8:
+            return CLV;
         case 0xc6:
         case 0xce:
         case 0xd6:
@@ -264,6 +279,12 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return LDY;
         case 0xea:
             return NOP;
+        case 0x38:
+            return SEC;
+        case 0xf8:
+            return SED;
+        case 0x78:
+            return SEI;
         case 0x81:
         case 0x85:
         case 0x8d:
@@ -390,6 +411,18 @@ void CPU::runOpcode(uint8_t opcode) {
                 pc = addr;
             }
             break;
+        case CLC:
+            p.c = 0;
+            break;
+        case CLD:
+            p.d = 0;
+            break;
+        case CLI:
+            p.i = 0;
+            break;
+        case CLV:
+            p.v = 0;
+            break;
         case DEC:
             memory->write(addr, argument - 1);
             setNZ(argument - 1);
@@ -431,6 +464,15 @@ void CPU::runOpcode(uint8_t opcode) {
             setNZ(y);
             break;
         case NOP:
+            break;
+        case SEC:
+            p.c = 1;
+            break;
+        case SED:
+            p.d = 1;
+            break;
+        case SEI:
+            p.i = 1;
             break;
         case STA:
             memory->write(addr, a);
