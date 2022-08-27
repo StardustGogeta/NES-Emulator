@@ -16,9 +16,9 @@ int addressingModeReadCount[] = {
 
 std::string opcodeNames[] = {
     "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC",
-    "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "INX", "INY", "JMP", "JSR", "LDA",
-    "LDX", "LDY", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "RTS", "SEC", "SED", "SEI", "STA", "STX",
-    "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
+    "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
+    "JSR", "LDA", "LDX", "LDY", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "RTS", "SEC", "SED", "SEI",
+    "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
 };
 
 CPU::CPU() {
@@ -84,6 +84,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
     switch (opcode) {
         case 0x09:
         case 0x29:
+        case 0x49:
         case 0x69:
         case 0xa0:
         case 0xa2:
@@ -96,6 +97,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x06:
         case 0x24:
         case 0x25:
+        case 0x45:
         case 0x65:
         case 0x84:
         case 0x85:
@@ -107,10 +109,12 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xc5:
         case 0xc6:
         case 0xe4:
+        case 0xe6:
             return ZP;
         case 0x15:
         case 0x16:
         case 0x35:
+        case 0x55:
         case 0x75:
         case 0x94:
         case 0x95:
@@ -118,12 +122,14 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xb5:
         case 0xd5:
         case 0xd6:
+        case 0xf6:
             return ZPX;
         case 0x96:
         case 0xb6:
             return ZPY;
         case 0x01:
         case 0x21:
+        case 0x41:
         case 0x61:
         case 0x81:
         case 0xa1:
@@ -131,6 +137,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
             return IZX;
         case 0x11:
         case 0x31:
+        case 0x51:
         case 0x71:
         case 0x91:
         case 0xb1:
@@ -142,6 +149,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x2c:
         case 0x2d:
         case 0x4c:
+        case 0x4d:
         case 0x6d:
         case 0x8c:
         case 0x8d:
@@ -153,19 +161,23 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xcd:
         case 0xce:
         case 0xec:
+        case 0xee:
             return ABS;
         case 0x1d:
         case 0x1e:
         case 0x3d:
+        case 0x5d:
         case 0x7d:
         case 0x9d:
         case 0xbc:
         case 0xbd:
         case 0xdd:
         case 0xde:
+        case 0xfe:
             return ABX;
         case 0x19:
         case 0x39:
+        case 0x59:
         case 0x79:
         case 0x99:
         case 0xb9:
@@ -333,6 +345,20 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return DEX;
         case 0x88:
             return DEY;
+        case 0x41:
+        case 0x45:
+        case 0x49:
+        case 0x4d:
+        case 0x51:
+        case 0x55:
+        case 0x59:
+        case 0x5d:
+            return EOR;
+        case 0xe6:
+        case 0xee:
+        case 0xf6:
+        case 0xfe:
+            return INC;
         case 0xe8:
             return INX;
         case 0xc8:
@@ -565,12 +591,12 @@ void CPU::runOpcode(uint8_t opcode) {
 
     switch (inst) {
         case ADC: {
-            // Use a type large enough to detect overflow
-            uint16_t carry = p.c;
-            p.c = carry + a + argument > 0xff;
-            a += argument + carry;
+            // Use a type large enough to detect carry
+            uint16_t result = a + p.c + argument;
+            p.c = result > 0xff;
+            p.v = ((a ^ result) & (argument ^ result) & 0x80) != 0;
+            a = result & 0xff;
             setNZ(a);
-            p.v = p.c ^ carry;
             }
             break;
         case AND:
@@ -684,6 +710,14 @@ void CPU::runOpcode(uint8_t opcode) {
         case DEY:
             y--;
             setNZ(y);
+            break;
+        case EOR:
+            a ^= argument;
+            setNZ(a);
+            break;
+        case INC:
+            memory->write(addr, argument + 1);
+            setNZ(argument + 1);
             break;
         case INX:
             x++;

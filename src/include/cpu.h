@@ -10,9 +10,9 @@ enum addressingMode {
 
 enum instruction {
     ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK, BVC, BVS, CLC,
-    CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY, INX, INY, JMP, JSR, LDA,
-    LDX, LDY, NOP, ORA, PHA, PHP, PLA, PLP, RTS, SEC, SED, SEI, STA, STX,
-    STY, TAX, TAY, TSX, TXA, TXS, TYA // TODO: Add the rest
+    CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY, EOR, INC, INX, INY, JMP,
+    JSR, LDA, LDX, LDY, NOP, ORA, PHA, PHP, PLA, PLP, RTS, SEC, SED, SEI,
+    STA, STX, STY, TAX, TAY, TSX, TXA, TXS, TYA // TODO: Add the rest
 };
 
 class CPU {
