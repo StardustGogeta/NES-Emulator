@@ -56,32 +56,46 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x24:
         case 0x25:
         case 0x65:
+        case 0x84:
+        case 0x85:
+        case 0x86:
         case 0xc6:
             return ZP;
         case 0x35:
         case 0x75:
+        case 0x94:
+        case 0x95:
         case 0xd6:
             return ZPX;
+        case 0x96:
+            return ZPY;
         case 0x21:
         case 0x61:
+        case 0x81:
             return IZX;
         case 0x31:
         case 0x71:
+        case 0x91:
             return IZY;
         case 0x0e:
         case 0x2c:
         case 0x2d:
         case 0x4c:
         case 0x6d:
+        case 0x8c:
+        case 0x8d:
+        case 0x8e:
         case 0xce:
             return ABS;
         case 0x1e:
         case 0x3d:
         case 0x7d:
+        case 0x9d:
         case 0xde:
             return ABX;
         case 0x39:
         case 0x79:
+        case 0x99:
             return ABY;
         case 0x6c:
             return IND;
@@ -207,6 +221,22 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return JMP;
         case 0xea:
             return NOP;
+        case 0x81:
+        case 0x85:
+        case 0x8d:
+        case 0x91:
+        case 0x95:
+        case 0x99:
+        case 0x9d:
+            return STA;
+        case 0x86:
+        case 0x8e:
+        case 0x96:
+            return STX;
+        case 0x84:
+        case 0x8c:
+        case 0x94:
+            return STY;
         case 0xaa:
             return TAX;
         case 0xa8:
@@ -337,6 +367,15 @@ void CPU::runOpcode(uint8_t opcode) {
             pc = addr;
             break;
         case NOP:
+            break;
+        case STA:
+            memory->write(addr, a);
+            break;
+        case STX:
+            memory->write(addr, x);
+            break;
+        case STY:
+            memory->write(addr, y);
             break;
         case TAX:
             x = a;
