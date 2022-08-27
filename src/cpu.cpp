@@ -17,8 +17,8 @@ int addressingModeReadCount[] = {
 std::string opcodeNames[] = {
     "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC",
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "INX", "INY", "JMP", "JSR", "LDA",
-    "LDX", "LDY", "NOP", "PHA", "PHP", "PLA", "PLP", "RTS", "SEC", "SED", "SEI", "STA", "STX", "STY",
-    "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
+    "LDX", "LDY", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "RTS", "SEC", "SED", "SEI", "STA", "STX",
+    "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
 };
 
 CPU::CPU() {
@@ -82,6 +82,7 @@ uint16_t CPU::readWord() {
 addressingMode CPU::getAddressingMode(uint8_t opcode) {
     // TODO: Add the rest, convert to table indexing
     switch (opcode) {
+        case 0x09:
         case 0x29:
         case 0x69:
         case 0xa0:
@@ -91,6 +92,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xc9:
         case 0xe0:
             return IMM;
+        case 0x05:
         case 0x06:
         case 0x24:
         case 0x25:
@@ -106,6 +108,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xc6:
         case 0xe4:
             return ZP;
+        case 0x15:
         case 0x16:
         case 0x35:
         case 0x75:
@@ -119,18 +122,21 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x96:
         case 0xb6:
             return ZPY;
+        case 0x01:
         case 0x21:
         case 0x61:
         case 0x81:
         case 0xa1:
         case 0xc1:
             return IZX;
+        case 0x11:
         case 0x31:
         case 0x71:
         case 0x91:
         case 0xb1:
         case 0xd1:
             return IZY;
+        case 0x0d:
         case 0x0e:
         case 0x20:
         case 0x2c:
@@ -148,6 +154,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xce:
         case 0xec:
             return ABS;
+        case 0x1d:
         case 0x1e:
         case 0x3d:
         case 0x7d:
@@ -157,6 +164,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xdd:
         case 0xde:
             return ABX;
+        case 0x19:
         case 0x39:
         case 0x79:
         case 0x99:
@@ -357,6 +365,15 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return LDY;
         case 0xea:
             return NOP;
+        case 0x01:
+        case 0x05:
+        case 0x09:
+        case 0x0d:
+        case 0x11:
+        case 0x15:
+        case 0x19:
+        case 0x1d:
+            return ORA;
         case 0x48:
             return PHA;
         case 0x08:
@@ -586,7 +603,7 @@ void CPU::runOpcode(uint8_t opcode) {
         case BIT:
             p.n = (argument & 0x80) > 0;
             p.v = (argument & 0x40) > 0;
-            p.z = (a | argument) == 0;
+            p.z = (a & argument) == 0;
             break;
         case BMI:
             if (p.n) {
@@ -699,6 +716,10 @@ void CPU::runOpcode(uint8_t opcode) {
             setNZ(y);
             break;
         case NOP:
+            break;
+        case ORA:
+            a |= argument;
+            setNZ(a);
             break;
         case PHA:
             stackPush(a);
