@@ -1,6 +1,7 @@
 # Files generated during build process
 build
 bin
+cpuLog.txt
 
 # Editor files
 .vscode
