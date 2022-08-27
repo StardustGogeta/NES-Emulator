@@ -50,6 +50,9 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
     switch (opcode) {
         case 0x29:
         case 0x69:
+        case 0xa0:
+        case 0xa2:
+        case 0xa9:
             return IMM;
         case 0x06:
         case 0x16:
@@ -59,23 +62,31 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x84:
         case 0x85:
         case 0x86:
+        case 0xa4:
+        case 0xa5:
+        case 0xa6:
         case 0xc6:
             return ZP;
         case 0x35:
         case 0x75:
         case 0x94:
         case 0x95:
+        case 0xb4:
+        case 0xb5:
         case 0xd6:
             return ZPX;
         case 0x96:
+        case 0xb6:
             return ZPY;
         case 0x21:
         case 0x61:
         case 0x81:
+        case 0xa1:
             return IZX;
         case 0x31:
         case 0x71:
         case 0x91:
+        case 0xb1:
             return IZY;
         case 0x0e:
         case 0x2c:
@@ -85,17 +96,24 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x8c:
         case 0x8d:
         case 0x8e:
+        case 0xac:
+        case 0xad:
+        case 0xae:
         case 0xce:
             return ABS;
         case 0x1e:
         case 0x3d:
         case 0x7d:
         case 0x9d:
+        case 0xbc:
+        case 0xbd:
         case 0xde:
             return ABX;
         case 0x39:
         case 0x79:
         case 0x99:
+        case 0xb9:
+        case 0xbe:
             return ABY;
         case 0x6c:
             return IND;
@@ -130,7 +148,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
 Memory::addr_t CPU::getAddress(addressingMode mode) {
     switch (mode) {
         case IMM:
-            return pc;
+            return pc++;
         case ZP:
             return read();
         case ZPX:
@@ -219,6 +237,27 @@ instruction CPU::getInstruction(uint8_t opcode) {
         case 0x4c:
         case 0x6c:
             return JMP;
+        case 0xa1:
+        case 0xa5:
+        case 0xa9:
+        case 0xad:
+        case 0xb1:
+        case 0xb5:
+        case 0xb9:
+        case 0xbd:
+            return LDA;
+        case 0xa2:
+        case 0xa6:
+        case 0xae:
+        case 0xb6:
+        case 0xbe:
+            return LDX;
+        case 0xa0:
+        case 0xa4:
+        case 0xac:
+        case 0xb4:
+        case 0xbc:
+            return LDY;
         case 0xea:
             return NOP;
         case 0x81:
@@ -257,7 +296,7 @@ void CPU::setNZ(uint8_t val) {
 
 void CPU::runOpcode(uint8_t opcode) {
     #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << (int)opcode << std::dec << std::endl;
+    std::cout << "Trying to run opcode 0x" << std::hex << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
     #endif
 
     addressingMode mode = getAddressingMode(opcode);
@@ -365,6 +404,18 @@ void CPU::runOpcode(uint8_t opcode) {
             break;
         case JMP:
             pc = addr;
+            break;
+        case LDA:
+            a = argument;
+            setNZ(a);
+            break;
+        case LDX:
+            x = argument;
+            setNZ(x);
+            break;
+        case LDY:
+            y = argument;
+            setNZ(y);
             break;
         case NOP:
             break;

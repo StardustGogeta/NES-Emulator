@@ -14,7 +14,7 @@ bool runNesTest() {
     nes->loadROM(rom);
     nes->cpu->reset(0xc000); // Set initial program counter
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
         uint8_t val = nes->cpu->peek();
         // std::cout << "Byte: " << std::hex << (int)val << std::dec << std::endl;
         nes->cpu->cycle();
@@ -35,7 +35,6 @@ int main(int argc, char* argv[]) {
         std::cout << "Defaulting to " << path << std::endl;
     }
 
-    runNesTest();
     if (path == "nestest") {
         runNesTest();
     } else {
