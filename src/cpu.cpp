@@ -9,6 +9,7 @@ CPU::CPU() {
 
 void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
     this->pc = pc;
+    sp = 0xfd;
     cycles = 0;
 }
 
@@ -46,7 +47,7 @@ uint16_t CPU::readWord() {
     Returns the addressing mode for a particular opcode.
 */
 addressingMode CPU::getAddressingMode(uint8_t opcode) {
-    // TODO: Add the rest
+    // TODO: Add the rest, convert to table indexing
     switch (opcode) {
         case 0x29:
         case 0x69:
@@ -89,6 +90,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xb1:
             return IZY;
         case 0x0e:
+        case 0x20:
         case 0x2c:
         case 0x2d:
         case 0x4c:
@@ -176,7 +178,7 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
 }
 
 instruction CPU::getInstruction(uint8_t opcode) {
-    // TODO: Add the rest
+    // TODO: Add the rest, convert to table indexing
     switch (opcode) {
         case 0x61:
         case 0x65:
@@ -237,6 +239,8 @@ instruction CPU::getInstruction(uint8_t opcode) {
         case 0x4c:
         case 0x6c:
             return JMP;
+        case 0x20:
+            return JSR;
         case 0xa1:
         case 0xa5:
         case 0xa9:
@@ -292,6 +296,10 @@ instruction CPU::getInstruction(uint8_t opcode) {
 void CPU::setNZ(uint8_t val) {
     p.n = val & 0x80 > 0;
     p.z = val == 0;
+}
+
+void CPU::stackPush(uint8_t val) {
+    memory->write(0x100 + (sp--), val);
 }
 
 void CPU::runOpcode(uint8_t opcode) {
@@ -403,6 +411,11 @@ void CPU::runOpcode(uint8_t opcode) {
             setNZ(y);
             break;
         case JMP:
+            pc = addr;
+            break;
+        case JSR:
+            stackPush(pc & 0xff00);
+            stackPush((pc & 0xff) - 1);
             pc = addr;
             break;
         case LDA:

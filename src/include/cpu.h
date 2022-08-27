@@ -8,7 +8,7 @@ enum addressingMode {
 };
 
 enum instruction {
-    ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BVC, BVS, DEC, DEX, DEY, INX, INY, JMP, LDA, LDX, LDY, NOP, STA, STX, STY, TAX, TAY, TXA, TYA // TODO: Add the rest
+    ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BVC, BVS, DEC, DEX, DEY, INX, INY, JMP, JSR, LDA, LDX, LDY, NOP, STA, STX, STY, TAX, TAY, TXA, TYA // TODO: Add the rest
 };
 
 class CPU {
@@ -48,5 +48,6 @@ class CPU {
         Memory::addr_t getAddress(addressingMode mode);
         instruction getInstruction(uint8_t opcode);
         void setNZ(uint8_t val);
+        void stackPush(uint8_t val);
         void runOpcode(uint8_t opcode);
 };
