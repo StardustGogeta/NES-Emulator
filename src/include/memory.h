@@ -16,6 +16,7 @@ class Memory {
         void writeBlock(addr_t address, uint8_t *src, uint16_t numBytes);
         void clear();
         void set_PRG_ROM_size(uint8_t PRG_ROM_size);
+        uint8_t readDirect(addr_t address);
         void writeDirect(addr_t address, uint8_t data);
 
     private:

@@ -149,6 +149,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x18:
         case 0x38:
         case 0x58:
+        case 0x60:
         case 0x78:
         case 0x88:
         case 0x98:
@@ -296,6 +297,8 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return LDY;
         case 0xea:
             return NOP;
+        case 0x60:
+            return RTS;
         case 0x38:
             return SEC;
         case 0xf8:
@@ -337,7 +340,11 @@ void CPU::setNZ(uint8_t val) {
 }
 
 void CPU::stackPush(uint8_t val) {
-    memory->write(0x100 + (sp--), val);
+    memory->writeDirect(0x100 + (sp--), val);
+}
+
+uint8_t CPU::stackPop() {
+    return memory->readDirect(0x100 + (++sp));
 }
 
 uint8_t CPU::processorStatus() {
@@ -484,8 +491,8 @@ void CPU::runOpcode(uint8_t opcode) {
             pc = addr;
             break;
         case JSR:
-            stackPush((pc & 0xff00) >> 8);
-            stackPush((pc & 0xff) - 1);
+            stackPush(((--pc) & 0xff00) >> 8);
+            stackPush(pc & 0xff);
             pc = addr;
             break;
         case LDA:
@@ -501,6 +508,10 @@ void CPU::runOpcode(uint8_t opcode) {
             setNZ(y);
             break;
         case NOP:
+            break;
+        case RTS:{
+            pc = (stackPop() | (stackPop() << 8)) + 1;
+            }
             break;
         case SEC:
             p.c = 1;
