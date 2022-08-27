@@ -2,6 +2,7 @@
 #include <bit>
 #include <stdexcept>
 #include <iostream>
+#include <cstring>
 
 CPU::CPU() {
     reset();
@@ -11,6 +12,8 @@ void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
     this->pc = pc;
     sp = 0xfd;
     cycles = 0;
+    memset(&p, 0, sizeof(p));
+    p.d = p.b2 = 1;
 }
 
 /*
@@ -323,6 +326,10 @@ void CPU::stackPush(uint8_t val) {
     memory->write(0x100 + (sp--), val);
 }
 
+uint8_t CPU::processorStatus() {
+    return (((((((((((((p.n << 1) | p.v) << 1) | p.b1) << 1) | p.b2) << 1) | p.d) << 1) | p.i) << 1) | p.z) << 1) | p.c;
+}
+
 void CPU::runOpcode(uint8_t opcode) {
     #ifdef DEBUG
     std::cout << "Trying to run opcode 0x" << std::hex << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
@@ -401,6 +408,17 @@ void CPU::runOpcode(uint8_t opcode) {
                 pc = addr;
             }
             break;
+        case BRK: {
+            // TODO: Make sure this all works as intended
+            pc += 2;
+            stackPush((pc & 0xff00) >> 8);
+            stackPush(pc & 0xff);
+            p.b1 = p.b2 = 1;
+            stackPush(processorStatus());
+            p.i = 1;
+            pc = 0xfffe;
+            }
+            break;
         case BVC:
             if (!p.v) {
                 pc = addr;
@@ -447,7 +465,7 @@ void CPU::runOpcode(uint8_t opcode) {
             pc = addr;
             break;
         case JSR:
-            stackPush(pc & 0xff00);
+            stackPush((pc & 0xff00) >> 8);
             stackPush((pc & 0xff) - 1);
             pc = addr;
             break;
