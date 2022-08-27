@@ -38,3 +38,4 @@ This will create a `bin` folder in the repository and build the project from the
 - nestest CPU test: http://www.qmtpro.com/~nes/misc/nestest.txt
 - Stack pointer and nestest: https://www.reddit.com/r/EmuDev/comments/g663hk/nestestlog_stack_pointer_starting_at_fd_and_sbc/
 - BRK/IRQ/NMI/RESET and stack pointer behavior: https://www.pagetable.com/?p=410
+- BRK command behavior: http://www.romdetectives.com/Wiki/index.php?title=BRK
