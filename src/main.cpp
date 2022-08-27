@@ -16,7 +16,7 @@ bool runNesTest() {
 
     for (int i = 0; i < 10; i++) {
         uint8_t val = nes->cpu->peek();
-        std::cout << "Byte: " << std::hex << (int)val << std::dec << std::endl;
+        // std::cout << "Byte: " << std::hex << (int)val << std::dec << std::endl;
         nes->cpu->cycle();
     }
 
@@ -35,6 +35,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Defaulting to " << path << std::endl;
     }
 
+    runNesTest();
     if (path == "nestest") {
         runNesTest();
     } else {

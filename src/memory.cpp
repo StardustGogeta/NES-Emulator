@@ -15,9 +15,6 @@ Memory::Memory(uint8_t PRG_ROM_size /* = 1 */) : PRG_ROM_size(PRG_ROM_size) {
     Reads a byte of data from a given memory address.
 */
 uint8_t Memory::read(addr_t address) {
-    #ifdef DEBUG
-    std::cout << "Reading from address 0x" << std::hex << mapAddress(address) << std::dec << std::endl;
-    #endif
     return memory[mapAddress(address)];
 }
 
@@ -26,6 +23,13 @@ uint8_t Memory::read(addr_t address) {
 */
 uint16_t Memory::readWord(addr_t address) {
     return (read(address + 1) << 8) | read(address); 
+}
+
+/*
+    Writes a byte of data to a given memory address, ignoring memory mapping.
+*/
+void Memory::writeDirect(addr_t address, uint8_t data) {
+    memory[address] = data;
 }
 
 /*

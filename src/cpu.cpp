@@ -1,6 +1,7 @@
 #include "cpu.h"
 #include <bit>
 #include <stdexcept>
+#include <iostream>
 
 CPU::CPU() {
     reset();
@@ -70,6 +71,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x0e:
         case 0x2c:
         case 0x2d:
+        case 0x4c:
         case 0x6d:
         case 0xce:
             return ABS;
@@ -81,6 +83,8 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x39:
         case 0x79:
             return ABY;
+        case 0x6c:
+            return IND;
         case 0x10:
         case 0x30:
         case 0x50:
@@ -112,7 +116,6 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
 Memory::addr_t CPU::getAddress(addressingMode mode) {
     switch (mode) {
         case IMM:
-        case IND:
             return pc;
         case ZP:
             return read();
@@ -130,6 +133,8 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
             return readWord() + x;
         case ABY:
             return readWord() + y;
+        case IND:
+            return memory->readWord(readWord());
         case REL:
             // TODO: Check if this has a small error with the PC
             return std::bit_cast<int8_t>(read()) + pc;
@@ -197,6 +202,9 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return INX;
         case 0xc8:
             return INY;
+        case 0x4c:
+        case 0x6c:
+            return JMP;
         case 0xea:
             return NOP;
         case 0xaa:
@@ -218,6 +226,10 @@ void CPU::setNZ(uint8_t val) {
 }
 
 void CPU::runOpcode(uint8_t opcode) {
+    #ifdef DEBUG
+    std::cout << "Trying to run opcode 0x" << std::hex << (int)opcode << std::dec << std::endl;
+    #endif
+
     addressingMode mode = getAddressingMode(opcode);
     instruction inst = getInstruction(opcode);
     
@@ -320,6 +332,9 @@ void CPU::runOpcode(uint8_t opcode) {
         case INY:
             y++;
             setNZ(y);
+            break;
+        case JMP:
+            pc = addr;
             break;
         case NOP:
             break;
