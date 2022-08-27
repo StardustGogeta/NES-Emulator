@@ -11,7 +11,7 @@ void ROM::setPath(std::string path) {
 void ROM::parseHeader() {
     std::ifstream romFile;
     // Open the file and go straight to the end
-    romFile.open(path, std::ifstream::ate | std::ifstream::binary);
+    romFile.open(path, std::ios::ate | std::ios::binary);
 
     int romSize = romFile.tellg(); // Find file length
     std::cout << "The file size is " << romSize << " bytes.\n";
@@ -70,20 +70,21 @@ void ROM::parseHeader() {
 void ROM::loadIntoMemory(Memory* memory) {
     this->parseHeader();
 
+    memory->set_PRG_ROM_size(PRG_ROM_size);
+
     std::ifstream romFile;
-    romFile.open(path, std::ifstream::binary);
+    romFile.open(path, std::ios::binary);
+    romFile >> std::noskipws;
 
     romFile.seekg(16); // Skip to the end of the header
 
     // Load PRG-ROM into memory
-    int PRG_ROM_size_bytes = PRG_ROM_size * 16384;
+    int PRG_ROM_size_bytes = PRG_ROM_size * 0x4000;
     uint8_t byte;
     for (int i = 0; i < PRG_ROM_size_bytes; i++) {
         romFile >> byte;
-        memory->write(0x8000 + i, byte);
+        memory->writeDirect(0x8000 + i, byte);
     }
 
     romFile.close();
-
-    memory->set_PRG_ROM_size(PRG_ROM_size);
 }
