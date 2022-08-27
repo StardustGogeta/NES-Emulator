@@ -5,6 +5,22 @@
 #include <iomanip>
 #include <cstring>
 
+// Pad output to given width using zeros
+#define ZPAD2 std::setfill('0') << std::setw(2)
+#define ZPAD4 std::setfill('0') << std::setw(4)
+
+// Number of bytes that must be read after each addressing mode
+int addressingModeReadCount[] = {
+    1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 0
+};
+
+std::string opcodeNames[] = {
+    "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC",
+    "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "INX", "INY", "JMP", "JSR", "LDA",
+    "LDX", "LDY", "NOP", "PHA", "PHP", "PLA", "PLP", "RTS", "SEC", "SED", "SEI", "STA", "STX", "STY",
+    "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
+};
+
 CPU::CPU() {
     reset();
 }
@@ -12,9 +28,9 @@ CPU::CPU() {
 void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
     this->pc = pc;
     sp = 0xfd;
-    cycles = 0;
+    cycles = a = x = y = 0;
     memset(&p, 0, sizeof(p));
-    p.d = p.b2 = 1;
+    p.b1 = p.i = 1;
     logging = false;
 }
 
@@ -71,9 +87,11 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xa0:
         case 0xa2:
         case 0xa9:
+        case 0xc0:
+        case 0xc9:
+        case 0xe0:
             return IMM;
         case 0x06:
-        case 0x16:
         case 0x24:
         case 0x25:
         case 0x65:
@@ -83,14 +101,19 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xa4:
         case 0xa5:
         case 0xa6:
+        case 0xc4:
+        case 0xc5:
         case 0xc6:
+        case 0xe4:
             return ZP;
+        case 0x16:
         case 0x35:
         case 0x75:
         case 0x94:
         case 0x95:
         case 0xb4:
         case 0xb5:
+        case 0xd5:
         case 0xd6:
             return ZPX;
         case 0x96:
@@ -100,11 +123,13 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x61:
         case 0x81:
         case 0xa1:
+        case 0xc1:
             return IZX;
         case 0x31:
         case 0x71:
         case 0x91:
         case 0xb1:
+        case 0xd1:
             return IZY;
         case 0x0e:
         case 0x20:
@@ -118,7 +143,10 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xac:
         case 0xad:
         case 0xae:
+        case 0xcc:
+        case 0xcd:
         case 0xce:
+        case 0xec:
             return ABS;
         case 0x1e:
         case 0x3d:
@@ -126,6 +154,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x9d:
         case 0xbc:
         case 0xbd:
+        case 0xdd:
         case 0xde:
             return ABX;
         case 0x39:
@@ -133,6 +162,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x99:
         case 0xb9:
         case 0xbe:
+        case 0xd9:
             return ABY;
         case 0x6c:
             return IND;
@@ -185,21 +215,29 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
         case ZP:
             return read();
         case ZPX:
-            return (read() + x) % 0x100;
+            cache = read();
+            return (cache + x) % 0x100;
         case ZPY:
-            return (read() + y) % 0x100;
+            cache = read();
+            return (cache + y) % 0x100;
         case IZX:
-            return memory->readWord((read() + x) % 0x100);
+            cache = read();
+            return memory->readWord((cache + x) % 0x100);
         case IZY:
-            return (memory->readWord(read()) << 8) | y;
+            cache = read();
+            cache2 = (memory->read(cache + 1) << 8) + memory->read(cache);
+            return cache2 + y;
         case ABS:
             return readWord();
         case ABX:
-            return readWord() + x;
+            cache = readWord();
+            return cache + x;
         case ABY:
-            return readWord() + y;
+            cache = readWord();
+            return cache + y;
         case IND:
-            return memory->readWord(readWord());
+            cache = readWord();
+            return memory->readWord(cache);
         case REL:
             // TODO: Check if this has a small error with the PC
             return std::bit_cast<int8_t>(read()) + pc;
@@ -262,6 +300,23 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return CLI;
         case 0xb8:
             return CLV;
+        case 0xc1:
+        case 0xc5:
+        case 0xc9:
+        case 0xcd:
+        case 0xd1:
+        case 0xd5:
+        case 0xd9:
+        case 0xdd:
+            return CMP;
+        case 0xe0:
+        case 0xe4:
+        case 0xec:
+            return CPX;
+        case 0xc0:
+        case 0xc4:
+        case 0xcc:
+            return CPY;
         case 0xc6:
         case 0xce:
         case 0xd6:
@@ -382,29 +437,110 @@ void CPU::setProcessorStatus(uint8_t status) {
 
 void CPU::runOpcode(uint8_t opcode) {
     #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
+    std::cout << "Trying to run opcode 0x" << std::hex << ZPAD2 << (int)opcode << " at position 0x" << pc - 1 << " and A=0x" << ZPAD2 << (int)a << std::dec << std::endl;
     #endif
-
-    // Write opcodes to a log file
-    if (logging) {
-        logFile << std::setfill('0') << std::setw(4) << pc - 1 << "  " << std::setfill('0') << std::setw(2) << (int)opcode << std::endl;
-    }
 
     addressingMode mode = getAddressingMode(opcode);
     instruction inst = getInstruction(opcode);
+
+    if (logging) {
+        // Write PC and opcode to log
+        logFile << std::setfill('0') << std::setw(4) << pc - 1 << "  " << ZPAD2 << (int)opcode;
+        
+        // Write opcode arguments to log
+        int count = addressingModeReadCount[mode];
+        if (count) {
+            logFile << " " << ZPAD2 << (int)memory->read(pc);
+            if (count > 1) {
+                logFile << " " << ZPAD2 << (int)memory->read(pc + 1);
+            } else {
+                logFile << "   ";
+            }
+        } else {
+            logFile << "      ";
+        }
+
+        // Write opcode name to log
+        std::string opcodeName = opcodeNames[inst];
+        logFile << "  " + opcodeName + " ";
+    }
     
     Memory::addr_t addr = 0;
-    uint8_t argument; // , arg_word;
+    uint8_t argument;
+    uint16_t arg_word;
     
     if (mode != NUL) {
         addr = getAddress(mode);
         // Read up to two bytes at the given address
         // TODO: Optimize by only reading argument if specific instruction requires it
         argument = memory->read(addr);
-        // arg_word = (memory->read(addr + 1) << 8) | argument;
+        if (mode == IND) {
+            arg_word = (memory->read(addr + 1) << 8) | argument;
+        }
     } else {
         // If an opcode normally takes arguments, then the no-arg instruction uses the accumulator
         argument = a;
+    }
+
+    if (logging) {
+        // Write stylized opcode arguments to log and trailing spaces
+        switch (mode) {
+            case IMM:
+                logFile << "#$" << ZPAD2 << (int)argument;
+                logFile << "                        ";
+                break;
+            case ZP:
+                logFile << "$" << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "                    ";
+                break;
+            case ZPX:
+                logFile << "$" << ZPAD2 << cache << ",X @ " << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "             ";
+                break;
+            case ZPY:
+                logFile << "$" << ZPAD2 << cache << ",Y @ " << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "             ";
+                break;
+            case IZX:
+                // TODO: Check for off-by-one or two on the (PC - 1) here
+                logFile << "($" << ZPAD2 << cache << ",X) @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "    ";
+                break;
+            case IZY:
+                logFile << "($" << ZPAD2 << cache << "),Y = " << ZPAD4 << cache2 << " @ " << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "  ";
+                break;
+            case ABS:
+                logFile << "$" << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "                  ";
+                break;
+            case ABX:
+                logFile << "$" << ZPAD4 << cache << ",X @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "         ";
+                break;
+            case ABY:
+                logFile << "$" << ZPAD4 << cache << ",Y @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+                logFile << "         ";
+                break;
+            case IND:
+                logFile << "($" << ZPAD4 << addr << ") = " << ZPAD4 << arg_word;
+                logFile << "              ";
+                break;
+            case REL:
+                logFile << "$" << ZPAD4 << addr;
+                logFile << "                       ";
+                break;
+            case NUL:
+                logFile << "                            ";
+                break;
+            default:
+                logFile << "ERROR                           ";
+                break;
+        }
+
+        logFile << "A:" << ZPAD2 << (int)a << " X:" << ZPAD2 << (int)x << " Y:" << ZPAD2 << (int)y << " P:" << ZPAD2 << (int)processorStatus() << " SP:" << ZPAD2 << (int)sp;
+
+        logFile << std::endl;
     }
 
     switch (inst) {
@@ -439,6 +575,7 @@ void CPU::runOpcode(uint8_t opcode) {
             }
             break;
         case BEQ:
+            std::cout << "PROCESSOR STATUS " << std::hex << (int)processorStatus() << std::dec << std::endl;
             if (p.z) {
                 pc = addr;
             }
@@ -495,6 +632,28 @@ void CPU::runOpcode(uint8_t opcode) {
             break;
         case CLV:
             p.v = 0;
+            break;
+        case CMP: {
+            std::cout << "ACC " << std::hex << (int)a << std::dec << std::endl;
+            uint8_t result = a - argument;
+            p.n = (result & 0x80) > 0;
+            p.z = result == 0;
+            p.c = a >= argument;
+            }
+            break;
+        case CPX: {
+            uint8_t result = x - argument;
+            p.n = (result & 0x80) > 0;
+            p.z = result == 0;
+            p.c = x >= argument;
+            }
+            break;
+        case CPY: {
+            uint8_t result = y - argument;
+            p.n = (result & 0x80) > 0;
+            p.z = result == 0;
+            p.c = y >= argument;
+            }
             break;
         case DEC:
             memory->write(addr, argument - 1);

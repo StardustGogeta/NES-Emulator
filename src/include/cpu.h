@@ -10,9 +10,9 @@ enum addressingMode {
 
 enum instruction {
     ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK, BVC, BVS, CLC,
-    CLD, CLI, CLV, DEC, DEX, DEY, INX, INY, JMP, JSR, LDA, LDX, LDY, NOP,
-    PHA, PHP, PLA, PLP, RTS, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TSX,
-    TXA, TXS, TYA // TODO: Add the rest
+    CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY, INX, INY, JMP, JSR, LDA,
+    LDX, LDY, NOP, PHA, PHP, PLA, PLP, RTS, SEC, SED, SEI, STA, STX, STY,
+    TAX, TAY, TSX, TXA, TXS, TYA // TODO: Add the rest
 };
 
 class CPU {
@@ -43,6 +43,7 @@ class CPU {
         */
         Memory::addr_t pc;
         uint8_t sp, a, x, y;
+        uint16_t cache, cache2;
         struct processorFlags {
             bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
