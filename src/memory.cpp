@@ -12,6 +12,13 @@ Memory::Memory(uint8_t PRG_ROM_size /* = 1 */) : PRG_ROM_size(PRG_ROM_size) {
 }
 
 /*
+    Reads a byte of data from a given memory address, ignoring memory mapping.
+*/
+uint8_t Memory::readDirect(addr_t address) {
+    return memory[address];
+}
+
+/*
     Reads a byte of data from a given memory address.
 */
 uint8_t Memory::read(addr_t address) {
