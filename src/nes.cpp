@@ -6,6 +6,11 @@ NES::NES() {
     cpu->memory = memory;
 }
 
+NES::~NES() {
+    delete memory;
+    delete cpu;
+}
+
 void NES::loadROM(ROM* rom) {
     rom->loadIntoMemory(memory);
 }
