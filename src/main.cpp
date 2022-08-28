@@ -20,13 +20,13 @@ bool runNesTest(int testCases) {
     NES* nes = new NES();
     nes->loadROM(rom);
     nes->cpu->reset(0xc000); // Set initial program counter
-    nes->cpu->startLogging("../test/cpuLog.txt");
+    nes->cpu->logger.start("../test/cpuLog.txt");
 
     for (int i = 0; i < testCases; i++) {
         nes->cpu->cycle();
     }
 
-    nes->cpu->stopLogging();
+    nes->cpu->logger.stop();
 
     return true;
 }
