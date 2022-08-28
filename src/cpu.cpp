@@ -247,7 +247,9 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xf8:
             return NUL;
         default:
-            throw std::runtime_error("Unsupported opcode in getAddressingMode.");
+            char buf[2];
+            itoa(opcode, buf, 16);
+            throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getAddressingMode.");
     }
 }
 
