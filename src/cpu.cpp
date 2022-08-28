@@ -17,8 +17,8 @@ int addressingModeReadCount[] = {
 std::string opcodeNames[] = {
     "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC",
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
-    "JSR", "LDA", "LDX", "LDY", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "RTS", "SEC", "SED", "SEI",
-    "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
+    "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTS",
+    "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
 };
 
 CPU::CPU() : logger(*this) {
@@ -98,8 +98,11 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x06:
         case 0x24:
         case 0x25:
+        case 0x26:
         case 0x45:
+        case 0x46:
         case 0x65:
+        case 0x66:
         case 0x84:
         case 0x85:
         case 0x86:
@@ -115,8 +118,11 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x15:
         case 0x16:
         case 0x35:
+        case 0x36:
         case 0x55:
+        case 0x56:
         case 0x75:
+        case 0x76:
         case 0x94:
         case 0x95:
         case 0xb4:
@@ -149,9 +155,12 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x20:
         case 0x2c:
         case 0x2d:
+        case 0x2e:
         case 0x4c:
         case 0x4d:
+        case 0x4e:
         case 0x6d:
+        case 0x6e:
         case 0x8c:
         case 0x8d:
         case 0x8e:
@@ -167,8 +176,11 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x1d:
         case 0x1e:
         case 0x3d:
+        case 0x3e:
         case 0x5d:
+        case 0x5e:
         case 0x7d:
+        case 0x7e:
         case 0x9d:
         case 0xbc:
         case 0xbd:
@@ -200,11 +212,14 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x0a:
         case 0x18:
         case 0x28:
+        case 0x2a:
         case 0x38:
         case 0x48:
+        case 0x4a:
         case 0x58:
         case 0x60:
         case 0x68:
+        case 0x6a:
         case 0x78:
         case 0x88:
         case 0x98:
@@ -390,6 +405,12 @@ instruction CPU::getInstruction(uint8_t opcode) {
         case 0xb4:
         case 0xbc:
             return LDY;
+        case 0x46:
+        case 0x4a:
+        case 0x4e:
+        case 0x56:
+        case 0x5e:
+            return LSR;
         case 0xea:
             return NOP;
         case 0x01:
@@ -409,6 +430,18 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return PLA;
         case 0x28:
             return PLP;
+        case 0x26:
+        case 0x2a:
+        case 0x2e:
+        case 0x36:
+        case 0x3e:
+            return ROL;
+        case 0x66:
+        case 0x6a:
+        case 0x6e:
+        case 0x76:
+        case 0x7e:
+            return ROR;
         case 0x60:
             return RTS;
         case 0x38:
@@ -518,7 +551,6 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
             logFile << "             ";
             break;
         case IZX:
-            // TODO: Check for off-by-one or two on the (PC - 1) here
             logFile << "($" << ZPAD2 << cpu.cache << ",X) @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
             logFile << "    ";
             break;
@@ -558,7 +590,11 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
             break;
     }
 
-    logFile << "A:" << ZPAD2 << (int)cpu.a << " X:" << ZPAD2 << (int)cpu.x << " Y:" << ZPAD2 << (int)cpu.y << " P:" << ZPAD2 << (int)cpu.processorStatus() << " SP:" << ZPAD2 << (int)cpu.sp;
+    logFile << "A:" << ZPAD2 << (int)cpu.a
+        << " X:" << ZPAD2 << (int)cpu.x
+        << " Y:" << ZPAD2 << (int)cpu.y
+        << " P:" << ZPAD2 << (int)cpu.processorStatus()
+        << " SP:" << ZPAD2 << (int)cpu.sp;
 
     logFile << std::endl;
 }
@@ -612,12 +648,17 @@ void CPU::runOpcode(uint8_t opcode) {
             a &= argument;
             setNZ(a);
             break;
-        case ASL:
-            // TODO: Make sure this is correct interpretation
-            p.c = (a & 0x80) > 0;
-            a = argument << 1;
-            p.n = (a & 0x80) > 0;
-            p.z = a == 0;
+        case ASL: {
+            // TODO: Make sure this is correct interpretation, same with other shifts
+            p.c = (argument & 0x80) > 0;
+            uint8_t result = argument << 1;
+            setNZ(result);
+            if (mode == NUL) {
+                a = result;
+            } else {
+                memory->write(addr, result);
+            }
+            }
             break;
         case BCC:
             if (!p.c) {
@@ -756,6 +797,17 @@ void CPU::runOpcode(uint8_t opcode) {
             y = argument;
             setNZ(y);
             break;
+        case LSR: {
+            p.c = argument & 1;
+            uint8_t result = argument >> 1;
+            setNZ(result);
+            if (mode == NUL) {
+                a = result;
+            } else {
+                memory->write(addr, result);
+            }
+            }
+            break;
         case NOP:
             break;
         case ORA:
@@ -782,6 +834,28 @@ void CPU::runOpcode(uint8_t opcode) {
             p.b1 = oldP.b1;
             p.b2 = oldP.b2;
             p.i = oldP.i;
+            }
+            break;
+        case ROL: {
+            uint8_t result = (argument << 1) | p.c;
+            p.c = (argument & 0x80) > 0;
+            setNZ(result);
+            if (mode == NUL) {
+                a = result;
+            } else {
+                memory->write(addr, result);
+            }
+            }
+            break;
+        case ROR:{
+            uint8_t result = (argument >> 1) | (p.c << 7);
+            p.c = argument & 1;
+            setNZ(result);
+            if (mode == NUL) {
+                a = result;
+            } else {
+                memory->write(addr, result);
+            }
             }
             break;
         case RTS:
