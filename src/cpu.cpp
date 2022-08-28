@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
+#include <cstdlib>
 
 // Pad output to given width using zeros
 #define ZPAD2 std::setfill('0') << std::setw(2)
