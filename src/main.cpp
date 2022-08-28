@@ -5,6 +5,8 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <thread>
+#include <chrono>
 
 const int DEFAULT_TEST_CASES = 10000;
 
@@ -22,9 +24,26 @@ bool runNesTest(int testCases) {
     nes->cpu->reset(0xc000); // Set initial program counter
     nes->cpu->logger.start("../test/cpuLog.txt");
 
+    #ifdef DEBUG
+    auto start = std::chrono::high_resolution_clock::now();
+    #endif
+
+    std::thread cpuThread(&CPU::start, nes->cpu);
+    
     for (int i = 0; i < testCases; i++) {
         nes->cpu->cycle();
+        // std::this_thread::sleep_for(std::chrono::seconds(1));
     }
+
+    nes->cpu->stop(cpuThread);
+
+    #ifdef DEBUG
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> diff = end - start;
+    std::cout << "Finished in " << diff.count() << " seconds" << std::endl;
+    #endif
+
+    std::cout << "Successfully ended execution." << std::endl;
 
     nes->cpu->logger.stop();
 

@@ -68,6 +68,7 @@ const instruction instructionsByOpcode[] = {
 
 CPU::CPU() : logger(*this) {
     reset();
+    running = false;
 }
 
 CPU::Logger::Logger(CPU& cpu) : cpu(cpu) { }
@@ -75,7 +76,7 @@ CPU::Logger::Logger(CPU& cpu) : cpu(cpu) { }
 void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
     this->pc = pc;
     sp = 0xfd;
-    cycles = a = x = y = 0;
+    a = x = y = 0;
     memset(&p, 0, sizeof(p));
     p.b1 = p.i = 1;
 }
@@ -312,7 +313,7 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
 
 void CPU::runOpcode(uint8_t opcode) {
     #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << ZPAD2 << (int)opcode << " at position 0x" << pc - 1 << " and A=0x" << ZPAD2 << (int)a << std::dec << std::endl;
+    std::cout << "Trying to run opcode 0x" << std::hex << ZPAD2 << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
     #endif
 
     addressingMode mode = getAddressingMode(opcode);
@@ -630,19 +631,84 @@ void CPU::runOpcode(uint8_t opcode) {
             a = y;
             setNZ(a);
             break;
+        case YYY:
+            throw std::runtime_error("Unsupported opcode in runOpcode.");
+            break;
     }
 
     // TODO: Get actual cycle count
-    cycles = 2;
+    if (!waitForCycles(2)) {
+        return; 
+    };
+}
+
+/*
+    Causes the current thread to wait until the controlling thread calls CPU::cycle() n times.
+    Returns true if execution of the thread should continue and false if the thread is being killed.
+*/
+bool CPU::waitForCycles(int n) {
+    for (int i = 0; i < n; i++) {
+        if (!waitForCycle()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/*
+    Causes the current thread to wait until the controlling thread calls CPU::cycle().
+    Returns true if execution of the thread should continue and false if the thread is being killed.
+*/
+bool CPU::waitForCycle() {
+    // Tell that this last cycle is finished.
+    std::unique_lock lck(cycleStatusMutex);
+    cycleStatus = 2;
+    cycleStatusCV.notify_all();
+
+    // Wait until the next cycle is triggered.
+    cycleStatusCV.wait(lck, [this] {return cycleStatus == 0;});
+    cycleStatus = 1;
+
+    return running;
+}
+
+/*
+    Continually runs opcodes until stopped by CPU::stop().
+*/
+void CPU::start() {
+    running = true;
+    cycleStatus = 0;
+
+    while (running) {
+        runOpcode(read());
+    }
+}
+
+/*
+    Stops the CPU from running by ending after the current opcode.
+    Causes the condition in CPU::start() to be false.
+    Argument t is the thread running CPU::start() that needs to end.
+*/
+void CPU::stop(std::thread& t) {
+    running = false;
+
+    // TODO: May need to issue one last cycleStatus=0 and notify_all to finish the opcode.
+
+    // Join the thread afterwards.
+    if (t.joinable()) {
+        t.join();
+    }
 }
 
 /*
     Performs one cycle of the CPU.
 */
 void CPU::cycle() {
-    if (cycles == 0) {
-        // New opcode begins
-        runOpcode(read());
-    }
-    cycles--;
+    // Wait until the last cycle finished.
+    std::unique_lock lck(cycleStatusMutex);
+    cycleStatusCV.wait(lck, [this] {return cycleStatus == 2;});
+
+    // Start a new cycle.
+    cycleStatus = 0;
+    cycleStatusCV.notify_all();
 }
