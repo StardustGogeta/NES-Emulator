@@ -183,7 +183,7 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
 instruction CPU::getInstruction(uint8_t opcode) {
     instruction ret = instructionsByOpcode[opcode];
     if (ret == YYY) {
-        char buf[2];
+        char buf[3];
         sprintf(buf, "%02x", opcode);
         throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getInstruction.");
     } else {
