@@ -4,7 +4,6 @@
 #include <iostream>
 #include <iomanip>
 #include <cstring>
-#include <cstdlib>
 
 // Pad output to given width using zeros
 #define ZPAD2 std::setfill('0') << std::setw(2)
@@ -130,7 +129,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
     addressingMode ret = addressingModesByOpcode[opcode];
     if (ret == XXX) {
         char buf[2];
-        itoa(opcode, buf, 16);
+        sprintf(buf, "%02x", opcode);
         throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getAddressingMode.");
     } else {
         return ret;
@@ -184,7 +183,7 @@ instruction CPU::getInstruction(uint8_t opcode) {
     instruction ret = instructionsByOpcode[opcode];
     if (ret == YYY) {
         char buf[2];
-        itoa(opcode, buf, 16);
+        sprintf(buf, "%02x", opcode);
         throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getInstruction.");
     } else {
         return ret;
