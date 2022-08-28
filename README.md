@@ -40,3 +40,4 @@ This will create a `bin` folder in the repository and build the project from the
 - BRK/IRQ/NMI/RESET and stack pointer behavior: https://www.pagetable.com/?p=410
 - BRK command behavior: http://www.romdetectives.com/Wiki/index.php?title=BRK
 - Detailed opcodes list: https://www.masswerk.at/6502/6502_instruction_set.html
+- ADC and SBC commands: https://stackoverflow.com/questions/29193303/6502-emulation-proper-way-to-implement-adc-and-sbc

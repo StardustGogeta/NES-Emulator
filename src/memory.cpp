@@ -27,9 +27,17 @@ uint8_t Memory::read(addr_t address) {
 
 /*
     Reads two consecutive bytes of data from a given memory address.
+    If wrap is true, the second read wraps to the beginning of the page.
 */
-uint16_t Memory::readWord(addr_t address) {
-    return (read(address + 1) << 8) | read(address); 
+uint16_t Memory::readWord(addr_t address, bool wrap /* =false */) {
+    addr_t addr2 = address + 1;
+    if (wrap) {
+        // Check if second address is on next page
+        if (!(addr2 % 0x100)) {
+            addr2 -= 0x100;
+        }
+    }
+    return (read(addr2) << 8) | read(address); 
 }
 
 /*

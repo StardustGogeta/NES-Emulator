@@ -6,7 +6,7 @@
 #include <string>
 #include <cstring>
 
-const int DEFAULT_TEST_CASES = 360;
+const int DEFAULT_TEST_CASES = 10000;
 
 bool runNesTest(int testCases) {
     std::cout << "Running nestest...\n";
