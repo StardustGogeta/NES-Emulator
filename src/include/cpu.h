@@ -2,6 +2,10 @@
 #include "memory.h"
 #include <cstdint>
 #include <fstream>
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <condition_variable>
 
 extern const std::string addressingModeNames[];
 extern const std::string opcodeNames[];
@@ -52,6 +56,8 @@ class CPU {
 
         CPU();
         void reset(Memory::addr_t pc=0xfffc);
+        void start();
+        void stop(std::thread& t);
         void cycle();
         uint8_t peek();
         uint16_t peekWord();
@@ -79,7 +85,6 @@ class CPU {
         struct processorFlags {
             bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
-        int cycles; // Cycles left in instruction
         
         Memory::addr_t getAddress(addressingMode mode);
         uint8_t processorStatus();
@@ -88,6 +93,14 @@ class CPU {
         void stackPush(uint8_t val);
         uint8_t stackPop();
         void runOpcode(uint8_t opcode);
+        bool waitForCycles(int n);
+        bool waitForCycle();
+        std::atomic<bool> running;
+
+        // 0 is new cycle started, 1 is running, 2 is done
+        int cycleStatus;
+        std::mutex cycleStatusMutex;
+        std::condition_variable cycleStatusCV;
 
         CPU(const CPU&) = delete;
         CPU& operator=(const CPU&) = delete;
