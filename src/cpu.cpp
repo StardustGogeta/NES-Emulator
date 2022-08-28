@@ -129,7 +129,7 @@ uint16_t CPU::readWord() {
 addressingMode CPU::getAddressingMode(uint8_t opcode) {
     addressingMode ret = addressingModesByOpcode[opcode];
     if (ret == XXX) {
-        char buf[2];
+        char buf[3];
         sprintf(buf, "%02x", opcode);
         throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getAddressingMode.");
     } else {
