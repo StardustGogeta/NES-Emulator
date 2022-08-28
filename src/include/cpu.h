@@ -17,13 +17,38 @@ enum instruction {
 
 class CPU {
     public:
+        class Logger {
+            friend CPU;
+
+            public:
+                void start(std::string path);
+                void stop();
+
+            private:
+                Logger(CPU& cpu);
+                void logOpcode(
+                    uint8_t opcode,
+                    addressingMode mode, 
+                    instruction inst
+                );
+                void logArgsAndRegisters(
+                    addressingMode mode,
+                    instruction inst,
+                    Memory::addr_t addr,
+                    uint8_t argument,
+                    uint16_t argWord
+                );
+                bool logging;
+                std::ofstream logFile;
+                CPU& cpu;
+        };
+
         Memory* memory;
+        Logger logger;
 
         CPU();
         void reset(Memory::addr_t pc=0xfffc);
         void cycle();
-        void startLogging(std::string path);
-        void stopLogging();
         uint8_t peek();
         uint16_t peekWord();
         uint8_t read();
@@ -48,8 +73,6 @@ class CPU {
             bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
         int cycles; // Cycles left in instruction
-        bool logging;
-        std::ofstream logFile;
 
         addressingMode getAddressingMode(uint8_t opcode);
         Memory::addr_t getAddress(addressingMode mode);
@@ -60,4 +83,7 @@ class CPU {
         void stackPush(uint8_t val);
         uint8_t stackPop();
         void runOpcode(uint8_t opcode);
+
+        CPU(const CPU&) = delete;
+        CPU& operator=(const CPU&) = delete;
 };

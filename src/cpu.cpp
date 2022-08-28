@@ -21,9 +21,11 @@ std::string opcodeNames[] = {
     "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
 };
 
-CPU::CPU() {
+CPU::CPU() : logger(*this) {
     reset();
 }
+
+CPU::Logger::Logger(CPU& cpu) : cpu(cpu) { }
 
 void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
     this->pc = pc;
@@ -31,17 +33,16 @@ void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
     cycles = a = x = y = 0;
     memset(&p, 0, sizeof(p));
     p.b1 = p.i = 1;
-    logging = false;
 }
 
-void CPU::startLogging(std::string path) {
+void CPU::Logger::start(std::string path) {
     logFile.open(path, std::ios::out);
     logFile << std::hex << std::uppercase;
     logging = true;
     std::cout << "Started CPU logging." << std::endl;
 }
 
-void CPU::stopLogging() {
+void CPU::Logger::stop() {
     logFile.close();
     std::cout << "Stopped CPU logging." << std::endl;
 }
@@ -477,6 +478,91 @@ void CPU::setProcessorStatus(uint8_t status) {
     p.c = (status & 0x01) > 0;
 }
 
+void CPU::Logger::logOpcode(uint8_t opcode, addressingMode mode, instruction inst) {
+    logFile << std::setfill('0') << std::setw(4) << cpu.pc - 1 << "  " << ZPAD2 << (int)opcode;
+        
+    // Write opcode arguments to log
+    int count = addressingModeReadCount[mode];
+    if (count) {
+        logFile << " " << ZPAD2 << (int)cpu.memory->read(cpu.pc);
+        if (count > 1) {
+            logFile << " " << ZPAD2 << (int)cpu.memory->read(cpu.pc + 1);
+        } else {
+            logFile << "   ";
+        }
+    } else {
+        logFile << "      ";
+    }
+
+    // Write opcode name to log
+    std::string opcodeName = opcodeNames[inst];
+    logFile << "  " + opcodeName + " ";
+}
+
+void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Memory::addr_t addr, uint8_t argument, uint16_t argWord) {
+    switch (mode) {
+        case IMM:
+            logFile << "#$" << ZPAD2 << (int)argument;
+            logFile << "                        ";
+            break;
+        case ZP:
+            logFile << "$" << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "                    ";
+            break;
+        case ZPX:
+            logFile << "$" << ZPAD2 << cpu.cache << ",X @ " << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "             ";
+            break;
+        case ZPY:
+            logFile << "$" << ZPAD2 << cpu.cache << ",Y @ " << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "             ";
+            break;
+        case IZX:
+            // TODO: Check for off-by-one or two on the (PC - 1) here
+            logFile << "($" << ZPAD2 << cpu.cache << ",X) @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "    ";
+            break;
+        case IZY:
+            logFile << "($" << ZPAD2 << cpu.cache << "),Y = " << ZPAD4 << cpu.cache2 << " @ " << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "  ";
+            break;
+        case ABS:
+            logFile << "$" << ZPAD4 << addr;
+            if (inst == JMP || inst == JSR) {
+                logFile << "                       ";
+            } else {
+                logFile << " = " << ZPAD2 << (int)argument << "                  ";
+            }
+            break;
+        case ABX:
+            logFile << "$" << ZPAD4 << cpu.cache << ",X @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "         ";
+            break;
+        case ABY:
+            logFile << "$" << ZPAD4 << cpu.cache << ",Y @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "         ";
+            break;
+        case IND:
+            logFile << "($" << ZPAD4 << addr << ") = " << ZPAD4 << argWord;
+            logFile << "              ";
+            break;
+        case REL:
+            logFile << "$" << ZPAD4 << addr;
+            logFile << "                       ";
+            break;
+        case NUL:
+            logFile << "                            ";
+            break;
+        default:
+            logFile << "ERROR                           ";
+            break;
+    }
+
+    logFile << "A:" << ZPAD2 << (int)cpu.a << " X:" << ZPAD2 << (int)cpu.x << " Y:" << ZPAD2 << (int)cpu.y << " P:" << ZPAD2 << (int)cpu.processorStatus() << " SP:" << ZPAD2 << (int)cpu.sp;
+
+    logFile << std::endl;
+}
+
 void CPU::runOpcode(uint8_t opcode) {
     #ifdef DEBUG
     std::cout << "Trying to run opcode 0x" << std::hex << ZPAD2 << (int)opcode << " at position 0x" << pc - 1 << " and A=0x" << ZPAD2 << (int)a << std::dec << std::endl;
@@ -485,31 +571,14 @@ void CPU::runOpcode(uint8_t opcode) {
     addressingMode mode = getAddressingMode(opcode);
     instruction inst = getInstruction(opcode);
 
-    if (logging) {
+    if (logger.logging) {
         // Write PC and opcode to log
-        logFile << std::setfill('0') << std::setw(4) << pc - 1 << "  " << ZPAD2 << (int)opcode;
-        
-        // Write opcode arguments to log
-        int count = addressingModeReadCount[mode];
-        if (count) {
-            logFile << " " << ZPAD2 << (int)memory->read(pc);
-            if (count > 1) {
-                logFile << " " << ZPAD2 << (int)memory->read(pc + 1);
-            } else {
-                logFile << "   ";
-            }
-        } else {
-            logFile << "      ";
-        }
-
-        // Write opcode name to log
-        std::string opcodeName = opcodeNames[inst];
-        logFile << "  " + opcodeName + " ";
+        logger.logOpcode(opcode, mode, inst);
     }
     
     Memory::addr_t addr = 0;
     uint8_t argument;
-    uint16_t arg_word;
+    uint16_t argWord;
     
     if (mode != NUL) {
         addr = getAddress(mode);
@@ -517,76 +586,16 @@ void CPU::runOpcode(uint8_t opcode) {
         // TODO: Optimize by only reading argument if specific instruction requires it
         argument = memory->read(addr);
         if (mode == IND) {
-            arg_word = (memory->read(addr + 1) << 8) | argument;
+            argWord = (memory->read(addr + 1) << 8) | argument;
         }
     } else {
         // If an opcode normally takes arguments, then the no-arg instruction uses the accumulator
         argument = a;
     }
 
-    if (logging) {
+    if (logger.logging) {
         // Write stylized opcode arguments to log and trailing spaces
-        switch (mode) {
-            case IMM:
-                logFile << "#$" << ZPAD2 << (int)argument;
-                logFile << "                        ";
-                break;
-            case ZP:
-                logFile << "$" << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "                    ";
-                break;
-            case ZPX:
-                logFile << "$" << ZPAD2 << cache << ",X @ " << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "             ";
-                break;
-            case ZPY:
-                logFile << "$" << ZPAD2 << cache << ",Y @ " << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "             ";
-                break;
-            case IZX:
-                // TODO: Check for off-by-one or two on the (PC - 1) here
-                logFile << "($" << ZPAD2 << cache << ",X) @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "    ";
-                break;
-            case IZY:
-                logFile << "($" << ZPAD2 << cache << "),Y = " << ZPAD4 << cache2 << " @ " << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "  ";
-                break;
-            case ABS:
-                logFile << "$" << ZPAD4 << addr;
-                if (inst == JMP || inst == JSR) {
-                    logFile << "                       ";
-                } else {
-                    logFile << " = " << ZPAD2 << (int)argument << "                  ";
-                }
-                break;
-            case ABX:
-                logFile << "$" << ZPAD4 << cache << ",X @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "         ";
-                break;
-            case ABY:
-                logFile << "$" << ZPAD4 << cache << ",Y @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
-                logFile << "         ";
-                break;
-            case IND:
-                logFile << "($" << ZPAD4 << addr << ") = " << ZPAD4 << arg_word;
-                logFile << "              ";
-                break;
-            case REL:
-                logFile << "$" << ZPAD4 << addr;
-                logFile << "                       ";
-                break;
-            case NUL:
-                logFile << "                            ";
-                break;
-            default:
-                logFile << "ERROR                           ";
-                break;
-        }
-
-        logFile << "A:" << ZPAD2 << (int)a << " X:" << ZPAD2 << (int)x << " Y:" << ZPAD2 << (int)y << " P:" << ZPAD2 << (int)processorStatus() << " SP:" << ZPAD2 << (int)sp;
-
-        logFile << std::endl;
+        logger.logArgsAndRegisters(mode, inst, addr, argument, argWord);
     }
 
     switch (inst) {
