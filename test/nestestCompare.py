@@ -14,7 +14,7 @@ with open(path + "/nestest.log") as nestest:
             assert ref_addr == emu_addr, f"Address mismatch on line {i + 1}: {ref_addr} expected, but saw {emu_addr}."
             assert ref_opc == emu_opc, f"Opcode mismatch on line {i + 1}: {ref_opc} expected, but saw {emu_opc}."
 
-            assert ref_line[:73] == emu_line[:73], f"Line mismatch on line {i + 1}:\nExpected: {ref_line[:74]}\nSaw:      {emu_line[:74]}"
+            assert ref_line[:73] == emu_line[:73], f"Line mismatch on line {i + 1}:\nExpected: {ref_line[:73]}\nSaw:      {emu_line[:73]}"
 
 
 
