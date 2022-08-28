@@ -9,16 +9,61 @@
 #define ZPAD2 std::setfill('0') << std::setw(2)
 #define ZPAD4 std::setfill('0') << std::setw(4)
 
+const std::string addressingModeNames[] = {
+    "IMM", "ZPG", "ZPX", "ZPY", "IZX", "IZY", "ABS", "ABX", "ABY", "IND", "REL", "NUL", "XXX"
+};
+
 // Number of bytes that must be read after each addressing mode
-int addressingModeReadCount[] = {
+const int addressingModeReadCount[] = {
     1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 0
 };
 
-std::string opcodeNames[] = {
+const std::string opcodeNames[] = {
     "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC",
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
     "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTI",
-    "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
+    "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA", "YYY"
+};
+
+// Table of addressing modes by opcode
+const addressingMode addressingModesByOpcode[] = {
+/*  x0   x1   x2   x3   x4   x5   x6   x7   x8   x9   xa   xb   xc   xd   xe   xf   */
+    NUL, IZX, XXX, XXX, XXX, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, XXX, ABS, ABS, XXX, // 0x
+    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 1x
+    ABS, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 2x
+    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 3x
+    NUL, IZX, XXX, XXX, XXX, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 4x
+    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 5x
+    NUL, IZX, XXX, XXX, XXX, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, IND, ABS, ABS, XXX, // 6x
+    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 7x
+    XXX, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, XXX, NUL, XXX, ABS, ABS, ABS, XXX, // 8x
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPY, XXX, NUL, ABY, NUL, XXX, XXX, ABX, XXX, XXX, // 9x
+    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // ax
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPY, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABY, XXX, // bx
+    IMM, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // cx
+    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // dx
+    IMM, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // ex
+    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // fx
+};
+
+const instruction instructionsByOpcode[] = {
+/*  x0   x1   x2   x3   x4   x5   x6   x7   x8   x9   xa   xb   xc   xd   xe   xf   */
+    BRK, ORA, YYY, YYY, YYY, ORA, ASL, YYY, PHP, ORA, ASL, YYY, YYY, ORA, ASL, YYY, // 0x
+    BPL, ORA, YYY, YYY, YYY, ORA, ASL, YYY, CLC, ORA, YYY, YYY, YYY, ORA, ASL, YYY, // 1x
+    JSR, AND, YYY, YYY, BIT, AND, ROL, YYY, PLP, AND, ROL, YYY, BIT, AND, ROL, YYY, // 2x
+    BMI, AND, YYY, YYY, YYY, AND, ROL, YYY, SEC, AND, YYY, YYY, YYY, AND, ROL, YYY, // 3x
+    RTI, EOR, YYY, YYY, YYY, EOR, LSR, YYY, PHA, EOR, LSR, YYY, JMP, EOR, LSR, YYY, // 4x
+    BVC, EOR, YYY, YYY, YYY, EOR, LSR, YYY, CLI, EOR, YYY, YYY, YYY, EOR, LSR, YYY, // 5x
+    RTS, ADC, YYY, YYY, YYY, ADC, ROR, YYY, PLA, ADC, ROR, YYY, JMP, ADC, ROR, YYY, // 6x
+    BVS, ADC, YYY, YYY, YYY, ADC, ROR, YYY, SEI, ADC, YYY, YYY, YYY, ADC, ROR, YYY, // 7x
+    YYY, STA, YYY, YYY, STY, STA, STX, YYY, DEY, YYY, TXA, YYY, STY, STA, STX, YYY, // 8x
+    BCC, STA, YYY, YYY, STY, STA, STX, YYY, TYA, STA, TXS, YYY, YYY, STA, YYY, YYY, // 9x
+    LDY, LDA, LDX, YYY, LDY, LDA, LDX, YYY, TAY, LDA, TAX, YYY, LDY, LDA, LDX, YYY, // ax
+    BCS, LDA, YYY, YYY, LDY, LDA, LDX, YYY, CLV, LDA, TSX, YYY, LDY, LDA, LDX, YYY, // bx
+    CPY, CMP, YYY, YYY, CPY, CMP, DEC, YYY, INY, CMP, DEX, YYY, CPY, CMP, DEC, YYY, // cx
+    BNE, CMP, YYY, YYY, YYY, CMP, DEC, YYY, CLD, CMP, YYY, YYY, YYY, CMP, DEC, YYY, // dx
+    CPX, SBC, YYY, YYY, CPX, SBC, INC, YYY, INX, SBC, NOP, YYY, CPX, SBC, INC, YYY, // ex
+    BEQ, SBC, YYY, YYY, YYY, SBC, INC, YYY, SED, SBC, YYY, YYY, YYY, SBC, INC, YYY, // fx
 };
 
 CPU::CPU() : logger(*this) {
@@ -81,175 +126,13 @@ uint16_t CPU::readWord() {
     Returns the addressing mode for a particular opcode.
 */
 addressingMode CPU::getAddressingMode(uint8_t opcode) {
-    // TODO: Add the rest, convert to table indexing
-    switch (opcode) {
-        case 0x09:
-        case 0x29:
-        case 0x49:
-        case 0x69:
-        case 0xa0:
-        case 0xa2:
-        case 0xa9:
-        case 0xc0:
-        case 0xc9:
-        case 0xe0:
-        case 0xe9:
-            return IMM;
-        case 0x05:
-        case 0x06:
-        case 0x24:
-        case 0x25:
-        case 0x26:
-        case 0x45:
-        case 0x46:
-        case 0x65:
-        case 0x66:
-        case 0x84:
-        case 0x85:
-        case 0x86:
-        case 0xa4:
-        case 0xa5:
-        case 0xa6:
-        case 0xc4:
-        case 0xc5:
-        case 0xc6:
-        case 0xe4:
-        case 0xe5:
-        case 0xe6:
-            return ZP;
-        case 0x15:
-        case 0x16:
-        case 0x35:
-        case 0x36:
-        case 0x55:
-        case 0x56:
-        case 0x75:
-        case 0x76:
-        case 0x94:
-        case 0x95:
-        case 0xb4:
-        case 0xb5:
-        case 0xd5:
-        case 0xd6:
-        case 0xf5:
-        case 0xf6:
-            return ZPX;
-        case 0x96:
-        case 0xb6:
-            return ZPY;
-        case 0x01:
-        case 0x21:
-        case 0x41:
-        case 0x61:
-        case 0x81:
-        case 0xa1:
-        case 0xc1:
-        case 0xe1:
-            return IZX;
-        case 0x11:
-        case 0x31:
-        case 0x51:
-        case 0x71:
-        case 0x91:
-        case 0xb1:
-        case 0xd1:
-        case 0xf1:
-            return IZY;
-        case 0x0d:
-        case 0x0e:
-        case 0x20:
-        case 0x2c:
-        case 0x2d:
-        case 0x2e:
-        case 0x4c:
-        case 0x4d:
-        case 0x4e:
-        case 0x6d:
-        case 0x6e:
-        case 0x8c:
-        case 0x8d:
-        case 0x8e:
-        case 0xac:
-        case 0xad:
-        case 0xae:
-        case 0xcc:
-        case 0xcd:
-        case 0xce:
-        case 0xec:
-        case 0xed:
-        case 0xee:
-            return ABS;
-        case 0x1d:
-        case 0x1e:
-        case 0x3d:
-        case 0x3e:
-        case 0x5d:
-        case 0x5e:
-        case 0x7d:
-        case 0x7e:
-        case 0x9d:
-        case 0xbc:
-        case 0xbd:
-        case 0xdd:
-        case 0xde:
-        case 0xfd:
-        case 0xfe:
-            return ABX;
-        case 0x19:
-        case 0x39:
-        case 0x59:
-        case 0x79:
-        case 0x99:
-        case 0xb9:
-        case 0xbe:
-        case 0xd9:
-        case 0xf9:
-            return ABY;
-        case 0x6c:
-            return IND;
-        case 0x10:
-        case 0x30:
-        case 0x50:
-        case 0x70:
-        case 0x90:
-        case 0xb0:
-        case 0xd0:
-        case 0xf0:
-            return REL;
-        case 0x00:
-        case 0x08:
-        case 0x0a:
-        case 0x18:
-        case 0x28:
-        case 0x2a:
-        case 0x38:
-        case 0x40:
-        case 0x48:
-        case 0x4a:
-        case 0x58:
-        case 0x60:
-        case 0x68:
-        case 0x6a:
-        case 0x78:
-        case 0x88:
-        case 0x8a:
-        case 0x98:
-        case 0x9a:
-        case 0xa8:
-        case 0xaa:
-        case 0xb8:
-        case 0xba:
-        case 0xc8:
-        case 0xca:
-        case 0xd8:
-        case 0xe8:
-        case 0xea:
-        case 0xf8:
-            return NUL;
-        default:
-            char buf[2];
-            itoa(opcode, buf, 16);
-            throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getAddressingMode.");
+    addressingMode ret = addressingModesByOpcode[opcode];
+    if (ret == XXX) {
+        char buf[2];
+        itoa(opcode, buf, 16);
+        throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getAddressingMode.");
+    } else {
+        return ret;
     }
 }
 
@@ -262,7 +145,7 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
     switch (mode) {
         case IMM:
             return pc++;
-        case ZP:
+        case ZPG:
             return read();
         case ZPX:
             cache = read();
@@ -297,217 +180,13 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
 }
 
 instruction CPU::getInstruction(uint8_t opcode) {
-    // TODO: Add the rest, convert to table indexing
-    switch (opcode) {
-        case 0x61:
-        case 0x65:
-        case 0x69:
-        case 0x6d:
-        case 0x71:
-        case 0x75:
-        case 0x79:
-        case 0x7d:
-            return ADC;
-        case 0x21:
-        case 0x25:
-        case 0x29:
-        case 0x2d:
-        case 0x31:
-        case 0x35:
-        case 0x39:
-        case 0x3d:
-            return AND;
-        case 0x06:
-        case 0x0a:
-        case 0x0e:
-        case 0x16:
-        case 0x1e:
-            return ASL;
-        case 0x90:
-            return BCC;
-        case 0xb0:
-            return BCS;
-        case 0xf0:
-            return BEQ;
-        case 0x24:
-        case 0x2c:
-            return BIT;
-        case 0x30:
-            return BMI;
-        case 0xd0:
-            return BNE;
-        case 0x10:
-            return BPL;
-        case 0x00:
-            return BRK;
-        case 0x50:
-            return BVC;
-        case 0x70:
-            return BVS;
-        case 0x18:
-            return CLC;
-        case 0xd8:
-            return CLD;
-        case 0x58:
-            return CLI;
-        case 0xb8:
-            return CLV;
-        case 0xc1:
-        case 0xc5:
-        case 0xc9:
-        case 0xcd:
-        case 0xd1:
-        case 0xd5:
-        case 0xd9:
-        case 0xdd:
-            return CMP;
-        case 0xe0:
-        case 0xe4:
-        case 0xec:
-            return CPX;
-        case 0xc0:
-        case 0xc4:
-        case 0xcc:
-            return CPY;
-        case 0xc6:
-        case 0xce:
-        case 0xd6:
-        case 0xde:
-            return DEC;
-        case 0xca:
-            return DEX;
-        case 0x88:
-            return DEY;
-        case 0x41:
-        case 0x45:
-        case 0x49:
-        case 0x4d:
-        case 0x51:
-        case 0x55:
-        case 0x59:
-        case 0x5d:
-            return EOR;
-        case 0xe6:
-        case 0xee:
-        case 0xf6:
-        case 0xfe:
-            return INC;
-        case 0xe8:
-            return INX;
-        case 0xc8:
-            return INY;
-        case 0x4c:
-        case 0x6c:
-            return JMP;
-        case 0x20:
-            return JSR;
-        case 0xa1:
-        case 0xa5:
-        case 0xa9:
-        case 0xad:
-        case 0xb1:
-        case 0xb5:
-        case 0xb9:
-        case 0xbd:
-            return LDA;
-        case 0xa2:
-        case 0xa6:
-        case 0xae:
-        case 0xb6:
-        case 0xbe:
-            return LDX;
-        case 0xa0:
-        case 0xa4:
-        case 0xac:
-        case 0xb4:
-        case 0xbc:
-            return LDY;
-        case 0x46:
-        case 0x4a:
-        case 0x4e:
-        case 0x56:
-        case 0x5e:
-            return LSR;
-        case 0xea:
-            return NOP;
-        case 0x01:
-        case 0x05:
-        case 0x09:
-        case 0x0d:
-        case 0x11:
-        case 0x15:
-        case 0x19:
-        case 0x1d:
-            return ORA;
-        case 0x48:
-            return PHA;
-        case 0x08:
-            return PHP;
-        case 0x68:
-            return PLA;
-        case 0x28:
-            return PLP;
-        case 0x26:
-        case 0x2a:
-        case 0x2e:
-        case 0x36:
-        case 0x3e:
-            return ROL;
-        case 0x66:
-        case 0x6a:
-        case 0x6e:
-        case 0x76:
-        case 0x7e:
-            return ROR;
-        case 0x40:
-            return RTI;
-        case 0x60:
-            return RTS;
-        case 0xe1:
-        case 0xe5:
-        case 0xe9:
-        case 0xed:
-        case 0xf1:
-        case 0xf5:
-        case 0xf9:
-        case 0xfd:
-            return SBC;
-        case 0x38:
-            return SEC;
-        case 0xf8:
-            return SED;
-        case 0x78:
-            return SEI;
-        case 0x81:
-        case 0x85:
-        case 0x8d:
-        case 0x91:
-        case 0x95:
-        case 0x99:
-        case 0x9d:
-            return STA;
-        case 0x86:
-        case 0x8e:
-        case 0x96:
-            return STX;
-        case 0x84:
-        case 0x8c:
-        case 0x94:
-            return STY;
-        case 0xaa:
-            return TAX;
-        case 0xa8:
-            return TAY;
-        case 0xba:
-            return TSX;
-        case 0x8a:
-            return TXA;
-        case 0x9a:
-            return TXS;
-        case 0x98:
-            return TYA;
-        default:
-            throw std::runtime_error("Unsupported opcode in getInstruction.");
+    instruction ret = instructionsByOpcode[opcode];
+    if (ret == YYY) {
+        char buf[2];
+        itoa(opcode, buf, 16);
+        throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getInstruction.");
+    } else {
+        return ret;
     }
 }
 
@@ -566,7 +245,7 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
             logFile << "#$" << ZPAD2 << (int)argument;
             logFile << "                        ";
             break;
-        case ZP:
+        case ZPG:
             logFile << "$" << ZPAD2 << addr << " = " << ZPAD2 << (int)argument;
             logFile << "                    ";
             break;

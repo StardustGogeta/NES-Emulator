@@ -51,6 +51,20 @@ int main(int argc, char* argv[]) {
 
     if (path == "nestest") {
         runNesTest(testCases);
+    } else if (path == "ADDRESSING_MODES") {
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                std::cout << addressingModeNames[CPU::getAddressingMode((i << 4) | j)] << ", ";
+            }
+            std::cout << std::endl;
+        }
+    } else if (path == "INSTRUCTIONS") {
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                std::cout << opcodeNames[CPU::getInstruction((i << 4) | j)] << ", ";
+            }
+            std::cout << std::endl;
+        }
     } else {
         ROM* rom = new ROM(); // Prepare to load ROM file
         rom->setPath(path); // Decode header into ROM object, parse header
