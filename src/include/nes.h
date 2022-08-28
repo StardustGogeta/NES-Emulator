@@ -5,8 +5,13 @@
 class NES {
     public:
         NES();
+        ~NES();
         void loadROM(ROM* rom);
 
         Memory* memory;
         CPU* cpu;
+        
+    private:
+        NES(const NES&) = delete;
+        NES& operator=(const NES&) = delete;
 };
