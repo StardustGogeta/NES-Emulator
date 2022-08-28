@@ -17,8 +17,8 @@ int addressingModeReadCount[] = {
 std::string opcodeNames[] = {
     "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC",
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
-    "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTS",
-    "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
+    "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTI",
+    "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA"
 };
 
 CPU::CPU() : logger(*this) {
@@ -93,6 +93,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xc0:
         case 0xc9:
         case 0xe0:
+        case 0xe9:
             return IMM;
         case 0x05:
         case 0x06:
@@ -113,6 +114,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xc5:
         case 0xc6:
         case 0xe4:
+        case 0xe5:
         case 0xe6:
             return ZP;
         case 0x15:
@@ -129,6 +131,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xb5:
         case 0xd5:
         case 0xd6:
+        case 0xf5:
         case 0xf6:
             return ZPX;
         case 0x96:
@@ -141,6 +144,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x81:
         case 0xa1:
         case 0xc1:
+        case 0xe1:
             return IZX;
         case 0x11:
         case 0x31:
@@ -149,6 +153,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x91:
         case 0xb1:
         case 0xd1:
+        case 0xf1:
             return IZY;
         case 0x0d:
         case 0x0e:
@@ -171,6 +176,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xcd:
         case 0xce:
         case 0xec:
+        case 0xed:
         case 0xee:
             return ABS;
         case 0x1d:
@@ -186,6 +192,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xbd:
         case 0xdd:
         case 0xde:
+        case 0xfd:
         case 0xfe:
             return ABX;
         case 0x19:
@@ -196,6 +203,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xb9:
         case 0xbe:
         case 0xd9:
+        case 0xf9:
             return ABY;
         case 0x6c:
             return IND;
@@ -208,12 +216,14 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0xd0:
         case 0xf0:
             return REL;
+        case 0x00:
         case 0x08:
         case 0x0a:
         case 0x18:
         case 0x28:
         case 0x2a:
         case 0x38:
+        case 0x40:
         case 0x48:
         case 0x4a:
         case 0x58:
@@ -222,8 +232,10 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
         case 0x6a:
         case 0x78:
         case 0x88:
+        case 0x8a:
         case 0x98:
         case 0x9a:
+        case 0xa8:
         case 0xaa:
         case 0xb8:
         case 0xba:
@@ -258,10 +270,11 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
             return (cache + y) % 0x100;
         case IZX:
             cache = read();
-            return memory->readWord((cache + x) % 0x100);
+            cache2 = (cache + x) % 0x100;
+            return (memory->read((cache2 + 1) % 0x100) << 8) | memory->read(cache2);
         case IZY:
             cache = read();
-            cache2 = (memory->read(cache + 1) << 8) + memory->read(cache);
+            cache2 = (memory->read((cache + 1) % 0x100) << 8) | memory->read(cache);
             return cache2 + y;
         case ABS:
             return readWord();
@@ -273,7 +286,7 @@ Memory::addr_t CPU::getAddress(addressingMode mode) {
             return cache + y;
         case IND:
             cache = readWord();
-            return memory->readWord(cache);
+            return memory->readWord(cache, true);
         case REL:
             return std::bit_cast<int8_t>(read()) + pc;
         default:
@@ -323,6 +336,8 @@ instruction CPU::getInstruction(uint8_t opcode) {
             return BNE;
         case 0x10:
             return BPL;
+        case 0x00:
+            return BRK;
         case 0x50:
             return BVC;
         case 0x70:
@@ -442,8 +457,19 @@ instruction CPU::getInstruction(uint8_t opcode) {
         case 0x76:
         case 0x7e:
             return ROR;
+        case 0x40:
+            return RTI;
         case 0x60:
             return RTS;
+        case 0xe1:
+        case 0xe5:
+        case 0xe9:
+        case 0xed:
+        case 0xf1:
+        case 0xf5:
+        case 0xf9:
+        case 0xfd:
+            return SBC;
         case 0x38:
             return SEC;
         case 0xf8:
@@ -532,7 +558,7 @@ void CPU::Logger::logOpcode(uint8_t opcode, addressingMode mode, instruction ins
     logFile << "  " + opcodeName + " ";
 }
 
-void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Memory::addr_t addr, uint8_t argument, uint16_t argWord) {
+void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Memory::addr_t addr, uint8_t argument) {
     switch (mode) {
         case IMM:
             logFile << "#$" << ZPAD2 << (int)argument;
@@ -551,11 +577,11 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
             logFile << "             ";
             break;
         case IZX:
-            logFile << "($" << ZPAD2 << cpu.cache << ",X) @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "($" << ZPAD2 << cpu.cache << ",X) @ " << ZPAD2 << cpu.cache2 << " = " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
             logFile << "    ";
             break;
         case IZY:
-            logFile << "($" << ZPAD2 << cpu.cache << "),Y = " << ZPAD4 << cpu.cache2 << " @ " << addr << " = " << ZPAD2 << (int)argument;
+            logFile << "($" << ZPAD2 << cpu.cache << "),Y = " << ZPAD4 << cpu.cache2 << " @ " << ZPAD4 << addr << " = " << ZPAD2 << (int)argument;
             logFile << "  ";
             break;
         case ABS:
@@ -575,7 +601,7 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
             logFile << "         ";
             break;
         case IND:
-            logFile << "($" << ZPAD4 << addr << ") = " << ZPAD4 << argWord;
+            logFile << "($" << ZPAD4 << cpu.cache << ") = " << ZPAD4 << addr;
             logFile << "              ";
             break;
         case REL:
@@ -583,7 +609,11 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
             logFile << "                       ";
             break;
         case NUL:
-            logFile << "                            ";
+            if (inst == ASL || inst == LSR || inst == ROL || inst == ROR) {
+                logFile << "A                           ";
+            } else {
+                logFile << "                            ";
+            }
             break;
         default:
             logFile << "ERROR                           ";
@@ -614,16 +644,12 @@ void CPU::runOpcode(uint8_t opcode) {
     
     Memory::addr_t addr = 0;
     uint8_t argument;
-    uint16_t argWord;
     
     if (mode != NUL) {
         addr = getAddress(mode);
         // Read up to two bytes at the given address
         // TODO: Optimize by only reading argument if specific instruction requires it
         argument = memory->read(addr);
-        if (mode == IND) {
-            argWord = (memory->read(addr + 1) << 8) | argument;
-        }
     } else {
         // If an opcode normally takes arguments, then the no-arg instruction uses the accumulator
         argument = a;
@@ -631,7 +657,7 @@ void CPU::runOpcode(uint8_t opcode) {
 
     if (logger.logging) {
         // Write stylized opcode arguments to log and trailing spaces
-        logger.logArgsAndRegisters(mode, inst, addr, argument, argWord);
+        logger.logArgsAndRegisters(mode, inst, addr, argument);
     }
 
     switch (inst) {
@@ -695,7 +721,7 @@ void CPU::runOpcode(uint8_t opcode) {
                 pc = addr;
             }
             break;
-        case BRK: {
+        case BRK:
             // TODO: Make sure this all works as intended
             pc += 2;
             stackPush((pc & 0xff00) >> 8);
@@ -704,7 +730,6 @@ void CPU::runOpcode(uint8_t opcode) {
             stackPush(processorStatus());
             p.i = 1;
             pc = 0xfffe;
-            }
             break;
         case BVC:
             if (!p.v) {
@@ -858,8 +883,30 @@ void CPU::runOpcode(uint8_t opcode) {
             }
             }
             break;
+        case RTI:{
+            // We ignore changes to the B and I flags
+            // See https://www.masswerk.at/6502/6502_instruction_set.html#PLP
+            processorFlags oldP = p;
+            setProcessorStatus(stackPop());
+            p.b1 = oldP.b1;
+            p.b2 = oldP.b2;
+            p.i = oldP.i;
+            pc = stackPop() | (stackPop() << 8);
+            }
+            break;
         case RTS:
             pc = (stackPop() | (stackPop() << 8)) + 1;
+            break;
+        case SBC: {
+            // Like ADC but with inverted argument
+            // See https://stackoverflow.com/questions/29193303/6502-emulation-proper-way-to-implement-adc-and-sbc
+            uint16_t result = a + p.c + ~argument;
+            // The carry flag is the inverse of ADC
+            p.c = result <= 0xff;
+            p.v = ((a ^ result) & (~argument ^ result) & 0x80) != 0;
+            a = result & 0xff;
+            setNZ(a);
+            }
             break;
         case SEC:
             p.c = 1;
