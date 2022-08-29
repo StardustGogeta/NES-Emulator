@@ -311,37 +311,7 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
     logFile << std::endl;
 }
 
-void CPU::runOpcode(uint8_t opcode) {
-    #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << ZPAD2 << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
-    #endif
-
-    addressingMode mode = getAddressingMode(opcode);
-    instruction inst = getInstruction(opcode);
-
-    if (logger.logging) {
-        // Write PC and opcode to log
-        logger.logOpcode(opcode, mode, inst);
-    }
-    
-    Memory::addr_t addr = 0;
-    uint8_t argument;
-    
-    if (mode != NUL) {
-        addr = getAddress(mode);
-        // Read up to two bytes at the given address
-        // TODO: Optimize by only reading argument if specific instruction requires it
-        argument = memory->read(addr);
-    } else {
-        // If an opcode normally takes arguments, then the no-arg instruction uses the accumulator
-        argument = a;
-    }
-
-    if (logger.logging) {
-        // Write stylized opcode arguments to log and trailing spaces
-        logger.logArgsAndRegisters(mode, inst, addr, argument);
-    }
-
+void CPU::runInstruction(addressingMode mode, instruction inst, Memory::addr_t addr, uint8_t argument) {
     switch (inst) {
         case ADC: {
             // Use a type large enough to detect carry
@@ -635,10 +605,44 @@ void CPU::runOpcode(uint8_t opcode) {
             throw std::runtime_error("Unsupported opcode in runOpcode.");
             break;
     }
+}
+
+void CPU::runOpcode(uint8_t opcode) {
+    #ifdef DEBUG
+    std::cout << "Trying to run opcode 0x" << std::hex << ZPAD2 << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
+    #endif
+
+    addressingMode mode = getAddressingMode(opcode);
+    instruction inst = getInstruction(opcode);
+
+    if (logger.logging) {
+        // Write PC and opcode to log
+        logger.logOpcode(opcode, mode, inst);
+    }
+    
+    Memory::addr_t addr = 0;
+    uint8_t argument;
+    
+    if (mode != NUL) {
+        addr = getAddress(mode);
+        // Read up to two bytes at the given address
+        // TODO: Optimize by only reading argument if specific instruction requires it
+        argument = memory->read(addr);
+    } else {
+        // If an opcode normally takes arguments, then the no-arg instruction uses the accumulator
+        argument = a;
+    }
+
+    if (logger.logging) {
+        // Write stylized opcode arguments to log and trailing spaces
+        logger.logArgsAndRegisters(mode, inst, addr, argument);
+    }
+
+    runInstruction(mode, inst, addr, argument);
 
     // TODO: Get actual cycle count
     if (!waitForCycles(2)) {
-        return; 
+        return;
     };
 }
 

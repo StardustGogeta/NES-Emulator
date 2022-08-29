@@ -93,6 +93,12 @@ class CPU {
         void stackPush(uint8_t val);
         uint8_t stackPop();
         void runOpcode(uint8_t opcode);
+        void runInstruction(
+            addressingMode mode,
+            instruction inst,
+            Memory::addr_t addr,
+            uint8_t argument
+        );
         bool waitForCycles(int n);
         bool waitForCycle();
         std::atomic<bool> running;

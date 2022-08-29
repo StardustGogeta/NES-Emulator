@@ -22,4 +22,5 @@ target_include_directories(main PRIVATE src/include)
 
 enable_testing()
 add_test(NAME nestest_execute COMMAND main nestest)
+set_tests_properties(nestest_execute PROPERTIES TIMEOUT 1)
 add_test(NAME nestest_match COMMAND python ${CMAKE_SOURCE_DIR}/test/nestestCompare.py)
