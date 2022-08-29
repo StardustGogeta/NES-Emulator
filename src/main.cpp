@@ -10,6 +10,15 @@
 
 const int DEFAULT_TEST_CASES = 10000;
 
+auto now() {
+    return std::chrono::high_resolution_clock::now();
+}
+ 
+auto awake_time() {
+    using std::chrono::operator""us;
+    return now() + 50us;
+}
+
 bool runNesTest(int testCases) {
     std::cout << "Running nestest...\n";
     if (!testCases) {
@@ -25,20 +34,27 @@ bool runNesTest(int testCases) {
     nes->cpu->logger.start("../test/cpuLog.txt");
 
     #ifdef DEBUG
-    auto start = std::chrono::high_resolution_clock::now();
+    auto start = now();
     #endif
 
     std::thread cpuThread(&CPU::start, nes->cpu);
     
+    // Wait until the CPU starts up.
+    while (!nes->cpu->checkRunning()) {
+        std::this_thread::yield();
+    }
+
     for (int i = 0; i < testCases; i++) {
         nes->cpu->cycle();
-        // std::this_thread::sleep_for(std::chrono::seconds(1));
+        
+        // We can artificially limit processor speed by sleeping the main thread:
+        // std::this_thread::sleep_until(awake_time());
     }
 
     nes->cpu->stop(cpuThread);
 
     #ifdef DEBUG
-    auto end = std::chrono::high_resolution_clock::now();
+    auto end = now();
     std::chrono::duration<double> diff = end - start;
     std::cout << "Finished in " << diff.count() << " seconds" << std::endl;
     #endif

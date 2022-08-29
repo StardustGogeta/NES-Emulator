@@ -659,32 +659,79 @@ bool CPU::waitForCycles(int n) {
     return true;
 }
 
+bool CPU::checkRunning() {
+    return running;
+}
+
 /*
     Causes the current thread to wait until the controlling thread calls CPU::cycle().
     Returns true if execution of the thread should continue and false if the thread is being killed.
 */
 bool CPU::waitForCycle() {
-    // Tell that this last cycle is finished.
     std::unique_lock lck(cycleStatusMutex);
-    cycleStatus = 2;
-    cycleStatusCV.notify_all();
+    cyclesExecuted++;
 
-    // Wait until the next cycle is triggered.
-    cycleStatusCV.wait(lck, [this] {return cycleStatus == 0;});
-    cycleStatus = 1;
+    bool caughtUp = cyclesRequested <= cyclesExecuted;
+    notDone = cyclesExecuted < maxCycles || !maxCycles;
 
-    return running;
+    #ifdef DEBUG
+    std::cout << "Executed " << cyclesExecuted
+        << " cycles of " << cyclesRequested
+        << " requested and max " << maxCycles
+        << ". running: " << running
+        << " caughtUp: " << caughtUp
+        << " notDone: " << notDone << std::endl;
+    #endif
+
+    if (running && caughtUp && notDone) {
+        // We are caught up, so we need to wait until the next cycle is requested.
+        cycleStatusCV.wait(lck, [this] {
+            // Check if we have more cycles in the queue to execute.
+            bool moreCycles = cyclesRequested > cyclesExecuted;
+            // Check if we have already hit the maximum number of cycles.
+            notDone = cyclesExecuted < maxCycles || !maxCycles;
+            // Check if we have been manually killed.
+            bool killed = !running;
+            // If any are true, we need to stop waiting and move on.
+            return killed || moreCycles || !notDone;
+        });
+    }
+
+    return running && notDone;
 }
 
 /*
     Continually runs opcodes until stopped by CPU::stop().
 */
 void CPU::start() {
+    std::unique_lock lck(cycleStatusMutex);
+    notDone = true;
+    cyclesRequested = 0;
+    cyclesExecuted = 0;
+    maxCycles = 0;
     running = true;
-    cycleStatus = 0;
+    lck.unlock();
 
-    while (running) {
+    while (running && notDone) {
         runOpcode(read());
+    }
+}
+
+/*
+    Stops the CPU from running by ending after the currently queued opcodes.
+    Argument t is the thread running CPU::start() that needs to end.
+*/
+void CPU::stop(std::thread& t) {
+    std::unique_lock lck(cycleStatusMutex);
+    maxCycles = cyclesRequested;
+    lck.unlock();
+
+    // Stop waiting for the next cycle, if that is the current thread state.
+    cycleStatusCV.notify_all();
+
+    // Join the thread afterwards.
+    if (t.joinable()) {
+        t.join();
     }
 }
 
@@ -692,11 +739,15 @@ void CPU::start() {
     Stops the CPU from running by ending after the current opcode.
     Causes the condition in CPU::start() to be false.
     Argument t is the thread running CPU::start() that needs to end.
+    This is more forceful than CPU::stop(), which allows queued opcodes to finish.
 */
-void CPU::stop(std::thread& t) {
+void CPU::kill(std::thread& t) {
+    std::unique_lock lck(cycleStatusMutex);
     running = false;
+    lck.unlock();
 
-    // TODO: May need to issue one last cycleStatus=0 and notify_all to finish the opcode.
+    // Stop waiting for the next cycle, if that is the current thread state.
+    cycleStatusCV.notify_all();
 
     // Join the thread afterwards.
     if (t.joinable()) {
@@ -708,11 +759,9 @@ void CPU::stop(std::thread& t) {
     Performs one cycle of the CPU.
 */
 void CPU::cycle() {
-    // Wait until the last cycle finished.
+    // std::cout << "Start of cycle\n";
+    // Increment the requested CPU cycle count.
     std::unique_lock lck(cycleStatusMutex);
-    cycleStatusCV.wait(lck, [this] {return cycleStatus == 2;});
-
-    // Start a new cycle.
-    cycleStatus = 0;
+    cyclesRequested++;
     cycleStatusCV.notify_all();
 }
