@@ -58,11 +58,13 @@ class CPU {
         void reset(Memory::addr_t pc=0xfffc);
         void start();
         void stop(std::thread& t);
+        void kill(std::thread& t);
         void cycle();
         uint8_t peek();
         uint16_t peekWord();
         uint8_t read();
         uint16_t readWord();
+        bool checkRunning();
 
         static addressingMode getAddressingMode(uint8_t opcode);
         static instruction getInstruction(uint8_t opcode);
@@ -102,9 +104,11 @@ class CPU {
         bool waitForCycles(int n);
         bool waitForCycle();
         std::atomic<bool> running;
+        std::atomic<bool> notDone;
 
-        // 0 is new cycle started, 1 is running, 2 is done
-        int cycleStatus;
+        int maxCycles;
+        int cyclesRequested; // uses cycleStatusMutex
+        std::atomic<int> cyclesExecuted;
         std::mutex cycleStatusMutex;
         std::condition_variable cycleStatusCV;
 
