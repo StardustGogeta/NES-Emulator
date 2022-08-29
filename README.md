@@ -3,11 +3,24 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator/badge)](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator)
 
 
-An incomplete NES emulator made using SDL2 and C++.
+An incomplete NES emulator made using SDL2 and C++20.
+
+**Roadmap**
+
+- ~~Basic source code layout~~
+- ~~ROM file input and processing~~
+- ~~Official CPU opcode emulation~~
+- Unofficial CPU opcode emulation
+- PPU emulation
+- Display support
+- Mapper support
+
+
+## Quick-Start Instructions
 
 #### Prerequisites
 - cmake
-- gcc / MinGW
+- gcc / MinGW (with C++20 standard)
 
 In order to build this, create a folder named `build`, navigate to this folder, and run
 
@@ -41,7 +54,6 @@ This will create a `bin` folder in the repository and build the project from the
 - BRK command behavior: http://www.romdetectives.com/Wiki/index.php?title=BRK
 - Detailed opcodes list: https://www.masswerk.at/6502/6502_instruction_set.html
 - ADC and SBC commands: https://stackoverflow.com/questions/29193303/6502-emulation-proper-way-to-implement-adc-and-sbc
-NES PPU explanation: https://www.reddit.com/r/EmuDev/comments/evu3u2/what_does_the_nes_ppu_actually_do/
-PPU rendering guide: https://www.nesdev.org/wiki/PPU_rendering
-PPU frame timing: https://www.nesdev.org/wiki/PPU_frame_timing
-
+- NES PPU explanation: https://www.reddit.com/r/EmuDev/comments/evu3u2/what_does_the_nes_ppu_actually_do/
+- PPU rendering guide: https://www.nesdev.org/wiki/PPU_rendering
+- PPU frame timing: https://www.nesdev.org/wiki/PPU_frame_timing
