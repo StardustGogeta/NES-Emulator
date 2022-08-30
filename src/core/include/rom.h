@@ -1,5 +1,5 @@
 #pragma once
-#include "memory.h"
+#include "core_memory.h"
 #include <string>
 #include <cstdint>
 
@@ -12,7 +12,7 @@ class ROM {
 
         void setPath(std::string path);
         void parseHeader();
-        void loadIntoMemory(Memory* memory);
+        void loadIntoMemory(CoreMemory* memory);
 
     private:
         uint8_t flags6, flags7, flags9, flags10;

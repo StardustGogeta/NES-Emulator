@@ -1,4 +1,4 @@
-#include "memory.h"
+#include "core_memory.h"
 #include "rom.h"
 #include <cstring>
 #include <iostream>
@@ -7,21 +7,21 @@
     Create a new memory object and store the PRG-ROM size (in 16 KB units).
     Assumes 16 KB of PRG-ROM if not provided.
 */
-Memory::Memory(uint8_t PRG_ROM_size /* = 1 */) : PRG_ROM_size(PRG_ROM_size) {
+CoreMemory::CoreMemory(uint8_t PRG_ROM_size /* = 1 */) : PRG_ROM_size(PRG_ROM_size) {
     clear();
 }
 
 /*
     Reads a byte of data from a given memory address, ignoring memory mapping.
 */
-uint8_t Memory::readDirect(addr_t address) {
+uint8_t CoreMemory::readDirect(addr_t address) {
     return memory[address];
 }
 
 /*
     Reads a byte of data from a given memory address.
 */
-uint8_t Memory::read(addr_t address) {
+uint8_t CoreMemory::read(addr_t address) {
     return memory[mapAddress(address)];
 }
 
@@ -29,7 +29,7 @@ uint8_t Memory::read(addr_t address) {
     Reads two consecutive bytes of data from a given memory address.
     If wrap is true, the second read wraps to the beginning of the page.
 */
-uint16_t Memory::readWord(addr_t address, bool wrap /* =false */) {
+uint16_t CoreMemory::readWord(addr_t address, bool wrap /* =false */) {
     addr_t addr2 = address + 1;
     if (wrap) {
         // Check if second address is on next page
@@ -43,35 +43,35 @@ uint16_t Memory::readWord(addr_t address, bool wrap /* =false */) {
 /*
     Writes a byte of data to a given memory address, ignoring memory mapping.
 */
-void Memory::writeDirect(addr_t address, uint8_t data) {
+void CoreMemory::writeDirect(addr_t address, uint8_t data) {
     memory[address] = data;
 }
 
 /*
     Writes a byte of data to a given memory address.
 */
-void Memory::write(addr_t address, uint8_t data) {
+void CoreMemory::write(addr_t address, uint8_t data) {
     memory[mapAddress(address)] = data;
 }
 
 /*
     Writes a block of data from a source to a given memory address.
 */
-void Memory::writeBlock(addr_t address, uint8_t *src, uint16_t numBytes) {
+void CoreMemory::writeBlock(addr_t address, uint8_t *src, uint16_t numBytes) {
     memcpy(&memory[mapAddress(address)], src, numBytes);
 }
 
 /*
     Clears all stored memory.
 */
-void Memory::clear() {
+void CoreMemory::clear() {
     memset(memory, 0, sizeof(memory)); // Set array elements to zero
 }
 
 /*
     Sets the PRG-ROM size (in 16 KB units).
 */
-void Memory::set_PRG_ROM_size(uint8_t PRG_ROM_size) {
+void CoreMemory::set_PRG_ROM_size(uint8_t PRG_ROM_size) {
     this->PRG_ROM_size = PRG_ROM_size;
 }
 
@@ -96,7 +96,7 @@ void Memory::set_PRG_ROM_size(uint8_t PRG_ROM_size) {
         - 0xfffe-0xffff: Break handler
 
 */
-Memory::addr_t Memory::mapAddress(addr_t address) {
+CoreMemory::addr_t CoreMemory::mapAddress(addr_t address) {
     if (address < 0x2000) {
         address %= 0x800;
     }

@@ -1,6 +1,6 @@
 #pragma once
 #include "rom.h"
-#include "memory.h"
+#include "core_memory.h"
 #include "cpu.h"
 
 class NES {
@@ -9,7 +9,7 @@ class NES {
         ~NES();
         void loadROM(ROM* rom);
 
-        Memory* memory;
+        CoreMemory* memory;
         CPU* cpu;
         
     private:

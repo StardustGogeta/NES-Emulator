@@ -1,5 +1,5 @@
 #pragma once
-#include "memory.h"
+#include "core_memory.h"
 #include <cstdint>
 #include <fstream>
 #include <thread>
@@ -43,7 +43,7 @@ class CPU {
                 void logArgsAndRegisters(
                     addressingMode mode,
                     instruction inst,
-                    Memory::addr_t addr,
+                    CoreMemory::addr_t addr,
                     uint8_t argument
                 );
                 bool logging;
@@ -51,11 +51,11 @@ class CPU {
                 CPU& cpu;
         };
 
-        Memory* memory;
+        CoreMemory* memory;
         Logger logger;
 
         CPU();
-        void reset(Memory::addr_t pc=0xfffc);
+        void reset(CoreMemory::addr_t pc=0xfffc);
         void start();
         void stop(std::thread& t);
         void kill(std::thread& t);
@@ -81,14 +81,14 @@ class CPU {
                 BRK command (unused), unused, overflow, negative
             Also written: NVbbDIZC
         */
-        Memory::addr_t pc;
+        CoreMemory::addr_t pc;
         uint8_t sp, a, x, y;
         uint16_t cache, cache2;
         struct processorFlags {
             bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
         
-        Memory::addr_t getAddress(addressingMode mode);
+        CoreMemory::addr_t getAddress(addressingMode mode);
         uint8_t processorStatus();
         void setProcessorStatus(uint8_t status);
         void setNZ(uint8_t val);
@@ -98,7 +98,7 @@ class CPU {
         void runInstruction(
             addressingMode mode,
             instruction inst,
-            Memory::addr_t addr,
+            CoreMemory::addr_t addr,
             uint8_t argument
         );
         bool waitForCycles(int n);

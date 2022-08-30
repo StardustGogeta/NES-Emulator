@@ -1,4 +1,4 @@
-#include "memory.h"
+#include "core_memory.h"
 #include "rom.h"
 #include "nes.h"
 #include <iostream>

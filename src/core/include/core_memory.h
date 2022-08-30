@@ -5,11 +5,11 @@
     This class is designed to encapsulate memory access to prevent
     simple mistakes with memory mirroring and other easy errors.
 */
-class Memory {
+class CoreMemory {
     public:
         typedef uint16_t addr_t;
         
-        Memory(uint8_t PRG_ROM_size=1);
+        CoreMemory(uint8_t PRG_ROM_size=1);
         uint8_t read(addr_t address);
         uint16_t readWord(addr_t address, bool wrap=false);
         void write(addr_t address, uint8_t data);

@@ -1,7 +1,7 @@
 #include "nes.h"
 
 NES::NES() {
-    memory = new Memory();
+    memory = new CoreMemory();
     cpu = new CPU();
     cpu->memory = memory;
 }
