@@ -1,5 +1,5 @@
 #include "rom.h"
-#include "memory.h"
+#include "core_memory.h"
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -65,7 +65,7 @@ void ROM::parseHeader() {
 /*
     Loads PRG-ROM from a file into memory.
 */
-void ROM::loadIntoMemory(Memory* memory) {
+void ROM::loadIntoMemory(CoreMemory* memory) {
     this->parseHeader();
 
     memory->set_PRG_ROM_size(PRG_ROM_size);

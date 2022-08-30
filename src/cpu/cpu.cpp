@@ -73,7 +73,7 @@ CPU::CPU() : logger(*this) {
 
 CPU::Logger::Logger(CPU& cpu) : cpu(cpu) { }
 
-void CPU::reset(Memory::addr_t pc /* =0xfffc */) {
+void CPU::reset(CoreMemory::addr_t pc /* =0xfffc */) {
     this->pc = pc;
     sp = 0xfd;
     a = x = y = 0;
@@ -142,7 +142,7 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
     Assumes the program counter is at the start of the arguments list.
     Moves the program counter to the end of the arguments list.
 */
-Memory::addr_t CPU::getAddress(addressingMode mode) {
+CoreMemory::addr_t CPU::getAddress(addressingMode mode) {
     switch (mode) {
         case IMM:
             return pc++;
@@ -240,7 +240,7 @@ void CPU::Logger::logOpcode(uint8_t opcode, addressingMode mode, instruction ins
     logFile << "  " + opcodeName + " ";
 }
 
-void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Memory::addr_t addr, uint8_t argument) {
+void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument) {
     switch (mode) {
         case IMM:
             logFile << "#$" << ZPAD2 << (int)argument;
@@ -311,7 +311,7 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, Mem
     logFile << std::endl;
 }
 
-void CPU::runInstruction(addressingMode mode, instruction inst, Memory::addr_t addr, uint8_t argument) {
+void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument) {
     switch (inst) {
         case ADC: {
             // Use a type large enough to detect carry
@@ -620,7 +620,7 @@ void CPU::runOpcode(uint8_t opcode) {
         logger.logOpcode(opcode, mode, inst);
     }
     
-    Memory::addr_t addr = 0;
+    CoreMemory::addr_t addr = 0;
     uint8_t argument;
     
     if (mode != NUL) {

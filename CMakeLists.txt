@@ -13,7 +13,7 @@ add_executable(
     main
     src/core/main.cpp
     src/core/rom.cpp
-    src/core/memory.cpp
+    src/core/core_memory.cpp
     src/core/nes.cpp
     src/cpu/cpu.cpp
 )
