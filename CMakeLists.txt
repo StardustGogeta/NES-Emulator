@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.24.0)
 
-set(CMAKE_CXX_STANDARD 20)
-
 project("NES Emulator" CXX)
 
 # Set default compile flags for GCC, per https://stackoverflow.com/a/2274040
@@ -32,7 +30,9 @@ target_include_directories(main PRIVATE
     src/cpu/include
 )
 
+target_compile_features(main PRIVATE cxx_std_20)
+
 enable_testing()
 add_test(NAME nestest_execute COMMAND main nestest)
-set_tests_properties(nestest_execute PROPERTIES TIMEOUT 0.2)
+set_tests_properties(nestest_execute PROPERTIES TIMEOUT 0.5)
 add_test(NAME nestest_match COMMAND python ${CMAKE_SOURCE_DIR}/test/nestestCompare.py)
