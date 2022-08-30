@@ -1,28 +1,12 @@
 #pragma once
 #include "core_memory.h"
+#include "opcodes.h"
 #include <cstdint>
 #include <fstream>
 #include <thread>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
-
-extern const std::string addressingModeNames[];
-extern const std::string opcodeNames[];
-
-enum addressingMode {
-    // NUL is for opcodes that take no arguments
-    // XXX is for unimplemented / unknown
-    IMM, ZPG, ZPX, ZPY, IZX, IZY, ABS, ABX, ABY, IND, REL, NUL, XXX
-};
-
-enum instruction {
-    // YYY is for unimplemented / unknown
-    ADC, AND, ASL, BCC, BCS, BEQ, BIT, BMI, BNE, BPL, BRK, BVC, BVS, CLC,
-    CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY, EOR, INC, INX, INY, JMP,
-    JSR, LDA, LDX, LDY, LSR, NOP, ORA, PHA, PHP, PLA, PLP, ROL, ROR, RTI,
-    RTS, SBC, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TSX, TXA, TXS, TYA, YYY // TODO: Add the rest
-};
 
 class CPU {
     public:

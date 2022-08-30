@@ -11,11 +11,15 @@ project("NES Emulator")
 
 add_executable(
     main
+    # Core
     src/core/main.cpp
     src/core/rom.cpp
     src/core/core_memory.cpp
     src/core/nes.cpp
+    # CPU
     src/cpu/cpu.cpp
+    src/cpu/logger.cpp
+    src/cpu/opcodes.cpp
 )
 
 target_include_directories(main PRIVATE
