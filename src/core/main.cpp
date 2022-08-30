@@ -1,6 +1,6 @@
-#include "memory.h"
-#include "rom.h"
-#include "nes.h"
+#include <memory.h>
+#include <rom.h>
+#include <nes.h>
 #include <iostream>
 #include <fstream>
 #include <string>

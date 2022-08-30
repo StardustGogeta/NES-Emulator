@@ -1,4 +1,4 @@
-#include "nes.h"
+#include <nes.h>
 
 NES::NES() {
     memory = new Memory();
