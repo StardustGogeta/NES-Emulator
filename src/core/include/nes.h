@@ -1,7 +1,7 @@
 #pragma once
-#include <rom.h>
-#include <memory.h>
-#include <cpu.h>
+#include "rom.h"
+#include "memory.h"
+#include "cpu.h"
 
 class NES {
     public:
