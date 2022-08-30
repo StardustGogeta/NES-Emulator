@@ -11,14 +11,17 @@ project("NES Emulator")
 
 add_executable(
     main
-    src/main.cpp
-    src/rom.cpp
-    src/memory.cpp
-    src/cpu.cpp
-    src/nes.cpp
+    src/core/main.cpp
+    src/core/rom.cpp
+    src/core/memory.cpp
+    src/core/nes.cpp
+    src/cpu/cpu.cpp
 )
 
-target_include_directories(main PRIVATE src/include)
+target_include_directories(main PRIVATE
+    src/core/include
+    src/cpu/include
+)
 
 enable_testing()
 add_test(NAME nestest_execute COMMAND main nestest)
