@@ -14,48 +14,49 @@ const std::string opcodeNames[] = {
     "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC",
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
     "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTI",
-    "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA", "YYY"
+    "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA",
+    "LAX", "YYY"
 };
 
 // Table of addressing modes by opcode
 const addressingMode addressingModesByOpcode[] = {
 /*  x0   x1   x2   x3   x4   x5   x6   x7   x8   x9   xa   xb   xc   xd   xe   xf   */
-    NUL, IZX, XXX, XXX, XXX, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, XXX, ABS, ABS, XXX, // 0x
-    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 1x
+    NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 0x
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 1x
     ABS, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 2x
-    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 3x
-    NUL, IZX, XXX, XXX, XXX, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 4x
-    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 5x
-    NUL, IZX, XXX, XXX, XXX, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, IND, ABS, ABS, XXX, // 6x
-    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // 7x
-    XXX, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, XXX, NUL, XXX, ABS, ABS, ABS, XXX, // 8x
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 3x
+    NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 4x
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 5x
+    NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, IND, ABS, ABS, XXX, // 6x
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 7x
+    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 8x
     REL, IZY, XXX, XXX, ZPX, ZPX, ZPY, XXX, NUL, ABY, NUL, XXX, XXX, ABX, XXX, XXX, // 9x
-    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // ax
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPY, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABY, XXX, // bx
-    IMM, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // cx
-    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // dx
-    IMM, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // ex
-    REL, IZY, XXX, XXX, XXX, ZPX, ZPX, XXX, NUL, ABY, XXX, XXX, XXX, ABX, ABX, XXX, // fx
+    IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, IMM, ABS, ABS, ABS, ABS, // ax
+    REL, IZY, XXX, IZY, ZPX, ZPX, ZPY, ZPY, NUL, ABY, NUL, XXX, ABX, ABX, ABY, ABY, // bx
+    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // cx
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // dx
+    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // ex
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // fx
 };
 
 const instruction instructionsByOpcode[] = {
 /*  x0   x1   x2   x3   x4   x5   x6   x7   x8   x9   xa   xb   xc   xd   xe   xf   */
-    BRK, ORA, YYY, YYY, YYY, ORA, ASL, YYY, PHP, ORA, ASL, YYY, YYY, ORA, ASL, YYY, // 0x
-    BPL, ORA, YYY, YYY, YYY, ORA, ASL, YYY, CLC, ORA, YYY, YYY, YYY, ORA, ASL, YYY, // 1x
+    BRK, ORA, YYY, YYY, NOP, ORA, ASL, YYY, PHP, ORA, ASL, YYY, NOP, ORA, ASL, YYY, // 0x
+    BPL, ORA, YYY, YYY, NOP, ORA, ASL, YYY, CLC, ORA, NOP, YYY, NOP, ORA, ASL, YYY, // 1x
     JSR, AND, YYY, YYY, BIT, AND, ROL, YYY, PLP, AND, ROL, YYY, BIT, AND, ROL, YYY, // 2x
-    BMI, AND, YYY, YYY, YYY, AND, ROL, YYY, SEC, AND, YYY, YYY, YYY, AND, ROL, YYY, // 3x
-    RTI, EOR, YYY, YYY, YYY, EOR, LSR, YYY, PHA, EOR, LSR, YYY, JMP, EOR, LSR, YYY, // 4x
-    BVC, EOR, YYY, YYY, YYY, EOR, LSR, YYY, CLI, EOR, YYY, YYY, YYY, EOR, LSR, YYY, // 5x
-    RTS, ADC, YYY, YYY, YYY, ADC, ROR, YYY, PLA, ADC, ROR, YYY, JMP, ADC, ROR, YYY, // 6x
-    BVS, ADC, YYY, YYY, YYY, ADC, ROR, YYY, SEI, ADC, YYY, YYY, YYY, ADC, ROR, YYY, // 7x
-    YYY, STA, YYY, YYY, STY, STA, STX, YYY, DEY, YYY, TXA, YYY, STY, STA, STX, YYY, // 8x
+    BMI, AND, YYY, YYY, NOP, AND, ROL, YYY, SEC, AND, NOP, YYY, NOP, AND, ROL, YYY, // 3x
+    RTI, EOR, YYY, YYY, NOP, EOR, LSR, YYY, PHA, EOR, LSR, YYY, JMP, EOR, LSR, YYY, // 4x
+    BVC, EOR, YYY, YYY, NOP, EOR, LSR, YYY, CLI, EOR, NOP, YYY, NOP, EOR, LSR, YYY, // 5x
+    RTS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, PLA, ADC, ROR, YYY, JMP, ADC, ROR, YYY, // 6x
+    BVS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, SEI, ADC, NOP, YYY, NOP, ADC, ROR, YYY, // 7x
+    NOP, STA, NOP, YYY, STY, STA, STX, YYY, DEY, NOP, TXA, YYY, STY, STA, STX, YYY, // 8x
     BCC, STA, YYY, YYY, STY, STA, STX, YYY, TYA, STA, TXS, YYY, YYY, STA, YYY, YYY, // 9x
-    LDY, LDA, LDX, YYY, LDY, LDA, LDX, YYY, TAY, LDA, TAX, YYY, LDY, LDA, LDX, YYY, // ax
-    BCS, LDA, YYY, YYY, LDY, LDA, LDX, YYY, CLV, LDA, TSX, YYY, LDY, LDA, LDX, YYY, // bx
-    CPY, CMP, YYY, YYY, CPY, CMP, DEC, YYY, INY, CMP, DEX, YYY, CPY, CMP, DEC, YYY, // cx
-    BNE, CMP, YYY, YYY, YYY, CMP, DEC, YYY, CLD, CMP, YYY, YYY, YYY, CMP, DEC, YYY, // dx
-    CPX, SBC, YYY, YYY, CPX, SBC, INC, YYY, INX, SBC, NOP, YYY, CPX, SBC, INC, YYY, // ex
-    BEQ, SBC, YYY, YYY, YYY, SBC, INC, YYY, SED, SBC, YYY, YYY, YYY, SBC, INC, YYY, // fx
+    LDY, LDA, LDX, LAX, LDY, LDA, LDX, LAX, TAY, LDA, TAX, LAX, LDY, LDA, LDX, LAX, // ax
+    BCS, LDA, YYY, LAX, LDY, LDA, LDX, LAX, CLV, LDA, TSX, YYY, LDY, LDA, LDX, LAX, // bx
+    CPY, CMP, NOP, YYY, CPY, CMP, DEC, YYY, INY, CMP, DEX, YYY, CPY, CMP, DEC, YYY, // cx
+    BNE, CMP, YYY, YYY, NOP, CMP, DEC, YYY, CLD, CMP, NOP, YYY, NOP, CMP, DEC, YYY, // dx
+    CPX, SBC, NOP, YYY, CPX, SBC, INC, YYY, INX, SBC, NOP, YYY, CPX, SBC, INC, YYY, // ex
+    BEQ, SBC, YYY, YYY, NOP, SBC, INC, YYY, SED, SBC, NOP, YYY, NOP, SBC, INC, YYY, // fx
 };
 
 const bool legalOpcodes[] = {
@@ -260,6 +261,10 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             stackPush(((--pc) & 0xff00) >> 8);
             stackPush(pc & 0xff);
             pc = addr;
+            break;
+        case LAX:
+            runInstruction(mode, LDA, addr, argument);
+            runInstruction(mode, LDX, addr, argument);
             break;
         case LDA:
             a = argument;
