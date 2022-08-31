@@ -15,7 +15,7 @@ const std::string opcodeNames[] = {
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
     "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTI",
     "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA",
-    "DCP", "ISB", "LAX", "RLA", "SAX", "SLO", "SRE", "YYY"
+    "DCP", "ISB", "LAX", "RLA", "RRA", "SAX", "SLO", "SRE", "YYY"
 };
 
 // Table of addressing modes by opcode
@@ -27,8 +27,8 @@ const addressingMode addressingModesByOpcode[] = {
     REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // 3x
     NUL, IZX, XXX, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // 4x
     REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // 5x
-    NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, IND, ABS, ABS, XXX, // 6x
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 7x
+    NUL, IZX, XXX, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, IND, ABS, ABS, ABS, // 6x
+    REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // 7x
     IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // 8x
     REL, IZY, XXX, XXX, ZPX, ZPX, ZPY, ZPY, NUL, ABY, NUL, XXX, XXX, ABX, XXX, XXX, // 9x
     IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, IMM, ABS, ABS, ABS, ABS, // ax
@@ -47,8 +47,8 @@ const instruction instructionsByOpcode[] = {
     BMI, AND, YYY, RLA, NOP, AND, ROL, RLA, SEC, AND, NOP, RLA, NOP, AND, ROL, RLA, // 3x
     RTI, EOR, YYY, SRE, NOP, EOR, LSR, SRE, PHA, EOR, LSR, YYY, JMP, EOR, LSR, SRE, // 4x
     BVC, EOR, YYY, SRE, NOP, EOR, LSR, SRE, CLI, EOR, NOP, SRE, NOP, EOR, LSR, SRE, // 5x
-    RTS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, PLA, ADC, ROR, YYY, JMP, ADC, ROR, YYY, // 6x
-    BVS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, SEI, ADC, NOP, YYY, NOP, ADC, ROR, YYY, // 7x
+    RTS, ADC, YYY, RRA, NOP, ADC, ROR, RRA, PLA, ADC, ROR, YYY, JMP, ADC, ROR, RRA, // 6x
+    BVS, ADC, YYY, RRA, NOP, ADC, ROR, RRA, SEI, ADC, NOP, RRA, NOP, ADC, ROR, RRA, // 7x
     NOP, STA, NOP, SAX, STY, STA, STX, SAX, DEY, NOP, TXA, YYY, STY, STA, STX, SAX, // 8x
     BCC, STA, YYY, YYY, STY, STA, STX, SAX, TYA, STA, TXS, YYY, YYY, STA, YYY, YYY, // 9x
     LDY, LDA, LDX, LAX, LDY, LDA, LDX, LAX, TAY, LDA, TAX, LAX, LDY, LDA, LDX, LAX, // ax
@@ -352,7 +352,7 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             }
             }
             break;
-        case ROR:{
+        case ROR: {
             uint8_t result = (argument >> 1) | (p.c << 7);
             p.c = argument & 1;
             setNZ(result);
@@ -363,7 +363,24 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             }
             }
             break;
-        case RTI:{
+        case RRA: { // ROR + ADC
+            uint8_t result = (argument >> 1) | (p.c << 7);
+            p.c = argument & 1;
+            setNZ(result);
+            if (mode == NUL) {
+                a = result;
+            } else {
+                memory->write(addr, result);
+            }
+            // Use a type large enough to detect carry
+            uint16_t result2 = a + p.c + result;
+            p.c = result2 > 0xff;
+            p.v = ((a ^ result2) & (result ^ result2) & 0x80) != 0;
+            a = result2 & 0xff;
+            setNZ(a);
+            }
+            break;
+        case RTI: {
             // We ignore changes to the B and I flags
             // See https://www.masswerk.at/6502/6502_instruction_set.html#PLP
             processorFlags oldP = p;

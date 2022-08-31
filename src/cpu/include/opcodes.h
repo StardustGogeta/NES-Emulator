@@ -15,7 +15,7 @@ enum instruction {
     RTS, SBC, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TSX, TXA, TXS, TYA,
     // The ones after here are unofficial (see http://www.oxyron.de/html/opcodes02.html)
     // Note that some of these names vary by the source
-    DCP, ISB, LAX, RLA, SAX, SLO, SRE, YYY, // TODO: Add the rest
+    DCP, ISB, LAX, RLA, RRA, SAX, SLO, SRE, YYY, // TODO: Add the rest
 };
 
 extern const std::string addressingModeNames[];
