@@ -5,7 +5,10 @@
 #include <fstream>
 
 ROM::ROM() {
-    memset(this, 0, sizeof(ROM));
+    persistentMemory = trainer = fourScreenVRAM = nes2 =
+        playchoice10 = VS_unisystem = false;
+    mapper = PRG_ROM_size = CHR_ROM_size = PRG_RAM_size =
+        flags6 = flags7 = flags9 = flags10 = 0;
 }
 
 void ROM::setPath(std::string path) {

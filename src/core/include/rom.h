@@ -5,6 +5,7 @@
 
 class ROM {
     public:
+        ROM();
         std::string mirroring;
         bool persistentMemory, trainer, fourScreenVRAM, nes2,
             playchoice10, VS_unisystem;
