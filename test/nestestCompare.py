@@ -16,8 +16,4 @@ with open(path + "/nestest.log") as nestest:
 
             assert ref_line[:73] == emu_line[:73], f"Line mismatch on line {i + 1}:\nExpected: {ref_line[:73]}\nSaw:      {emu_line[:73]}"
 
-
-
-
-
 print("All checks completed successfully.")

@@ -100,6 +100,13 @@ int main(int argc, char* argv[]) {
             }
             std::cout << std::endl;
         }
+    } else if (path == "LEGAL_OPCODES") {
+        for (int i = 0; i < 16; i++) {
+            for (int j = 0; j < 16; j++) {
+                std::cout << CPU::isLegalOpcode((i << 4) | j) << ", ";
+            }
+            std::cout << std::endl;
+        }
     } else {
         ROM* rom = new ROM(); // Prepare to load ROM file
         rom->setPath(path); // Decode header into ROM object, parse header

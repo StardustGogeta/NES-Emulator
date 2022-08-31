@@ -58,6 +58,26 @@ const instruction instructionsByOpcode[] = {
     BEQ, SBC, YYY, YYY, YYY, SBC, INC, YYY, SED, SBC, YYY, YYY, YYY, SBC, INC, YYY, // fx
 };
 
+const bool legalOpcodes[] = {
+/*  x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xa xb xc xd xe xf  */
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, // 0x
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, // 1x
+    1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, // 2x
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, // 3x
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, // 4x
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, // 5x
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, // 6x
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, // 7x
+    0, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, // 8x
+    1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, // 9x
+    1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, // ax
+    1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, // bx
+    1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, // cx
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, // dx
+    1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, // ex
+    1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, // fx
+};
+
 instruction CPU::getInstruction(uint8_t opcode) {
     instruction ret = instructionsByOpcode[opcode];
     if (ret == YYY) {
@@ -81,6 +101,13 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
     } else {
         return ret;
     }
+}
+
+/*
+    Returns whether a given opcode is a legal opcode for the NES' 6502 CPU.
+*/
+bool CPU::isLegalOpcode(uint8_t opcode) {
+    return legalOpcodes[opcode];
 }
 
 void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument) {

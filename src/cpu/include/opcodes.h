@@ -20,3 +20,4 @@ extern const std::string opcodeNames[];
 extern const int addressingModeReadCount[];
 extern const addressingMode addressingModesByOpcode[];
 extern const instruction instructionsByOpcode[];
+extern const bool legalOpcodes[];

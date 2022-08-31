@@ -52,6 +52,7 @@ class CPU {
 
         static addressingMode getAddressingMode(uint8_t opcode);
         static instruction getInstruction(uint8_t opcode);
+        static bool isLegalOpcode(uint8_t opcode);
 
     private:
         /*
