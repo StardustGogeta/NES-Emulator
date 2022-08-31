@@ -15,7 +15,7 @@ const std::string opcodeNames[] = {
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
     "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTI",
     "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA",
-    "LAX", "YYY"
+    "DCP", "LAX", "SAX", "YYY"
 };
 
 // Table of addressing modes by opcode
@@ -29,13 +29,13 @@ const addressingMode addressingModesByOpcode[] = {
     REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 5x
     NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, IND, ABS, ABS, XXX, // 6x
     REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 7x
-    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 8x
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPY, XXX, NUL, ABY, NUL, XXX, XXX, ABX, XXX, XXX, // 9x
+    IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // 8x
+    REL, IZY, XXX, XXX, ZPX, ZPX, ZPY, ZPY, NUL, ABY, NUL, XXX, XXX, ABX, XXX, XXX, // 9x
     IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, IMM, ABS, ABS, ABS, ABS, // ax
     REL, IZY, XXX, IZY, ZPX, ZPX, ZPY, ZPY, NUL, ABY, NUL, XXX, ABX, ABX, ABY, ABY, // bx
-    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // cx
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // dx
-    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // ex
+    IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // cx
+    REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // dx
+    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, IMM, ABS, ABS, ABS, XXX, // ex
     REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // fx
 };
 
@@ -49,13 +49,13 @@ const instruction instructionsByOpcode[] = {
     BVC, EOR, YYY, YYY, NOP, EOR, LSR, YYY, CLI, EOR, NOP, YYY, NOP, EOR, LSR, YYY, // 5x
     RTS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, PLA, ADC, ROR, YYY, JMP, ADC, ROR, YYY, // 6x
     BVS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, SEI, ADC, NOP, YYY, NOP, ADC, ROR, YYY, // 7x
-    NOP, STA, NOP, YYY, STY, STA, STX, YYY, DEY, NOP, TXA, YYY, STY, STA, STX, YYY, // 8x
-    BCC, STA, YYY, YYY, STY, STA, STX, YYY, TYA, STA, TXS, YYY, YYY, STA, YYY, YYY, // 9x
+    NOP, STA, NOP, SAX, STY, STA, STX, SAX, DEY, NOP, TXA, YYY, STY, STA, STX, SAX, // 8x
+    BCC, STA, YYY, YYY, STY, STA, STX, SAX, TYA, STA, TXS, YYY, YYY, STA, YYY, YYY, // 9x
     LDY, LDA, LDX, LAX, LDY, LDA, LDX, LAX, TAY, LDA, TAX, LAX, LDY, LDA, LDX, LAX, // ax
     BCS, LDA, YYY, LAX, LDY, LDA, LDX, LAX, CLV, LDA, TSX, YYY, LDY, LDA, LDX, LAX, // bx
-    CPY, CMP, NOP, YYY, CPY, CMP, DEC, YYY, INY, CMP, DEX, YYY, CPY, CMP, DEC, YYY, // cx
-    BNE, CMP, YYY, YYY, NOP, CMP, DEC, YYY, CLD, CMP, NOP, YYY, NOP, CMP, DEC, YYY, // dx
-    CPX, SBC, NOP, YYY, CPX, SBC, INC, YYY, INX, SBC, NOP, YYY, CPX, SBC, INC, YYY, // ex
+    CPY, CMP, NOP, DCP, CPY, CMP, DEC, DCP, INY, CMP, DEX, YYY, CPY, CMP, DEC, DCP, // cx
+    BNE, CMP, YYY, DCP, NOP, CMP, DEC, DCP, CLD, CMP, NOP, DCP, NOP, CMP, DEC, DCP, // dx
+    CPX, SBC, NOP, YYY, CPX, SBC, INC, YYY, INX, SBC, NOP, SBC, CPX, SBC, INC, YYY, // ex
     BEQ, SBC, YYY, YYY, NOP, SBC, INC, YYY, SED, SBC, NOP, YYY, NOP, SBC, INC, YYY, // fx
 };
 
@@ -226,6 +226,10 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             p.c = y >= argument;
             }
             break;
+        case DCP:
+            runInstruction(mode, DEC, addr, argument);
+            runInstruction(mode, CMP, addr, argument - 1);
+            break;
         case DEC:
             memory->write(addr, argument - 1);
             setNZ(argument - 1);
@@ -352,6 +356,9 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case RTS:
             pc = (stackPop() | (stackPop() << 8)) + 1;
+            break;
+        case SAX:
+            memory->write(addr, a & x);
             break;
         case SBC: {
             // Like ADC but with inverted argument
