@@ -14,7 +14,7 @@ enum instruction {
     JSR, LDA, LDX, LDY, LSR, NOP, ORA, PHA, PHP, PLA, PLP, ROL, ROR, RTI,
     RTS, SBC, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TSX, TXA, TXS, TYA,
     // The ones after here are unofficial
-    LAX, YYY, // TODO: Add the rest
+    DCP, LAX, SAX, YYY, // TODO: Add the rest
 };
 
 extern const std::string addressingModeNames[];
