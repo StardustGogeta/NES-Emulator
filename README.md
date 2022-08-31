@@ -2,6 +2,7 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator/badge)](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator)
 [![CMake](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml)
+[![Microsoft C++ Code Analysis](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml)
 
 An incomplete NES emulator made using SDL2 and C++20.
 
