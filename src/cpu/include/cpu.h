@@ -1,5 +1,6 @@
 #pragma once
 #include "core_memory.h"
+#include "ppu.h"
 #include "opcodes.h"
 #include <cstdint>
 #include <fstream>
@@ -7,8 +8,12 @@
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
+#include <semaphore>
 
 class CPU {
+    friend class NES;
+    friend class PPU;
+
     public:
         class Logger {
             friend CPU;
@@ -30,16 +35,20 @@ class CPU {
                     CoreMemory::addr_t addr,
                     uint8_t argument
                 );
+                void logPPU(int scanline, int cyclesOnLine);
+                void logCycles(int cyclesExecuted);
+                void formatLogger();
                 bool logging;
                 std::ofstream logFile;
                 CPU& cpu;
         };
 
-        CoreMemory* memory;
+        PPU* ppu;
         Logger logger;
 
         CPU();
         void reset(CoreMemory::addr_t pc=0xfffc);
+        void setPC(CoreMemory::addr_t pc);
         void start();
         void stop(std::thread& t);
         void kill(std::thread& t);
@@ -49,9 +58,11 @@ class CPU {
         uint8_t read();
         uint16_t readWord();
         bool checkRunning();
+        void runOpcode(uint8_t opcode);
 
         static addressingMode getAddressingMode(uint8_t opcode);
         static instruction getInstruction(uint8_t opcode);
+        static int getCycleCount(uint8_t opcode, CoreMemory::addr_t pc, CoreMemory::addr_t addr, int cycleOffset);
         static bool isLegalOpcode(uint8_t opcode);
 
     private:
@@ -66,9 +77,10 @@ class CPU {
                 BRK command (unused), unused, overflow, negative
             Also written: NVbbDIZC
         */
+        CoreMemory* memory;
         CoreMemory::addr_t pc;
         uint8_t sp, a, x, y;
-        uint16_t cache, cache2;
+        uint16_t cache, precache;
         struct processorFlags {
             bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
@@ -79,12 +91,12 @@ class CPU {
         void setNZ(uint8_t val);
         void stackPush(uint8_t val);
         uint8_t stackPop();
-        void runOpcode(uint8_t opcode);
-        void runInstruction(
+        int runInstruction(
             addressingMode mode,
             instruction inst,
             CoreMemory::addr_t addr,
-            uint8_t argument
+            uint8_t argument,
+            bool extraCycles
         );
         bool waitForCycles(int n);
         bool waitForCycle();
@@ -96,6 +108,10 @@ class CPU {
         std::atomic<int> cyclesExecuted;
         std::mutex cycleStatusMutex;
         std::condition_variable cycleStatusCV;
+
+        // For synchronizing with PPU clock
+        std::condition_variable ppuToCpuCV;
+        std::mutex ppuToCpuMutex;
 
         CPU(const CPU&) = delete;
         CPU& operator=(const CPU&) = delete;
