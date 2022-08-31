@@ -38,7 +38,7 @@ void CPU::Logger::logOpcode(uint8_t opcode, addressingMode mode, instruction ins
 
     // Write opcode name to log
     std::string opcodeName = opcodeNames[inst];
-    logFile << "  " + opcodeName + " ";
+    logFile << (isLegalOpcode(opcode) ? "  " : " *") + opcodeName + " ";
 }
 
 void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument) {
