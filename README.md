@@ -43,7 +43,7 @@ This will create a `bin` folder in the repository and build the project from the
 - List of games by mapper: https://nesdir.github.io/mapper0.html
 - NES addressing modes: https://www.nesdev.org/wiki/CPU_addressing_modes
 - 6502 opcodes: http://www.6502.org/tutorials/6502opcodes.html
-- More 6502 opcodes: http://www.oxyron.de/html/opcodes02.html
+- More 6502 opcodes (with cycle counts): http://www.oxyron.de/html/opcodes02.html
 - Status flags: https://www.nesdev.org/wiki/Status_flags
 - Detailed opcode descriptions: http://www.romdetectives.com/Wiki/index.php?title=AND
 - Reference implementation: https://github.com/fogleman/nes

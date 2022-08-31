@@ -79,6 +79,46 @@ const bool legalOpcodes[] = {
     1, 1, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, // fx
 };
 
+const int cycleCounts[] = {
+/*  x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xa xb xc xd xe xf  */
+    7, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6, // 0x
+    2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7, // 1x
+    6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6, // 2x
+    2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7, // 3x
+    6, 6, 0, 8, 3, 3, 5, 5, 3, 2, 2, 2, 3, 4, 6, 6, // 4x
+    2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7, // 5x
+    6, 6, 0, 8, 3, 3, 5, 5, 4, 2, 2, 2, 5, 4, 6, 6, // 6x
+    2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7, // 7x
+    2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, // 8x
+    2, 6, 0, 6, 4, 4, 4, 4, 2, 5, 2, 5, 5, 5, 5, 5, // 9x
+    2, 6, 2, 6, 3, 3, 3, 3, 2, 2, 2, 2, 4, 4, 4, 4, // ax
+    2, 5, 0, 5, 4, 4, 4, 4, 2, 4, 2, 4, 4, 4, 4, 4, // bx
+    2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6, // cx
+    2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7, // dx
+    2, 6, 2, 8, 3, 3, 5, 5, 2, 2, 2, 2, 4, 4, 6, 6, // ex
+    2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7, // fx
+};
+
+const int extraCycles[] = {
+/*  x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xa xb xc xd xe xf  */
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x
+    1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, // 1x
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 2x
+    1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, // 3x
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4x
+    1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, // 5x
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 6x
+    1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, // 7x
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 8x
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 9x
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // ax
+    1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, // bx
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // cx
+    1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, // dx
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // ex
+    1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, // fx
+};
+
 instruction CPU::getInstruction(uint8_t opcode) {
     instruction ret = instructionsByOpcode[opcode];
     if (ret == YYY) {
@@ -104,6 +144,16 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
     }
 }
 
+int CPU::getCycleCount(uint8_t opcode, CoreMemory::addr_t pc, CoreMemory::addr_t addr, int cycleOffset) {
+    int ret = cycleCounts[opcode];
+    if (pc == addr && 0 > 1) {
+        return true;
+    }
+    // Check for jump across page boundary
+    // if () = pc / 0x200 != addr / 0x200;
+    return ret + cycleOffset;
+}
+
 /*
     Returns whether a given opcode is a legal opcode for the NES' 6502 CPU.
 */
@@ -111,7 +161,8 @@ bool CPU::isLegalOpcode(uint8_t opcode) {
     return legalOpcodes[opcode];
 }
 
-void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument) {
+int CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument, bool extraCycles) {
+    int ret = 0;
     switch (inst) {
         case ADC: {
             // Use a type large enough to detect carry
@@ -139,16 +190,22 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case BCC:
             if (!p.c) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
         case BCS:
             if (p.c) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
         case BEQ:
             if (p.z) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
@@ -159,16 +216,22 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case BMI:
             if (p.n) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
         case BNE:
             if (!p.z) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
         case BPL:
             if (!p.n) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
@@ -184,11 +247,15 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case BVC:
             if (!p.v) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
         case BVS:
             if (p.v) {
+                // Account for crossing page boundary
+                ret += 1 + (pc / 0x200 != addr / 0x200);
                 pc = addr;
             }
             break;
@@ -227,8 +294,8 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case DCP: // DEC + CMP
             // TODO: Fix cycle accuracy by mixing both
-            runInstruction(mode, DEC, addr, argument);
-            runInstruction(mode, CMP, addr, argument - 1);
+            runInstruction(mode, DEC, addr, argument, extraCycles);
+            runInstruction(mode, CMP, addr, argument - 1, extraCycles);
             break;
         case DEC:
             memory->write(addr, argument - 1);
@@ -260,8 +327,8 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case ISB: // INC + SBC
             // TODO: Fix cycle accuracy by mixing both
-            runInstruction(mode, INC, addr, argument);
-            runInstruction(mode, SBC, addr, argument + 1);
+            runInstruction(mode, INC, addr, argument, extraCycles);
+            runInstruction(mode, SBC, addr, argument + 1, extraCycles);
             break;
         case JMP:
             pc = addr;
@@ -273,18 +340,24 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case LAX: // LDA + LDX
             // TODO: Fix cycle accuracy by mixing both
-            runInstruction(mode, LDA, addr, argument);
-            runInstruction(mode, LDX, addr, argument);
+            runInstruction(mode, LDA, addr, argument, extraCycles);
+            runInstruction(mode, LDX, addr, argument, extraCycles);
             break;
         case LDA:
+            // Account for crossing page boundary
+            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
             a = argument;
             setNZ(a);
             break;
         case LDX:
+            // Account for crossing page boundary
+            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
             x = argument;
             setNZ(x);
             break;
         case LDY:
+            // Account for crossing page boundary
+            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
             y = argument;
             setNZ(y);
             break;
@@ -300,6 +373,8 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             }
             break;
         case NOP:
+            // Account for crossing page boundary
+            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
             break;
         case ORA:
             a |= argument;
@@ -419,13 +494,13 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case SLO: // ASL + ORA
             // TODO: Fix cycle accuracy by mixing both
-            runInstruction(mode, ASL, addr, argument);
-            runInstruction(mode, ORA, addr, argument << 1);
+            runInstruction(mode, ASL, addr, argument, extraCycles);
+            runInstruction(mode, ORA, addr, argument << 1, extraCycles);
             break;
         case SRE: // LSR + EOR
             // TODO: Fix cycle accuracy by mixing both
-            runInstruction(mode, LSR, addr, argument);
-            runInstruction(mode, EOR, addr, argument >> 1);
+            runInstruction(mode, LSR, addr, argument, extraCycles);
+            runInstruction(mode, EOR, addr, argument >> 1, extraCycles);
             break;
         case STA:
             memory->write(addr, a);
@@ -463,4 +538,5 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             throw std::runtime_error("Unsupported opcode in runOpcode.");
             break;
     }
+    return ret;
 }

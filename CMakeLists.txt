@@ -19,6 +19,7 @@ add_executable(
     src/core/rom.cpp
     src/core/core_memory.cpp
     src/core/nes.cpp
+    src/core/ppu.cpp
     # CPU
     src/cpu/cpu.cpp
     src/cpu/logger.cpp
@@ -34,5 +35,5 @@ target_compile_features(main PRIVATE cxx_std_20)
 
 enable_testing()
 add_test(NAME nestest_execute COMMAND main nestest)
-set_tests_properties(nestest_execute PROPERTIES TIMEOUT 0.5)
+set_tests_properties(nestest_execute PROPERTIES TIMEOUT 1)
 add_test(NAME nestest_match COMMAND python ${CMAKE_SOURCE_DIR}/test/nestestCompare.py)

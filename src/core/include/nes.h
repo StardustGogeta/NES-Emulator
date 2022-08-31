@@ -2,6 +2,7 @@
 #include "rom.h"
 #include "core_memory.h"
 #include "cpu.h"
+#include "ppu.h"
 
 class NES {
     public:
@@ -11,6 +12,7 @@ class NES {
 
         CoreMemory* memory;
         CPU* cpu;
+        PPU* ppu;
         
     private:
         NES(const NES&) = delete;

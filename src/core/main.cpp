@@ -30,15 +30,22 @@ bool runNesTest(int testCases) {
 
     NES* nes = new NES();
     nes->loadROM(rom);
-    nes->cpu->reset(0xc000); // Set initial program counter
+    
     for (int i = 0; i < 0x20; i++) { // Set APU registers to 0xff
         nes->memory->write(0x4000 | i, 0xff);
     }
-    nes->cpu->logger.start("../test/cpuLog.txt");
 
     #ifdef DEBUG
     auto start = now();
     #endif
+
+    // We run a couple NOPs at the beginning to synchronize clocks with nestest
+    nes->cpu->runOpcode(0x64);
+    nes->cpu->runOpcode(0x74);
+
+    nes->cpu->setPC(0xc000); // Set initial program counter
+
+    nes->cpu->logger.start("../test/cpuLog.txt");
 
     std::thread cpuThread(&CPU::start, nes->cpu);
     

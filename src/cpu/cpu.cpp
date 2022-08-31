@@ -15,6 +15,13 @@ void CPU::reset(CoreMemory::addr_t pc /* =0xfffc */) {
     a = x = y = 0;
     memset(&p, 0, sizeof(p));
     p.b1 = p.i = 1;
+    cyclesRequested = 0;
+    cyclesExecuted = 0;
+    maxCycles = 0;
+}
+
+void CPU::setPC(CoreMemory::addr_t pc) {
+    this->pc = pc;
 }
 
 /*
@@ -65,13 +72,13 @@ CoreMemory::addr_t CPU::getAddress(addressingMode mode) {
             cache = read();
             return (cache + y) % 0x100;
         case IZX:
-            cache = read();
-            cache2 = (cache + x) % 0x100;
-            return (memory->read((cache2 + 1) % 0x100) << 8) | memory->read(cache2);
+            precache = read();
+            cache = (precache + x) % 0x100;
+            return (memory->read((cache + 1) % 0x100) << 8) | memory->read(cache);
         case IZY:
-            cache = read();
-            cache2 = (memory->read((cache + 1) % 0x100) << 8) | memory->read(cache);
-            return cache2 + y;
+            precache = read();
+            cache = (memory->read((precache + 1) % 0x100) << 8) | memory->read(precache);
+            return cache + y;
         case ABS:
             return readWord();
         case ABX:
@@ -119,8 +126,10 @@ void CPU::setProcessorStatus(uint8_t status) {
 }
 
 void CPU::runOpcode(uint8_t opcode) {
+    // std::thread ppuThread(&PPU::cycles, ppu, 3);
+
     #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << ZPAD2 << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
+    std::cout << "Trying to run opcode 0x" << std::hex << PAD2 << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
     #endif
 
     addressingMode mode = getAddressingMode(opcode);
@@ -149,10 +158,21 @@ void CPU::runOpcode(uint8_t opcode) {
         logger.logArgsAndRegisters(mode, inst, addr, argument);
     }
 
-    runInstruction(mode, inst, addr, argument);
+    int cycleOffset = runInstruction(mode, inst, addr, argument, extraCycles[opcode]);
+
+    logger.logPPU(ppu->scanline, ppu->cyclesOnLine);
+    logger.logCycles(cyclesExecuted);
+
+    int cycleCount = getCycleCount(opcode, pc, addr, cycleOffset);
+
+    // PPU does 3 cycles for every CPU cycle
+    ppu->cycles(cycleCount * 3);
 
     // TODO: Get actual cycle count
-    if (!waitForCycles(2)) {
+    cyclesExecuted += cycleCount;
+    bool dying = waitForCycles(cycleCount);    
+
+    if (dying) {
         return;
     };
 }
@@ -180,7 +200,6 @@ bool CPU::checkRunning() {
 */
 bool CPU::waitForCycle() {
     std::unique_lock lck(cycleStatusMutex);
-    cyclesExecuted++;
 
     bool caughtUp = cyclesRequested <= cyclesExecuted;
     notDone = cyclesExecuted < maxCycles || !maxCycles;
@@ -217,9 +236,6 @@ bool CPU::waitForCycle() {
 void CPU::start() {
     std::unique_lock lck(cycleStatusMutex);
     notDone = true;
-    cyclesRequested = 0;
-    cyclesExecuted = 0;
-    maxCycles = 0;
     running = true;
     lck.unlock();
 
