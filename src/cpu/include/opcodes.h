@@ -13,8 +13,9 @@ enum instruction {
     CLD, CLI, CLV, CMP, CPX, CPY, DEC, DEX, DEY, EOR, INC, INX, INY, JMP,
     JSR, LDA, LDX, LDY, LSR, NOP, ORA, PHA, PHP, PLA, PLP, ROL, ROR, RTI,
     RTS, SBC, SEC, SED, SEI, STA, STX, STY, TAX, TAY, TSX, TXA, TXS, TYA,
-    // The ones after here are unofficial
-    DCP, LAX, SAX, YYY, // TODO: Add the rest
+    // The ones after here are unofficial (see http://www.oxyron.de/html/opcodes02.html)
+    // Note that some of these names vary by the source
+    DCP, ISB, LAX, RLA, SAX, SLO, SRE, YYY, // TODO: Add the rest
 };
 
 extern const std::string addressingModeNames[];

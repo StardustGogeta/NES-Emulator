@@ -15,18 +15,18 @@ const std::string opcodeNames[] = {
     "CLD", "CLI", "CLV", "CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP",
     "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", "PLP", "ROL", "ROR", "RTI",
     "RTS", "SBC", "SEC", "SED", "SEI", "STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA",
-    "DCP", "LAX", "SAX", "YYY"
+    "DCP", "ISB", "LAX", "RLA", "SAX", "SLO", "SRE", "YYY"
 };
 
 // Table of addressing modes by opcode
 const addressingMode addressingModesByOpcode[] = {
 /*  x0   x1   x2   x3   x4   x5   x6   x7   x8   x9   xa   xb   xc   xd   xe   xf   */
-    NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 0x
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 1x
-    ABS, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 2x
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 3x
-    NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, ABS, ABS, ABS, XXX, // 4x
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 5x
+    NUL, IZX, XXX, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // 0x
+    REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // 1x
+    ABS, IZX, XXX, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // 2x
+    REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // 3x
+    NUL, IZX, XXX, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // 4x
+    REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // 5x
     NUL, IZX, XXX, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, XXX, IND, ABS, ABS, XXX, // 6x
     REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // 7x
     IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // 8x
@@ -35,18 +35,18 @@ const addressingMode addressingModesByOpcode[] = {
     REL, IZY, XXX, IZY, ZPX, ZPX, ZPY, ZPY, NUL, ABY, NUL, XXX, ABX, ABX, ABY, ABY, // bx
     IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, XXX, ABS, ABS, ABS, ABS, // cx
     REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // dx
-    IMM, IZX, IMM, XXX, ZPG, ZPG, ZPG, XXX, NUL, IMM, NUL, IMM, ABS, ABS, ABS, XXX, // ex
-    REL, IZY, XXX, XXX, ZPX, ZPX, ZPX, XXX, NUL, ABY, NUL, XXX, ABX, ABX, ABX, XXX, // fx
+    IMM, IZX, IMM, IZX, ZPG, ZPG, ZPG, ZPG, NUL, IMM, NUL, IMM, ABS, ABS, ABS, ABS, // ex
+    REL, IZY, XXX, IZY, ZPX, ZPX, ZPX, ZPX, NUL, ABY, NUL, ABY, ABX, ABX, ABX, ABX, // fx
 };
 
 const instruction instructionsByOpcode[] = {
 /*  x0   x1   x2   x3   x4   x5   x6   x7   x8   x9   xa   xb   xc   xd   xe   xf   */
-    BRK, ORA, YYY, YYY, NOP, ORA, ASL, YYY, PHP, ORA, ASL, YYY, NOP, ORA, ASL, YYY, // 0x
-    BPL, ORA, YYY, YYY, NOP, ORA, ASL, YYY, CLC, ORA, NOP, YYY, NOP, ORA, ASL, YYY, // 1x
-    JSR, AND, YYY, YYY, BIT, AND, ROL, YYY, PLP, AND, ROL, YYY, BIT, AND, ROL, YYY, // 2x
-    BMI, AND, YYY, YYY, NOP, AND, ROL, YYY, SEC, AND, NOP, YYY, NOP, AND, ROL, YYY, // 3x
-    RTI, EOR, YYY, YYY, NOP, EOR, LSR, YYY, PHA, EOR, LSR, YYY, JMP, EOR, LSR, YYY, // 4x
-    BVC, EOR, YYY, YYY, NOP, EOR, LSR, YYY, CLI, EOR, NOP, YYY, NOP, EOR, LSR, YYY, // 5x
+    BRK, ORA, YYY, SLO, NOP, ORA, ASL, SLO, PHP, ORA, ASL, YYY, NOP, ORA, ASL, SLO, // 0x
+    BPL, ORA, YYY, SLO, NOP, ORA, ASL, SLO, CLC, ORA, NOP, SLO, NOP, ORA, ASL, SLO, // 1x
+    JSR, AND, YYY, RLA, BIT, AND, ROL, RLA, PLP, AND, ROL, YYY, BIT, AND, ROL, RLA, // 2x
+    BMI, AND, YYY, RLA, NOP, AND, ROL, RLA, SEC, AND, NOP, RLA, NOP, AND, ROL, RLA, // 3x
+    RTI, EOR, YYY, SRE, NOP, EOR, LSR, SRE, PHA, EOR, LSR, YYY, JMP, EOR, LSR, SRE, // 4x
+    BVC, EOR, YYY, SRE, NOP, EOR, LSR, SRE, CLI, EOR, NOP, SRE, NOP, EOR, LSR, SRE, // 5x
     RTS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, PLA, ADC, ROR, YYY, JMP, ADC, ROR, YYY, // 6x
     BVS, ADC, YYY, YYY, NOP, ADC, ROR, YYY, SEI, ADC, NOP, YYY, NOP, ADC, ROR, YYY, // 7x
     NOP, STA, NOP, SAX, STY, STA, STX, SAX, DEY, NOP, TXA, YYY, STY, STA, STX, SAX, // 8x
@@ -55,8 +55,8 @@ const instruction instructionsByOpcode[] = {
     BCS, LDA, YYY, LAX, LDY, LDA, LDX, LAX, CLV, LDA, TSX, YYY, LDY, LDA, LDX, LAX, // bx
     CPY, CMP, NOP, DCP, CPY, CMP, DEC, DCP, INY, CMP, DEX, YYY, CPY, CMP, DEC, DCP, // cx
     BNE, CMP, YYY, DCP, NOP, CMP, DEC, DCP, CLD, CMP, NOP, DCP, NOP, CMP, DEC, DCP, // dx
-    CPX, SBC, NOP, YYY, CPX, SBC, INC, YYY, INX, SBC, NOP, SBC, CPX, SBC, INC, YYY, // ex
-    BEQ, SBC, YYY, YYY, NOP, SBC, INC, YYY, SED, SBC, NOP, YYY, NOP, SBC, INC, YYY, // fx
+    CPX, SBC, NOP, ISB, CPX, SBC, INC, ISB, INX, SBC, NOP, SBC, CPX, SBC, INC, ISB, // ex
+    BEQ, SBC, YYY, ISB, NOP, SBC, INC, ISB, SED, SBC, NOP, ISB, NOP, SBC, INC, ISB, // fx
 };
 
 const bool legalOpcodes[] = {
@@ -127,7 +127,6 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             setNZ(a);
             break;
         case ASL: {
-            // TODO: Make sure this is correct interpretation, same with other shifts
             p.c = (argument & 0x80) > 0;
             uint8_t result = argument << 1;
             setNZ(result);
@@ -226,7 +225,8 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             p.c = y >= argument;
             }
             break;
-        case DCP:
+        case DCP: // DEC + CMP
+            // TODO: Fix cycle accuracy by mixing both
             runInstruction(mode, DEC, addr, argument);
             runInstruction(mode, CMP, addr, argument - 1);
             break;
@@ -258,6 +258,11 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             y++;
             setNZ(y);
             break;
+        case ISB: // INC + SBC
+            // TODO: Fix cycle accuracy by mixing both
+            runInstruction(mode, INC, addr, argument);
+            runInstruction(mode, SBC, addr, argument + 1);
+            break;
         case JMP:
             pc = addr;
             break;
@@ -266,7 +271,8 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             stackPush(pc & 0xff);
             pc = addr;
             break;
-        case LAX:
+        case LAX: // LDA + LDX
+            // TODO: Fix cycle accuracy by mixing both
             runInstruction(mode, LDA, addr, argument);
             runInstruction(mode, LDX, addr, argument);
             break;
@@ -319,6 +325,20 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             p.b1 = oldP.b1;
             p.b2 = oldP.b2;
             p.i = oldP.i;
+            }
+            break;
+        case RLA: {// ROL + AND
+            uint8_t result = (argument << 1) | p.c;
+            p.c = (argument & 0x80) > 0;
+            setNZ(result);
+            if (mode == NUL) {
+                a = result;
+            } else {
+                memory->write(addr, result);
+            }
+            a &= result;
+            setNZ(a);
+            break;
             }
             break;
         case ROL: {
@@ -379,6 +399,16 @@ void CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr
             break;
         case SEI:
             p.i = 1;
+            break;
+        case SLO: // ASL + ORA
+            // TODO: Fix cycle accuracy by mixing both
+            runInstruction(mode, ASL, addr, argument);
+            runInstruction(mode, ORA, addr, argument << 1);
+            break;
+        case SRE: // LSR + EOR
+            // TODO: Fix cycle accuracy by mixing both
+            runInstruction(mode, LSR, addr, argument);
+            runInstruction(mode, EOR, addr, argument >> 1);
             break;
         case STA:
             memory->write(addr, a);
