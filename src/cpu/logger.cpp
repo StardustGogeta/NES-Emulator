@@ -6,7 +6,7 @@
 #define ZPAD2 std::setfill('0') << std::setw(2)
 #define ZPAD4 std::setfill('0') << std::setw(4)
 
-CPU::Logger::Logger(CPU& cpu) : cpu(cpu) { }
+CPU::Logger::Logger(CPU& cpu) : cpu(cpu), logging(false) { }
 
 void CPU::Logger::start(std::string path) {
     logFile.open(path, std::ios::out);

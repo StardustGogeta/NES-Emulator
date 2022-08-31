@@ -4,6 +4,10 @@
 #include <iostream>
 #include <fstream>
 
+ROM::ROM() {
+    memset(this, 0, sizeof(ROM));
+}
+
 void ROM::setPath(std::string path) {
     this->path = path;
 }
