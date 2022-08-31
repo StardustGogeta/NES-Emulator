@@ -57,3 +57,6 @@ This will create a `bin` folder in the repository and build the project from the
 - NES PPU explanation: https://www.reddit.com/r/EmuDev/comments/evu3u2/what_does_the_nes_ppu_actually_do/
 - PPU rendering guide: https://www.nesdev.org/wiki/PPU_rendering
 - PPU frame timing: https://www.nesdev.org/wiki/PPU_frame_timing
+- CPU power-up information: https://www.nesdev.org/wiki/CPU_power_up_state
+- NES APU register guide: https://www.nesdev.org/wiki/APU_registers
+- NES emulator guide for Rust: https://bugzmanov.github.io/nes_ebook/chapter_5_1.html

@@ -8,7 +8,7 @@
 #include <thread>
 #include <chrono>
 
-const int DEFAULT_TEST_CASES = 10000;
+const int DEFAULT_TEST_CASES = 8991 * 2;
 
 auto now() {
     return std::chrono::high_resolution_clock::now();
@@ -31,6 +31,9 @@ bool runNesTest(int testCases) {
     NES* nes = new NES();
     nes->loadROM(rom);
     nes->cpu->reset(0xc000); // Set initial program counter
+    for (int i = 0; i < 0x20; i++) { // Set APU registers to 0xff
+        nes->memory->write(0x4000 | i, 0xff);
+    }
     nes->cpu->logger.start("../test/cpuLog.txt");
 
     #ifdef DEBUG
