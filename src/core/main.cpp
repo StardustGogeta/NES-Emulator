@@ -8,6 +8,8 @@
 #include <thread>
 #include <chrono>
 
+#include "SDL.h"
+
 const int DEFAULT_NESTEST_CASES = 26555;
 
 auto now() {
@@ -77,6 +79,9 @@ bool runNesTest(int testCases) {
 }
 
 int main(int argc, char* argv[]) {
+    SDL_SetMainReady();
+    SDL_Init(SDL_INIT_VIDEO);
+    
     std::cout << "Hello world!\n";
     std::string path;
     int testCases = 0;

@@ -10,7 +10,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Wall -Wextra -pedantic -Werror -static-libstdc++")
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+set(BIN_DIR "${CMAKE_SOURCE_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
 
 add_executable(
     main
@@ -26,12 +27,25 @@ add_executable(
     src/cpu/opcodes.cpp
 )
 
+set(SDL2_DIR lib/SDL2/cmake)
+#set(SDL2_DIR lib/SDL2/x86_64-w64-mingw32/lib/cmake)
+find_package(SDL2 REQUIRED)
+
 target_include_directories(main PRIVATE
     src/core/include
     src/cpu/include
+    src/display/include
+    ${SDL2_INCLUDE_DIR}
 )
 
+target_link_libraries(main PRIVATE ${SDL2_LIBRARIES})
+
 target_compile_features(main PRIVATE cxx_std_20)
+
+# Add SDL2.dll to the executables folder
+if(CMAKE_HOST_WIN32)
+    file(COPY "${SDL2_BINDIR}/SDL2.dll" DESTINATION ${BIN_DIR})
+endif()
 
 enable_testing()
 add_test(NAME nestest_execute COMMAND main nestest)

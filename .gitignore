@@ -9,3 +9,7 @@ cpuLog.txt
 # ROM files
 *.nes
 !nestest.nes
+
+# SDL files
+lib/SDL2/docs
+lib/SDL2/test
