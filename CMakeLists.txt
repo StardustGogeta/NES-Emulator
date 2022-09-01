@@ -32,7 +32,7 @@ if (CMAKE_HOST_WIN32)
     set(SDL2_DIR lib/SDL2/cmake)
 endif()
 
-find_package(SDL2 REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 
 target_include_directories(main PRIVATE
     src/core/include
