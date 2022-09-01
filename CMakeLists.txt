@@ -27,7 +27,10 @@ add_executable(
     src/cpu/opcodes.cpp
 )
 
-set(SDL2_DIR lib/SDL2/cmake)
+# If on Windows, grab SDL2 from the local folder
+if (CMAKE_HOST_WIN32)
+    set(SDL2_DIR lib/SDL2/cmake)
+endif()
 
 find_package(SDL2 REQUIRED)
 
