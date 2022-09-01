@@ -29,7 +29,11 @@ add_executable(
 
 # If on Windows, grab SDL2 from the local folder
 if (CMAKE_HOST_WIN32)
-    set(SDL2_DIR lib/SDL2/cmake)
+    if (MSVC) # Get the Visual C++ version
+        set(SDL2_DIR lib/SDL2-VC/cmake)
+    else() # Get the MinGW version
+        set(SDL2_DIR lib/SDL2/cmake)
+    endif()
 endif()
 
 find_package(SDL2 CONFIG REQUIRED)

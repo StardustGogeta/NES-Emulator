@@ -13,3 +13,4 @@ cpuLog.txt
 # SDL files
 lib/SDL2/docs
 lib/SDL2/test
+lib/SDL2-VC/docs
