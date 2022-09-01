@@ -8,7 +8,7 @@
 #include <thread>
 #include <chrono>
 
-const int DEFAULT_TEST_CASES = 8991 * 2;
+const int DEFAULT_NESTEST_CASES = 26555;
 
 auto now() {
     return std::chrono::high_resolution_clock::now();
@@ -22,7 +22,7 @@ auto awake_time() {
 bool runNesTest(int testCases) {
     std::cout << "Running nestest...\n";
     if (!testCases) {
-        testCases = DEFAULT_TEST_CASES;
+        testCases = DEFAULT_NESTEST_CASES;
     }
 
     ROM* rom = new ROM();
@@ -39,7 +39,7 @@ bool runNesTest(int testCases) {
     auto start = now();
     #endif
 
-    // We run a couple NOPs at the beginning to synchronize clocks with nestest
+    // We queue up a couple NOPs at the beginning to synchronize clocks with nestest
     nes->cpu->runOpcode(0x64);
     nes->cpu->runOpcode(0x74);
 

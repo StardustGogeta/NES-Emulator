@@ -144,14 +144,8 @@ addressingMode CPU::getAddressingMode(uint8_t opcode) {
     }
 }
 
-int CPU::getCycleCount(uint8_t opcode, CoreMemory::addr_t pc, CoreMemory::addr_t addr, int cycleOffset) {
-    int ret = cycleCounts[opcode];
-    if (pc == addr && 0 > 1) {
-        return true;
-    }
-    // Check for jump across page boundary
-    // if () = pc / 0x200 != addr / 0x200;
-    return ret + cycleOffset;
+int CPU::getCycleCount(uint8_t opcode, int cycleOffset) {
+    return cycleCounts[opcode] + cycleOffset;
 }
 
 /*
@@ -191,21 +185,21 @@ int CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_
         case BCC:
             if (!p.c) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
         case BCS:
             if (p.c) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
         case BEQ:
             if (p.z) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
@@ -217,21 +211,21 @@ int CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_
         case BMI:
             if (p.n) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
         case BNE:
             if (!p.z) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
         case BPL:
             if (!p.n) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
@@ -248,14 +242,14 @@ int CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_
         case BVC:
             if (!p.v) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
         case BVS:
             if (p.v) {
                 // Account for crossing page boundary
-                ret += 1 + (pc / 0x200 != addr / 0x200);
+                ret += 1 + (pc / 0x100 != addr / 0x100);
                 pc = addr;
             }
             break;
@@ -340,24 +334,26 @@ int CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_
             break;
         case LAX: // LDA + LDX
             // TODO: Fix cycle accuracy by mixing both
+            // Account for crossing page boundary
+            ret += (cache / 0x100 != addr / 0x100) * extraCycles;
             runInstruction(mode, LDA, addr, argument, extraCycles);
             runInstruction(mode, LDX, addr, argument, extraCycles);
             break;
         case LDA:
             // Account for crossing page boundary
-            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
+            ret += (cache / 0x100 != addr / 0x100) * extraCycles;
             a = argument;
             setNZ(a);
             break;
         case LDX:
             // Account for crossing page boundary
-            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
+            ret += (cache / 0x100 != addr / 0x100) * extraCycles;
             x = argument;
             setNZ(x);
             break;
         case LDY:
             // Account for crossing page boundary
-            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
+            ret += (cache / 0x100 != addr / 0x100) * extraCycles;
             y = argument;
             setNZ(y);
             break;
@@ -374,7 +370,7 @@ int CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_
             break;
         case NOP:
             // Account for crossing page boundary
-            ret += (cache / 0x200 != addr / 0x200) * extraCycles;
+            ret += (cache / 0x100 != addr / 0x100) * extraCycles;
             break;
         case ORA:
             a |= argument;
