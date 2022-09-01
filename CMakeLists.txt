@@ -28,7 +28,7 @@ add_executable(
 )
 
 set(SDL2_DIR lib/SDL2/cmake)
-#set(SDL2_DIR lib/SDL2/x86_64-w64-mingw32/lib/cmake)
+
 find_package(SDL2 REQUIRED)
 
 target_include_directories(main PRIVATE
