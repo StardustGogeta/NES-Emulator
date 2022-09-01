@@ -1,7 +1,10 @@
 #include "ppu.h"
 #include "cpu.h"
 
-PPU::PPU(CPU& cpu) : cyclesExecuted(0), cpu(cpu) { }
+PPU::PPU(CPU& cpu) : cpu(cpu) {
+    cyclesExecuted = scanline = cyclesOnLine = 0;
+    running = false;
+}
 
 void PPU::start() {
     running = true;
