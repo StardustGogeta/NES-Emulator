@@ -1,6 +1,6 @@
 # Files generated during build process
 build
-bin
+/bin
 cpuLog.txt
 
 # Editor files
