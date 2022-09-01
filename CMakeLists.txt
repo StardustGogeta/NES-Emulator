@@ -45,6 +45,10 @@ target_include_directories(main PRIVATE
     ${SDL2_INCLUDE_DIR}
 )
 
+message(STATUS "Added ${SDL2_INCLUDE_DIR} to include directories.")
+
+message(STATUS "Attempting to link libraries: ${SDL2_LIBRARIES}")
+
 target_link_libraries(main PRIVATE ${SDL2_LIBRARIES})
 
 target_compile_features(main PRIVATE cxx_std_20)
