@@ -163,7 +163,7 @@ void CPU::runOpcode(uint8_t opcode) {
     logger.logPPU(ppu->scanline, ppu->cyclesOnLine);
     logger.logCycles(cyclesExecuted);
 
-    int cycleCount = getCycleCount(opcode, pc, addr, cycleOffset);
+    int cycleCount = getCycleCount(opcode, cycleOffset);
 
     // PPU does 3 cycles for every CPU cycle
     ppu->cycles(cycleCount * 3);

@@ -62,7 +62,7 @@ class CPU {
 
         static addressingMode getAddressingMode(uint8_t opcode);
         static instruction getInstruction(uint8_t opcode);
-        static int getCycleCount(uint8_t opcode, CoreMemory::addr_t pc, CoreMemory::addr_t addr, int cycleOffset);
+        static int getCycleCount(uint8_t opcode, int cycleOffset);
         static bool isLegalOpcode(uint8_t opcode);
 
     private:
