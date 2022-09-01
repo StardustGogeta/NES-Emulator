@@ -42,10 +42,10 @@ target_include_directories(main PRIVATE
     src/core/include
     src/cpu/include
     src/display/include
-    ${SDL2_INCLUDE_DIR}
+    ${SDL2_INCLUDE_DIRS}
 )
 
-message(STATUS "Added ${SDL2_INCLUDE_DIR} to include directories.")
+message(STATUS "Added ${SDL2_INCLUDE_DIRS} to include directories.")
 
 message(STATUS "Attempting to link libraries: ${SDL2_LIBRARIES}")
 
