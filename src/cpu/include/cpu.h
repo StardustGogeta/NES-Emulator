@@ -3,12 +3,17 @@
 #include "ppu.h"
 #include "opcodes.h"
 #include <cstdint>
+#include <iomanip>
 #include <fstream>
 #include <thread>
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
 #include <semaphore>
+
+// Pad output to given width using zeros
+#define PAD2 std::setw(2)
+#define PAD4 std::setw(4)
 
 class CPU {
     friend class NES;

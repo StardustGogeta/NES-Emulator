@@ -25,6 +25,8 @@ add_executable(
     src/cpu/cpu.cpp
     src/cpu/logger.cpp
     src/cpu/opcodes.cpp
+    # Display
+    src/display/display.cpp
 )
 
 # If on Windows, grab SDL2 from the local folder
@@ -59,6 +61,6 @@ if(CMAKE_HOST_WIN32)
 endif()
 
 enable_testing()
-add_test(NAME nestest_execute COMMAND main nestest)
+add_test(NAME nestest_execute COMMAND main NESTEST)
 set_tests_properties(nestest_execute PROPERTIES TIMEOUT 1)
 add_test(NAME nestest_match COMMAND diff ${CMAKE_SOURCE_DIR}/test/cpuLog.txt ${CMAKE_SOURCE_DIR}/test/nestest.log)

@@ -1,6 +1,7 @@
 #include "core_memory.h"
 #include "rom.h"
 #include "nes.h"
+#include "display.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -80,27 +81,28 @@ bool runNesTest(int testCases) {
 
 int main(int argc, char* argv[]) {
     SDL_SetMainReady();
-    SDL_Init(SDL_INIT_VIDEO);
-    
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        return 1;
+    }
+
     std::cout << "Hello world!\n";
     std::string path;
-    int testCases = 0;
-
+    
     if (argc > 1) {
         path = argv[1];
         std::cout << "File argument: " << path << std::endl;
-
-        if (argc > 2) {
-            testCases = atoi(argv[2]);
-        }
-    }
-    else {
+    } else {
         path = "mario.nes";
         std::cout << "Defaulting to " << path << std::endl;
     }
 
-    if (path == "nestest") {
+    if (path == "NESTEST") {
+        int testCases = argc > 2 ? atoi(argv[2]) : 0;
         runNesTest(testCases);
+    } else if (true || path == "DISPLAY_TEST") {
+        std::string testType = argc > 2 ? argv[2] : "rectangle";
+        runDisplayTest(testType);
     } else if (path == "ADDRESSING_MODES") {
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
@@ -129,6 +131,7 @@ int main(int argc, char* argv[]) {
         NES* nes = new NES();
         nes->loadROM(rom);
     }
-    
+
+    SDL_Quit();
     return 0;
 }

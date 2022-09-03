@@ -129,7 +129,7 @@ void CPU::runOpcode(uint8_t opcode) {
     // std::thread ppuThread(&PPU::cycles, ppu, 3);
 
     #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << PAD2 << (int)opcode << " at position 0x" << pc - 1 << std::dec << std::endl;
+    std::cout << "Trying to run opcode 0x" << std::hex << PAD2 << (int)opcode << " at position 0x" << PAD4 << pc - 1 << std::dec << std::endl;
     #endif
 
     addressingMode mode = getAddressingMode(opcode);
