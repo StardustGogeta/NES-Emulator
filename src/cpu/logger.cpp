@@ -2,10 +2,6 @@
 #include <iostream>
 #include <iomanip>
 
-// Pad output to given width using zeros
-#define PAD2 std::setw(2)
-#define PAD4 std::setw(4)
-
 CPU::Logger::Logger(CPU& cpu) : logging(false), cpu(cpu) { }
 
 void CPU::Logger::formatLogger() {
