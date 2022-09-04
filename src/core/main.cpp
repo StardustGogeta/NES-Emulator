@@ -80,12 +80,6 @@ bool runNesTest(int testCases) {
 }
 
 int main(int argc, char* argv[]) {
-    SDL_SetMainReady();
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-        SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-        return 1;
-    }
-
     std::cout << "Hello world!\n";
     std::string path;
     
@@ -100,7 +94,7 @@ int main(int argc, char* argv[]) {
     if (path == "NESTEST") {
         int testCases = argc > 2 ? atoi(argv[2]) : 0;
         runNesTest(testCases);
-    } else if (true || path == "DISPLAY_TEST") {
+    } else if (path == "DISPLAY_TEST") {
         std::string testType = argc > 2 ? argv[2] : "rectangle";
         runDisplayTest(testType);
     } else if (path == "ADDRESSING_MODES") {
@@ -132,6 +126,5 @@ int main(int argc, char* argv[]) {
         nes->loadROM(rom);
     }
 
-    SDL_Quit();
     return 0;
 }

@@ -5,7 +5,7 @@ project("NES Emulator" CXX)
 # Set default compile flags for GCC, per https://stackoverflow.com/a/2274040
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "GCC detected, adding compile flags")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra -pedantic -Werror -static-libstdc++")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra -pedantic -static-libstdc++")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -pedantic -Werror -static-libstdc++")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Wall -Wextra -pedantic -Werror -static-libstdc++")
 endif()
