@@ -52,7 +52,8 @@ class CPU {
         Logger logger;
 
         CPU();
-        void reset(CoreMemory::addr_t pc=0xfffc);
+        void reset();
+        void setPC();
         void setPC(CoreMemory::addr_t pc);
         void start();
         void stop(std::thread& t);

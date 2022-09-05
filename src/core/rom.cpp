@@ -25,7 +25,6 @@ void ROM::parseHeader() {
     romFile.seekg(0); // Reset to start of file
     for (int x = 0; x < 16; x++) {
         romFile >> std::hex >> header[x];
-        // cout << setfill('0') << setw(2) << hex << (int)header[x] << " Byte" << endl;
     }
 
     // Check that the first 4 characters are "NES\n"
