@@ -5,12 +5,15 @@
 #include <cstring>
 
 CPU::CPU() : logger(*this) {
-    reset();
     running = false;
+    memory = nullptr;
+    ppu = nullptr;
+    reset();
 }
 
-void CPU::reset(CoreMemory::addr_t pc /* =0xfffc */) {
-    this->pc = pc;
+void CPU::reset() {
+    // Read the PC from the reset vector if possible
+    this->pc = memory ? memory->readWord(0xfffc) : 0;
     sp = 0xfd;
     a = x = y = 0;
     memset(&p, 0, sizeof(p));
@@ -18,6 +21,12 @@ void CPU::reset(CoreMemory::addr_t pc /* =0xfffc */) {
     cyclesRequested = 0;
     cyclesExecuted = 0;
     maxCycles = 0;
+}
+
+void CPU::setPC() {
+    if (memory) {
+        this->pc = memory->readWord(0xfffc);
+    }
 }
 
 void CPU::setPC(CoreMemory::addr_t pc) {
@@ -129,7 +138,7 @@ void CPU::runOpcode(uint8_t opcode) {
     // std::thread ppuThread(&PPU::cycles, ppu, 3);
 
     #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << PAD2 << (int)opcode << " at position 0x" << PAD4 << pc - 1 << std::dec << std::endl;
+    std::cout << "Trying to run opcode 0x" << std::hex << std::setfill('0') << PAD2 << (int)opcode << " at position 0x" << PAD4 << pc - 1 << std::dec << std::endl;
     #endif
 
     addressingMode mode = getAddressingMode(opcode);
@@ -207,10 +216,7 @@ bool CPU::waitForCycle() {
     #ifdef DEBUG
     std::cout << "Executed " << cyclesExecuted
         << " cycles of " << cyclesRequested
-        << " requested and max " << maxCycles
-        << ". running: " << running
-        << " caughtUp: " << caughtUp
-        << " notDone: " << notDone << std::endl;
+        << " requested and max " << maxCycles << std::endl;
     #endif
 
     if (running && caughtUp && notDone) {

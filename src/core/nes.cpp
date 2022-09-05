@@ -16,4 +16,5 @@ NES::~NES() {
 
 void NES::loadROM(ROM* rom) {
     rom->loadIntoMemory(memory);
+    cpu->setPC(); // Load initial program counter from reset vector
 }

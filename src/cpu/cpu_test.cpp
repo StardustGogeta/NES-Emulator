@@ -13,7 +13,7 @@ auto awake_time() {
     return now() + 50us;
 }
 
-bool runNesTest(int testCases) {
+void runNesTest(int testCases) {
     std::cout << "Running nestest...\n";
     if (!testCases) {
         testCases = DEFAULT_NESTEST_CASES;
@@ -37,9 +37,9 @@ bool runNesTest(int testCases) {
     nes->cpu->runOpcode(0x64);
     nes->cpu->runOpcode(0x74);
 
-    nes->cpu->setPC(0xc000); // Set initial program counter
+    nes->cpu->setPC(0xc000); // Override initial program counter
 
-    nes->cpu->logger.start("../test/cpuLog.txt");
+    nes->cpu->logger.start("../test/nestestLog.txt");
 
     std::thread cpuThread(&CPU::start, nes->cpu);
     
@@ -66,8 +66,51 @@ bool runNesTest(int testCases) {
     std::cout << "Successfully ended execution." << std::endl;
 
     nes->cpu->logger.stop();
+}
 
-    return true;
+void runBlarggCpuTest5Official() {
+    std::cout << "Running blargg CPU test 5 (official opcodes only)...\n";
+
+    ROM* rom = new ROM();
+    rom->setPath("../test/blargg_cpu_test5_official.nes");
+
+    NES* nes = new NES();
+    nes->loadROM(rom);
+
+    nes->cpu->logger.start("../test/blargg5Log.txt");
+
+    #ifdef DEBUG
+    auto start = now();
+    #endif
+
+    std::thread cpuThread(&CPU::start, nes->cpu);
+    
+    // Wait until the CPU starts up.
+    while (!nes->cpu->checkRunning()) {
+        std::this_thread::yield();
+    }
+
+    for (int i = 0; i < 1000; i++) {
+        nes->cpu->cycle();
+    }
+
+    nes->cpu->stop(cpuThread);
+
+    nes->cpu->logger.stop();
+
+    #ifdef DEBUG
+    auto end = now();
+    std::chrono::duration<double> diff = end - start;
+    std::cout << "Finished in " << diff.count() << " seconds" << std::endl;
+    #endif
+
+    std::cout << "Successfully ended execution." << std::endl;
+
+    std::cout << "Error log output:" << std::endl;
+    for (int i = 0; i < 20; i++) {
+        std::cout << nes->memory->read(0x6000 | i);
+    }
+    std::cout << std::endl;
 }
 
 void printOpcodeProperties(std::string mapping(int)) {
@@ -82,6 +125,8 @@ void printOpcodeProperties(std::string mapping(int)) {
 void runCpuTest(std::string testName) {
     if (testName == "nestest") {
         runNesTest(0);
+    } else if (testName == "blargg5official") {
+        runBlarggCpuTest5Official();
     } else if (testName == "addressing_modes") {
         printOpcodeProperties([] (int x) { return addressingModeNames[addressingModesByOpcode[x]]; });
     } else if (testName == "instructions") {

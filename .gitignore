@@ -1,14 +1,14 @@
 # Files generated during build process
 build
 /bin
-cpuLog.txt
+test/**
 
 # Editor files
 .vscode
 
 # ROM files
 *.nes
-!nestest.nes
+!test/**.nes
 
 # SDL files
 lib/SDL2/docs
