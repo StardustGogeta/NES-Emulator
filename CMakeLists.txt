@@ -23,6 +23,7 @@ add_executable(
     src/core/ppu.cpp
     # CPU
     src/cpu/cpu.cpp
+    src/cpu/cpu_test.cpp
     src/cpu/logger.cpp
     src/cpu/opcodes.cpp
     # Display
@@ -40,6 +41,6 @@ target_compile_features(main PRIVATE cxx_std_20)
 add_subdirectory(lib)
 
 enable_testing()
-add_test(NAME nestest_execute COMMAND main NESTEST)
+add_test(NAME nestest_execute COMMAND main CPU_TEST nestest)
 set_tests_properties(nestest_execute PROPERTIES TIMEOUT 1)
 add_test(NAME nestest_match COMMAND diff ${CMAKE_SOURCE_DIR}/test/cpuLog.txt ${CMAKE_SOURCE_DIR}/test/nestest.log)
