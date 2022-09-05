@@ -79,6 +79,15 @@ bool runNesTest(int testCases) {
     return true;
 }
 
+void printOpcodeProperties(std::string mapping(int)) {
+    for (int i = 0; i < 16; i++) {
+        for (int j = 0; j < 16; j++) {
+            std::cout << mapping((i << 4) | j) << ", ";
+        }
+        std::cout << std::endl;
+    }
+}
+
 int main(int argc, char* argv[]) {
     std::cout << "Hello world!\n";
     std::string path;
@@ -98,26 +107,11 @@ int main(int argc, char* argv[]) {
         std::string testType = argc > 2 ? argv[2] : "rectangle";
         runDisplayTest(testType);
     } else if (path == "ADDRESSING_MODES") {
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
-                std::cout << addressingModeNames[CPU::getAddressingMode((i << 4) | j)] << ", ";
-            }
-            std::cout << std::endl;
-        }
+        printOpcodeProperties([] (int x) { return addressingModeNames[addressingModesByOpcode[x]]; });
     } else if (path == "INSTRUCTIONS") {
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
-                std::cout << opcodeNames[CPU::getInstruction((i << 4) | j)] << ", ";
-            }
-            std::cout << std::endl;
-        }
+        printOpcodeProperties([] (int x) { return opcodeNames[instructionsByOpcode[x]]; });
     } else if (path == "LEGAL_OPCODES") {
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 16; j++) {
-                std::cout << CPU::isLegalOpcode((i << 4) | j) << ", ";
-            }
-            std::cout << std::endl;
-        }
+        printOpcodeProperties([] (int x) { return std::to_string((int)legalOpcodes[x]); });
     } else {
         ROM* rom = new ROM(); // Prepare to load ROM file
         rom->setPath(path); // Decode header into ROM object, parse header
