@@ -29,36 +29,15 @@ add_executable(
     src/display/display.cpp
 )
 
-# If on Windows, grab SDL2 from the local folder
-if (CMAKE_HOST_WIN32)
-    if (MSVC) # Get the Visual C++ version
-        set(SDL2_DIR lib/SDL2-VC/cmake)
-    else() # Get the MinGW version
-        set(SDL2_DIR lib/SDL2/cmake)
-    endif()
-endif()
-
-find_package(SDL2 CONFIG REQUIRED)
-
 target_include_directories(main PRIVATE
     src/core/include
     src/cpu/include
     src/display/include
-    ${SDL2_INCLUDE_DIRS}
 )
-
-message(STATUS "Added ${SDL2_INCLUDE_DIRS} to include directories.")
-
-message(STATUS "Attempting to link libraries: ${SDL2_LIBRARIES}")
-
-target_link_libraries(main PRIVATE ${SDL2_LIBRARIES})
 
 target_compile_features(main PRIVATE cxx_std_20)
 
-# Add SDL2.dll to the executables folder
-if(CMAKE_HOST_WIN32)
-    file(COPY "${SDL2_BINDIR}/SDL2.dll" DESTINATION ${BIN_DIR})
-endif()
+add_subdirectory(lib)
 
 enable_testing()
 add_test(NAME nestest_execute COMMAND main NESTEST)
