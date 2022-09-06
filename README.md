@@ -63,3 +63,7 @@ This will create a `bin` folder in the repository and build the project from the
 - CPU power-up information: https://www.nesdev.org/wiki/CPU_power_up_state
 - NES APU register guide: https://www.nesdev.org/wiki/APU_registers
 - NES emulator guide for Rust: https://bugzmanov.github.io/nes_ebook/chapter_5_1.html
+- NES mapper explanation: https://www.reddit.com/r/EmuDev/comments/cyrowl/mappers_and_nes/
+- Interesting NES mapper exploration: https://somethingnerdy.com/unlocking-the-nes-for-former-dawn/
+- Explanation of mappers and bank switching: https://somethingnerdy.com/mappers-matter/
+- NES test ROM collection: https://github.com/christopherpow/nes-test-roms

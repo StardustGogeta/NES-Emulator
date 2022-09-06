@@ -8,7 +8,9 @@ test/**
 
 # ROM files
 *.nes
-!test/**.nes
+!test/blargg_instr_test-v5
+!test/blargg_instr_test-v5/rom_singles
+!test/**/*.nes
 
 # SDL files
 lib/SDL2/docs
