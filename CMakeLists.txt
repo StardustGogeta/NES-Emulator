@@ -18,7 +18,6 @@ add_executable(
     # Core
     src/core/main.cpp
     src/core/rom.cpp
-    src/core/core_memory.cpp
     src/core/nes.cpp
     src/core/ppu.cpp
     # CPU
@@ -28,12 +27,16 @@ add_executable(
     src/cpu/opcodes.cpp
     # Display
     src/display/display.cpp
+    # Memory
+    src/memory/core_memory.cpp
+    src/memory/mapper000.cpp
 )
 
 target_include_directories(main PRIVATE
     src/core/include
     src/cpu/include
     src/display/include
+    src/memory/include
 )
 
 target_compile_features(main PRIVATE cxx_std_20)

@@ -82,6 +82,10 @@ void ROM::loadIntoMemory(CoreMemory* memory) {
 
     romFile.seekg(16); // Skip to the end of the header
 
+    if (trainer) {
+        romFile.seekg(528); // If there is a trainer section, skip it
+    }
+
     // Load PRG-ROM into memory
     int PRG_ROM_size_bytes = PRG_ROM_size * 0x4000;
     uint8_t byte;
