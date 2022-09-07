@@ -3,6 +3,7 @@
 
 class Mapper000 : public CoreMemory {
     public:
+        Mapper000();
         uint8_t read(addr_t address);
         void writeDirect(addr_t address, uint8_t data);
         void write(addr_t address, uint8_t data);

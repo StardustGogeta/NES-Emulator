@@ -6,7 +6,9 @@
 /*
     Create a new generic memory object.
 */
-CoreMemory::CoreMemory() { }
+CoreMemory::CoreMemory() {
+    PRG_ROM_size = 0;
+}
 
 /*
     Destroy the generic memory object. 
