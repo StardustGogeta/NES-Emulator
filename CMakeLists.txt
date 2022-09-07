@@ -30,6 +30,7 @@ add_executable(
     # Memory
     src/memory/core_memory.cpp
     src/memory/mapper000.cpp
+    src/memory/memory_factory.cpp
 )
 
 target_include_directories(main PRIVATE

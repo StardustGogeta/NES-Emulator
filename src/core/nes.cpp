@@ -1,10 +1,9 @@
 #include "nes.h"
 
 NES::NES() {
-    memory = new CoreMemory();
+    memory = nullptr;
     cpu = new CPU();
     ppu = new PPU(*cpu);
-    cpu->memory = memory;
     cpu->ppu = ppu;
 }
 
@@ -15,6 +14,7 @@ NES::~NES() {
 }
 
 void NES::loadROM(ROM* rom) {
-    rom->loadIntoMemory(memory);
+    memory = rom->loadIntoMemory();
+    cpu->memory = memory;
     cpu->setPC(); // Load initial program counter from reset vector
 }

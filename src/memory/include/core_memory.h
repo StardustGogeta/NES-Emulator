@@ -1,26 +1,43 @@
 #pragma once
 #include <cstdint>
 
+typedef uint16_t addr_t;
+
 /*
     This class is designed to encapsulate memory access to prevent
     simple mistakes with memory mirroring and other easy errors.
 */
 class CoreMemory {
     public:
-        typedef uint16_t addr_t;
-        
-        CoreMemory(uint8_t PRG_ROM_size=1);
-        uint8_t read(addr_t address);
-        uint16_t readWord(addr_t address, bool wrap=false);
-        void write(addr_t address, uint8_t data);
-        void writeBlock(addr_t address, uint8_t *src, uint16_t numBytes);
-        void clear();
-        void set_PRG_ROM_size(uint8_t PRG_ROM_size);
-        uint8_t readDirect(addr_t address);
-        void writeDirect(addr_t address, uint8_t data);
+        virtual ~CoreMemory();
 
-    private:
-        uint8_t memory[0x10000],
-            PRG_ROM_size;
-        addr_t mapAddress(addr_t address);
+        /*
+            Reads a byte of data from a given memory address.
+        */
+        virtual uint8_t read(addr_t address) = 0;
+
+        uint16_t readWord(addr_t address, bool wrap=false);
+
+        /*
+            Writes a byte of data directly to a memory address, ignoring
+            pre-conditions. This allows initial writing of the ROM data.
+        */
+        virtual void writeDirect(addr_t address, uint8_t data) = 0;
+
+        /*
+            Writes a byte of data to a given memory address.
+        */
+        virtual void write(addr_t address, uint8_t data) = 0;
+        
+        /*
+            Clears all stored memory.
+        */
+        virtual void clear() = 0;
+        
+        void set_PRG_ROM_size(uint8_t PRG_ROM_size);
+
+    protected:
+        CoreMemory();
+        
+        uint8_t PRG_ROM_size;
 };

@@ -155,7 +155,7 @@ bool CPU::isLegalOpcode(uint8_t opcode) {
     return legalOpcodes[opcode];
 }
 
-int CPU::runInstruction(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument, bool extraCycles) {
+int CPU::runInstruction(addressingMode mode, instruction inst, addr_t addr, uint8_t argument, bool extraCycles) {
     int ret = 0;
     switch (inst) {
         case ADC: {

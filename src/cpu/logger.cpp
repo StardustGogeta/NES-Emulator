@@ -41,7 +41,7 @@ void CPU::Logger::logOpcode(uint8_t opcode, addressingMode mode, instruction ins
     logFile << (isLegalOpcode(opcode) ? "  " : " *") + opcodeName + " ";
 }
 
-void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, CoreMemory::addr_t addr, uint8_t argument) {
+void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, addr_t addr, uint8_t argument) {
     switch (mode) {
         case IMM:
             logFile << "#$" << PAD2 << (int)argument;
