@@ -2,6 +2,10 @@
 #include "core_memory.h"
 #include <cstring>
 
+Mapper000::Mapper000() {
+    clear();
+}
+
 uint8_t Mapper000::read(addr_t address) {
     return memory[mapAddress(address)];
 }
