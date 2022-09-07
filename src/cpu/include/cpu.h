@@ -37,7 +37,7 @@ class CPU {
                 void logArgsAndRegisters(
                     addressingMode mode,
                     instruction inst,
-                    CoreMemory::addr_t addr,
+                    addr_t addr,
                     uint8_t argument
                 );
                 void logPPU(int scanline, int cyclesOnLine);
@@ -54,7 +54,7 @@ class CPU {
         CPU();
         void reset();
         void setPC();
-        void setPC(CoreMemory::addr_t pc);
+        void setPC(addr_t pc);
         void start();
         void stop(std::thread& t);
         void kill(std::thread& t);
@@ -84,14 +84,14 @@ class CPU {
             Also written: NVbbDIZC
         */
         CoreMemory* memory;
-        CoreMemory::addr_t pc;
+        addr_t pc;
         uint8_t sp, a, x, y;
         uint16_t cache, precache;
         struct processorFlags {
             bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
         
-        CoreMemory::addr_t getAddress(addressingMode mode);
+        addr_t getAddress(addressingMode mode);
         uint8_t processorStatus();
         void setProcessorStatus(uint8_t status);
         void setNZ(uint8_t val);
@@ -100,7 +100,7 @@ class CPU {
         int runInstruction(
             addressingMode mode,
             instruction inst,
-            CoreMemory::addr_t addr,
+            addr_t addr,
             uint8_t argument,
             bool extraCycles
         );

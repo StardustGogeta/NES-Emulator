@@ -12,11 +12,13 @@ An incomplete NES emulator made using SDL2 and C++20.
 - ~~ROM file input and processing~~
 - ~~Continuous integration / static analysis tool setup~~
 - ~~Official CPU opcode emulation~~
-- Unofficial CPU opcode emulation
+- Full unofficial CPU opcode emulation
 - ~~Finish nestest support~~
+- Additional CPU tests
 - PPU emulation
 - Display support
 - Mapper support
+- Testing with game ROMs
 
 
 ## Quick-Start Instructions

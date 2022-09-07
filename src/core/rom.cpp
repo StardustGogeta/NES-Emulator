@@ -1,5 +1,6 @@
 #include "rom.h"
 #include "core_memory.h"
+#include "memory_factory.h"
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -58,7 +59,7 @@ void ROM::parseHeader() {
         persistentMemory    = (flags6 & 0b00000010) > 0;
         trainer             = (flags6 & 0b00000100) > 0;
         fourScreenVRAM      = (flags6 & 0b00001000) > 0;
-        mapper              = (flags6 >> 4) + (flags7 & 0b11110000); // Mappers not supported
+        mapper              = (flags6 >> 4) + (flags7 & 0b11110000);
         nes2                = (flags7 & 0b00001100) == 0b1000; // NES 2.0 not fully supported
         playchoice10        = (flags7 & 0b00000010) > 0;
         VS_unisystem        = (flags7 & 0b00000001) > 0;
@@ -69,10 +70,12 @@ void ROM::parseHeader() {
 }
 
 /*
-    Loads PRG-ROM from a file into memory.
+    Loads PRG-ROM from a file into memory and returns the object created.
 */
-void ROM::loadIntoMemory(CoreMemory* memory) {
+CoreMemory* ROM::loadIntoMemory() {
     this->parseHeader();
+
+    CoreMemory* memory = MemoryFactory::create(mapper);
 
     memory->set_PRG_ROM_size(PRG_ROM_size);
 
@@ -95,4 +98,6 @@ void ROM::loadIntoMemory(CoreMemory* memory) {
     }
 
     romFile.close();
+
+    return memory;
 }

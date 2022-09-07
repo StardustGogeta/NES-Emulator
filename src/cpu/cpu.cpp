@@ -29,7 +29,7 @@ void CPU::setPC() {
     }
 }
 
-void CPU::setPC(CoreMemory::addr_t pc) {
+void CPU::setPC(addr_t pc) {
     this->pc = pc;
 }
 
@@ -68,7 +68,7 @@ uint16_t CPU::readWord() {
     Assumes the program counter is at the start of the arguments list.
     Moves the program counter to the end of the arguments list.
 */
-CoreMemory::addr_t CPU::getAddress(addressingMode mode) {
+addr_t CPU::getAddress(addressingMode mode) {
     switch (mode) {
         case IMM:
             return pc++;
@@ -112,11 +112,11 @@ void CPU::setNZ(uint8_t val) {
 }
 
 void CPU::stackPush(uint8_t val) {
-    memory->writeDirect(0x100 + (sp--), val);
+    memory->write(0x100 + (sp--), val);
 }
 
 uint8_t CPU::stackPop() {
-    return memory->readDirect(0x100 + (++sp));
+    return memory->read(0x100 + (++sp));
 }
 
 uint8_t CPU::processorStatus() {
@@ -149,7 +149,7 @@ void CPU::runOpcode(uint8_t opcode) {
         logger.logOpcode(opcode, mode, inst);
     }
     
-    CoreMemory::addr_t addr = 0;
+    addr_t addr = 0;
     uint8_t argument;
     
     if (mode != NUL) {
