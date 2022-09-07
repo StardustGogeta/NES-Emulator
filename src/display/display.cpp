@@ -178,8 +178,8 @@ void rainbowTest() {
 
         for (int i = 0; i < NES_DISPLAY_WIDTH * NES_DISPLAY_HEIGHT; i++) {
             int r_x = (int)(i + offset) % NES_DISPLAY_WIDTH;
-            int b_x = (int)(i + offset * M_E) % NES_DISPLAY_WIDTH;
-            int g_x = (int)(i + offset * M_LN10) % NES_DISPLAY_WIDTH;
+            int b_x = (int)(i + offset * 2.7183) % NES_DISPLAY_WIDTH;
+            int g_x = (int)(i + offset * 2.3026) % NES_DISPLAY_WIDTH;
             double mult = 2 * M_PI / NES_DISPLAY_WIDTH;
             uint8_t red =   (sin(mult * r_x) / 2 + .5) * 235 + 20,
                     blue =  (sin(mult * b_x) / 2 + .5) * 235 + 20,
