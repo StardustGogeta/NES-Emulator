@@ -63,7 +63,7 @@ void ROM::parseHeader() {
         nes2                = (flags7 & 0b00001100) == 0b1000; // NES 2.0 not fully supported
         playchoice10        = (flags7 & 0b00000010) > 0;
         VS_unisystem        = (flags7 & 0b00000001) > 0;
-        std::cout << (int)PRG_ROM_size << " PRGROM\n" << (int)PRG_RAM_size << " PRGRAM\n" << (int)mapper << " Mapper\n";
+        std::cout << (int)PRG_ROM_size << " PRGROM\n" << (int)PRG_RAM_size << " PRGRAM\n" << (int)CHR_ROM_size << " CHRROM\n" << (int)mapper << " Mapper" << std::endl;
     }
 
     romFile.close();

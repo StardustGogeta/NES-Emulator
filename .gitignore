@@ -2,6 +2,7 @@
 build
 /bin
 test/**
+!*.py
 
 # Editor files
 .vscode
@@ -11,6 +12,7 @@ test/**
 !test/blargg_instr_test-v5
 !test/blargg_instr_test-v5/rom_singles
 !test/**/*.nes
+!test/**/*.log
 
 # SDL files
 lib/SDL2/docs

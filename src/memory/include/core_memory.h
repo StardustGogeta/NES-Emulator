@@ -1,7 +1,11 @@
 #pragma once
 #include <cstdint>
 
-typedef uint16_t addr_t;
+typedef uint16_t addr_t; // Allows addresses in the 64 KB range
+
+// Allows expanded addresses for larger memory spaces due to mappers
+// This should be much larger than necessary for any NES ROMs
+typedef uint32_t exp_addr_t;
 
 /*
     This class is designed to encapsulate memory access to prevent
@@ -21,8 +25,10 @@ class CoreMemory {
         /*
             Writes a byte of data directly to a memory address, ignoring
             pre-conditions. This allows initial writing of the ROM data.
+            The first argument needs to be large enough to address the full
+            range of the larger mappers.
         */
-        virtual void writeDirect(addr_t address, uint8_t data) = 0;
+        virtual void writeDirect(exp_addr_t address, uint8_t data) = 0;
 
         /*
             Writes a byte of data to a given memory address.

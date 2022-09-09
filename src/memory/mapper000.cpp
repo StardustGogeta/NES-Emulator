@@ -11,7 +11,7 @@ uint8_t Mapper000::read(addr_t address) {
 }
 
 
-void Mapper000::writeDirect(addr_t address, uint8_t data) {
+void Mapper000::writeDirect(exp_addr_t address, uint8_t data) {
     memory[address] = data;
 }
 

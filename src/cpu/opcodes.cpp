@@ -237,7 +237,7 @@ int CPU::runInstruction(addressingMode mode, instruction inst, addr_t addr, uint
             p.b1 = p.b2 = 1;
             stackPush(processorStatus());
             p.i = 1;
-            pc = 0xfffe;
+            pc = memory->readWord(0xfffe);
             break;
         case BVC:
             if (!p.v) {

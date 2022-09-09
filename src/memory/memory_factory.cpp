@@ -10,7 +10,7 @@ CoreMemory* MemoryFactory::create(int mapper) {
         case 000:
             return new Mapper000();
         case 001:
-            return nullptr; // new Mapper001();
+            return new Mapper001();
         default:
             throw std::runtime_error("Unsupported mapper " + std::to_string(mapper) + " encountered."); 
     }
