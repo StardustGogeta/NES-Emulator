@@ -30,6 +30,7 @@ add_executable(
     # Memory
     src/memory/core_memory.cpp
     src/memory/mapper000.cpp
+    src/memory/mapper001.cpp
     src/memory/memory_factory.cpp
 )
 
@@ -47,4 +48,18 @@ add_subdirectory(lib)
 enable_testing()
 add_test(NAME nestest_execute COMMAND main CPU_TEST nestest)
 set_tests_properties(nestest_execute PROPERTIES TIMEOUT 1)
-add_test(NAME nestest_match COMMAND diff ${CMAKE_SOURCE_DIR}/test/nestestLog.txt ${CMAKE_SOURCE_DIR}/test/nestest.log)
+add_test(
+    NAME nestest_match
+    COMMAND diff    ${CMAKE_SOURCE_DIR}/test/nestestLog.txt
+                    ${CMAKE_SOURCE_DIR}/test/nestest.log
+)
+
+# Could also compare the first lines of each file using technique from https://superuser.com/a/511406
+add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5official)
+set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 1)
+add_test(
+    NAME blargg_cpu_test5_official_match
+    COMMAND python ../test/logCompare.py
+        ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
+        ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
+)

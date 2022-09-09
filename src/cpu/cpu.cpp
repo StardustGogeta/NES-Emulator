@@ -25,7 +25,8 @@ void CPU::reset() {
 
 void CPU::setPC() {
     if (memory) {
-        this->pc = memory->readWord(0xfffc);
+        pc = memory->readWord(0xfffc);
+        // std::cout << "Initial PC was found to be " << std::hex << pc << std::endl;
     }
 }
 

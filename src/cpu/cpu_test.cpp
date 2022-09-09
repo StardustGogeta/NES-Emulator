@@ -77,6 +77,14 @@ void runBlarggCpuTest5Official() {
     NES* nes = new NES();
     nes->loadROM(rom);
 
+    // We queue up a handful of NOPs at the beginning to synchronize clocks with nestest
+    nes->cpu->runOpcode(0x64);
+    nes->cpu->runOpcode(0x74);
+    nes->cpu->runOpcode(0x64);
+    nes->cpu->runOpcode(0x74);
+
+    nes->cpu->setPC();
+
     nes->cpu->logger.start("../test/blargg5Log.txt");
 
     #ifdef DEBUG
@@ -90,7 +98,7 @@ void runBlarggCpuTest5Official() {
         std::this_thread::yield();
     }
 
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 80; i++) {
         nes->cpu->cycle();
     }
 
@@ -108,7 +116,7 @@ void runBlarggCpuTest5Official() {
 
     std::cout << "Error log output:" << std::endl;
     for (int i = 0; i < 20; i++) {
-        std::cout << nes->memory->read(0x6000 | i);
+        std::cout << std::hex << (int)nes->memory->read(0x6000 | i);
     }
     std::cout << std::endl;
 }
