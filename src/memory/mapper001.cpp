@@ -51,7 +51,9 @@ void Mapper001::clear() {
     memset(memory, 0, sizeof(memory)); // Set array elements to zero
     controlReg = 0x0c; // Reset control register
     chrReg0 = chrReg1 = prgReg = 0; // Clear ROM registers
-    resetShift();   
+    resetShift();
+
+    memset(memory + 0x2000, 0xff, 8); // Set the PPU registers to 0xff
 }
 
 /*
