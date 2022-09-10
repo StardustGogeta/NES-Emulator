@@ -8,6 +8,9 @@ Mapper001::Mapper001() {
 }
 
 uint8_t Mapper001::read(addr_t address) {
+    if (0x2000 <= address && address < 0x4000) {
+        return readPPU(mapPPU(address));
+    }
     return memory[mapAddress(address)];
 }
 
@@ -18,7 +21,9 @@ void Mapper001::writeDirect(exp_addr_t address, uint8_t data) {
 
 
 void Mapper001::write(addr_t address, uint8_t data) {
-    if (address >= 0x8000) {
+    if (0x2000 <= address && address < 0x4000) {
+        writePPU(mapPPU(address), data);
+    } else if (address >= 0x8000) {
         // We are trying to write to PRG-ROM, so we intercept this
         // Instead, it modifies a shift register
         if (data & 0x80) {
@@ -38,6 +43,7 @@ void Mapper001::write(addr_t address, uint8_t data) {
             }
         }
     } else {
+        // TODO: Prevent writing into ROM space?
         memory[mapAddress(address)] = data;
     }
 }
@@ -52,8 +58,6 @@ void Mapper001::clear() {
     controlReg = 0x0c; // Reset control register
     chrReg0 = chrReg1 = prgReg = 0; // Clear ROM registers
     resetShift();
-
-    memset(memory + 0x2000, 0xff, 8); // Set the PPU registers to 0xff
 }
 
 /*

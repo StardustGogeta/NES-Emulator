@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 
-CPU::Logger::Logger(CPU& cpu) : logging(false), cpu(cpu) { }
+CPU::Logger::Logger(CPU& cpu) : logging(false), reversePPU(false), cpu(cpu) { }
 
 void CPU::Logger::formatLogger() {
     logFile << std::hex << std::uppercase << std::setfill('0');

@@ -7,11 +7,15 @@ typedef uint16_t addr_t; // Allows addresses in the 64 KB range
 // This should be much larger than necessary for any NES ROMs
 typedef uint32_t exp_addr_t;
 
+class PPU;
+
 /*
     This class is designed to encapsulate memory access to prevent
     simple mistakes with memory mirroring and other easy errors.
 */
 class CoreMemory {
+    friend class NES;
+
     public:
         virtual ~CoreMemory();
 
@@ -34,6 +38,12 @@ class CoreMemory {
             Writes a byte of data to a given memory address.
         */
         virtual void write(addr_t address, uint8_t data) = 0;
+
+        addr_t mapPPU(addr_t address);
+
+        uint8_t readPPU(addr_t address);
+
+        void writePPU(addr_t address, uint8_t data);
         
         /*
             Clears all stored memory.
@@ -43,6 +53,8 @@ class CoreMemory {
         void set_PRG_ROM_size(uint8_t PRG_ROM_size);
 
     protected:
+        PPU* ppu;
+
         CoreMemory();
         
         uint8_t PRG_ROM_size;
