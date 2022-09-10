@@ -24,7 +24,7 @@ class CPU {
             friend CPU;
 
             public:
-                void start(std::string path);
+                void start(std::string path, bool reversePPU=false);
                 void stop();
 
             private:
@@ -43,7 +43,7 @@ class CPU {
                 void logPPU(int scanline, int cyclesOnLine);
                 void logCycles(int cyclesExecuted);
                 void formatLogger();
-                bool logging;
+                bool logging, reversePPU;
                 std::ofstream logFile;
                 CPU& cpu;
         };
@@ -53,7 +53,7 @@ class CPU {
 
         CPU();
         void reset();
-        void setPC();
+        void setPC(bool ignoreCycles=false);
         void setPC(addr_t pc);
         void start();
         void stop(std::thread& t);
@@ -64,7 +64,7 @@ class CPU {
         uint8_t read();
         uint16_t readWord();
         bool checkRunning();
-        void runOpcode(uint8_t opcode);
+        void runOpcode(uint8_t opcode, bool ignoreCycles=false);
 
         static addressingMode getAddressingMode(uint8_t opcode);
         static instruction getInstruction(uint8_t opcode);

@@ -37,7 +37,7 @@ void runNesTest(int testCases) {
     nes->cpu->runOpcode(0x64);
     nes->cpu->runOpcode(0x74);
 
-    nes->cpu->setPC(0xc000); // Override initial program counter
+    nes->cpu->setPC((addr_t)0xc000); // Override initial program counter
 
     nes->cpu->logger.start("../test/nestestLog.txt");
 
@@ -77,15 +77,13 @@ void runBlarggCpuTest5Official() {
     NES* nes = new NES();
     nes->loadROM(rom);
 
-    // We queue up a handful of NOPs at the beginning to synchronize clocks with nestest
-    nes->cpu->runOpcode(0x64);
-    nes->cpu->runOpcode(0x74);
-    nes->cpu->runOpcode(0x64);
-    nes->cpu->runOpcode(0x74);
+    nes->cpu->runOpcode(0x48, true); // Execute PHA x 3
+    nes->cpu->runOpcode(0x48, true); // Synchronizes stack pointer with Nintendulator
+    nes->cpu->runOpcode(0x48, true); // Must keep PPU cycles from logging
 
     nes->cpu->setPC();
 
-    nes->cpu->logger.start("../test/blargg5Log.txt");
+    nes->cpu->logger.start("../test/blargg5Log.txt", true);
 
     #ifdef DEBUG
     auto start = now();

@@ -23,10 +23,16 @@ void CPU::reset() {
     maxCycles = 0;
 }
 
-void CPU::setPC() {
+void CPU::setPC(bool ignoreCycles /* = false */) {
     if (memory) {
         pc = memory->readWord(0xfffc);
         // std::cout << "Initial PC was found to be " << std::hex << pc << std::endl;
+        
+        // Going to the initial PC location seems to take 14 cycles, per Nintendulator
+        // We have a flag to disable this if it's unwanted
+        if (!ignoreCycles) {
+            cyclesRequested = cyclesExecuted = 14;
+        }
     }
 }
 
@@ -135,7 +141,7 @@ void CPU::setProcessorStatus(uint8_t status) {
     p.c = (status & 0x01) > 0;
 }
 
-void CPU::runOpcode(uint8_t opcode) {
+void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
     // std::thread ppuThread(&PPU::cycles, ppu, 3);
 
     #ifdef DEBUG
@@ -173,18 +179,17 @@ void CPU::runOpcode(uint8_t opcode) {
     logger.logPPU(ppu->scanline, ppu->cyclesOnLine);
     logger.logCycles(cyclesExecuted);
 
-    int cycleCount = getCycleCount(opcode, cycleOffset);
+    if (!ignoreCycles) {
+        int cycleCount = getCycleCount(opcode, cycleOffset);
 
-    // PPU does 3 cycles for every CPU cycle
-    ppu->cycles(cycleCount * 3);
+        // PPU does 3 cycles for every CPU cycle
+        ppu->cycles(cycleCount * 3);
 
-    // TODO: Get actual cycle count
-    cyclesExecuted += cycleCount;
-    bool dying = waitForCycles(cycleCount);    
+        // TODO: Get actual cycle count
+        cyclesExecuted += cycleCount;
 
-    if (dying) {
-        return;
-    };
+        waitForCycles(cycleCount);
+    }
 }
 
 /*

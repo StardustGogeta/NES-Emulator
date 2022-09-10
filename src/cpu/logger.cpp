@@ -8,10 +8,13 @@ void CPU::Logger::formatLogger() {
     logFile << std::hex << std::uppercase << std::setfill('0');
 }
 
-void CPU::Logger::start(std::string path) {
+void CPU::Logger::start(std::string path, bool reversePPU /* = false */) {
     logFile.open(path, std::ios::out);
     formatLogger();
     logging = true;
+    // Nintendulator and nestest seem to use reversed PPU cycle notations
+    // Setting this to true will make it Nintendulator-compatible
+    this->reversePPU = reversePPU;
     std::cout << "Started CPU logging." << std::endl;
 }
 
@@ -111,8 +114,11 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, add
 }
 
 void CPU::Logger::logPPU(int scanline, int cyclesOnLine) {
-    logFile << std::dec << std::setfill(' ') << " PPU:" << std::setw(3) << scanline
-        << "," << std::setw(3) << cyclesOnLine;
+    int first = reversePPU ? cyclesOnLine : scanline;
+    int second = reversePPU ? scanline : cyclesOnLine;
+
+    logFile << std::dec << std::setfill(' ') << " PPU:" << std::setw(3) << first
+        << "," << std::setw(3) << second;
 }
 
 void CPU::Logger::logCycles(int cyclesExecuted) {

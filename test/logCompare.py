@@ -8,7 +8,7 @@ path = os.path.dirname(os.path.realpath(__file__))
 assert(len(sys.argv) == 3)
 
 # Allow ending before the end of the line, for dealing with cycle count and PPU timing later
-END_INDEX = 70
+END_INDEX = None
 
 with open(sys.argv[1]) as emuLog:
     with open(sys.argv[2]) as goodLog:
@@ -21,7 +21,14 @@ with open(sys.argv[1]) as emuLog:
 
             assert ref_addr == emu_addr, f"Address mismatch on line {i + 1}: {ref_addr} expected, but saw {emu_addr}."
             assert ref_opc == emu_opc, f"Opcode mismatch on line {i + 1}: {ref_opc} expected, but saw {emu_opc}."
-            assert ref_line[:END_INDEX] == emu_line[:END_INDEX], f"Line mismatch on line {i + 1}:\nExpected: {ref_line[:END_INDEX]}\nSaw:      {emu_line[:END_INDEX]}"
+
+            if END_INDEX:
+                ref_fragment = ref_line[:END_INDEX]
+                emu_fragment = emu_line[:END_INDEX]
+            else:
+                ref_fragment = ref_line
+                emu_fragment = emu_line
+            assert ref_fragment == emu_fragment, f"Line mismatch on line {i + 1}:\nExpected: {ref_fragment}\nSaw:      {emu_fragment}"
             i += 1
 
 print("All checks completed successfully.")
