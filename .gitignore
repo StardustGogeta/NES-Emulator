@@ -4,6 +4,10 @@ build
 test/**
 !*.py
 
+# Documentation files (may add later)
+Doxyfile
+/doc
+
 # Editor files
 .vscode
 

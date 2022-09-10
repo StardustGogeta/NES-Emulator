@@ -8,6 +8,7 @@
     Create a new generic memory object.
 */
 CoreMemory::CoreMemory() {
+    ppu = nullptr;
     PRG_ROM_size = 0;
 }
 
