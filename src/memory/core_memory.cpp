@@ -1,5 +1,6 @@
 #include "core_memory.h"
 #include "rom.h"
+#include "ppu.h"
 #include <cstring>
 #include <iostream>
 
@@ -28,6 +29,30 @@ uint16_t CoreMemory::readWord(addr_t address, bool wrap /* =false */) {
         }
     }
     return (read(addr2) << 8) | read(address); 
+}
+
+/*
+    Maps a memory address in the valid range to one of the PPU register indices.
+*/
+addr_t CoreMemory::mapPPU(addr_t address) {
+    if (0x2000 > address || address >= 0x4000) {
+        throw std::runtime_error("Address is not in valid PPU register range!");
+    }
+    return (address - 0x2000) % 8;
+}
+
+/*
+    Reads a byte of data from one of the PPU registers.
+*/
+uint8_t CoreMemory::readPPU(addr_t address) {
+    return ppu->readRegister(address);
+}
+
+/*
+    Writes a byte of data to one of the PPU registers.
+*/
+void CoreMemory::writePPU(addr_t address, uint8_t data) {
+    return ppu->writeRegister(address, data);
 }
 
 /*

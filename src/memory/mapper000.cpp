@@ -7,7 +7,10 @@ Mapper000::Mapper000() {
 }
 
 uint8_t Mapper000::read(addr_t address) {
-    return memory[mapAddress(address)];
+    if (0x2000 <= address && address < 0x4000) {
+        return readPPU(mapPPU(address));
+    }
+    return memory[ mapAddress(address)];
 }
 
 
@@ -17,7 +20,12 @@ void Mapper000::writeDirect(exp_addr_t address, uint8_t data) {
 
 
 void Mapper000::write(addr_t address, uint8_t data) {
-    memory[mapAddress(address)] = data;
+    if (0x2000 <= address && address < 0x4000) {
+        writePPU(mapPPU(address), data);
+    } else {
+        // TODO: Prevent writing into ROM space?
+        memory[mapAddress(address)] = data;
+    }
 }
 
 
