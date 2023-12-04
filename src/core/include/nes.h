@@ -7,12 +7,11 @@
 class NES {
     public:
         NES();
-        ~NES();
-        void loadROM(ROM* rom);
+        void loadROM(ROM& rom);
 
-        CoreMemory* memory;
-        CPU* cpu;
-        PPU* ppu;
+        std::shared_ptr<CoreMemory> memory;
+        std::unique_ptr<CPU> cpu;
+        std::shared_ptr<PPU> ppu;
         
     private:
         NES(const NES&) = delete;

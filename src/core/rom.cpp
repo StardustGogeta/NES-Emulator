@@ -72,10 +72,10 @@ void ROM::parseHeader() {
 /*
     Loads PRG-ROM from a file into memory and returns the object created.
 */
-CoreMemory* ROM::loadIntoMemory() {
+std::unique_ptr<CoreMemory> ROM::loadIntoMemory() {
     this->parseHeader();
 
-    CoreMemory* memory = MemoryFactory::create(mapper);
+    std::unique_ptr<CoreMemory> memory = MemoryFactory::create(mapper);
 
     memory->set_PRG_ROM_size(PRG_ROM_size);
 

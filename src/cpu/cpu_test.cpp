@@ -19,10 +19,10 @@ void runNesTest(int testCases) {
         testCases = DEFAULT_NESTEST_CASES;
     }
 
-    ROM* rom = new ROM();
-    rom->setPath("../test/nestest.nes");
+    ROM rom;
+    rom.setPath("../test/nestest.nes");
 
-    NES* nes = new NES();
+    std::unique_ptr<NES> nes = std::make_unique<NES>();
     nes->loadROM(rom);
     
     for (int i = 0; i < 0x20; i++) { // Set APU registers to 0xff
@@ -41,7 +41,7 @@ void runNesTest(int testCases) {
 
     nes->cpu->logger.start("../test/nestestLog.txt");
 
-    std::thread cpuThread(&CPU::start, nes->cpu);
+    std::thread cpuThread(&CPU::start, nes->cpu.get());
     
     // Wait until the CPU starts up.
     while (!nes->cpu->checkRunning()) {
@@ -71,8 +71,8 @@ void runNesTest(int testCases) {
 void runBlarggCpuTest5Official() {
     std::cout << "Running blargg CPU test 5 (official opcodes only)...\n";
 
-    ROM* rom = new ROM();
-    rom->setPath("../test/blargg_cpu_test5_official.nes");
+    ROM rom;
+    rom.setPath("../test/blargg_cpu_test5_official.nes");
 
     NES* nes = new NES();
     nes->loadROM(rom);
@@ -89,7 +89,7 @@ void runBlarggCpuTest5Official() {
     auto start = now();
     #endif
 
-    std::thread cpuThread(&CPU::start, nes->cpu);
+    std::thread cpuThread(&CPU::start, nes->cpu.get());
     
     // Wait until the CPU starts up.
     while (!nes->cpu->checkRunning()) {

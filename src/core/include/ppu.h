@@ -20,7 +20,7 @@ class PPU {
         bool checkRunning();
         
     private:
-        CoreMemory* memory;
+        std::shared_ptr<CoreMemory> memory;
 
         /*
             Control and status registers for the PPU.

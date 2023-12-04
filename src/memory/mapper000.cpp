@@ -10,7 +10,7 @@ uint8_t Mapper000::read(addr_t address) {
     if (0x2000 <= address && address < 0x4000) {
         return readPPU(mapPPU(address));
     }
-    return memory[ mapAddress(address)];
+    return memory[mapAddress(address)];
 }
 
 

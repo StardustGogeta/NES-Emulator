@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <memory>
 
 typedef uint16_t addr_t; // Allows addresses in the 64 KB range
 
@@ -53,7 +54,7 @@ class CoreMemory {
         void set_PRG_ROM_size(uint8_t PRG_ROM_size);
 
     protected:
-        PPU* ppu;
+        std::shared_ptr<PPU> ppu;
 
         CoreMemory();
         
