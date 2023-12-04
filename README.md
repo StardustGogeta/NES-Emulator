@@ -69,3 +69,4 @@ This will create a `bin` folder in the repository and build the project from the
 - Interesting NES mapper exploration: https://somethingnerdy.com/unlocking-the-nes-for-former-dawn/
 - Explanation of mappers and bank switching: https://somethingnerdy.com/mappers-matter/
 - NES test ROM collection: https://github.com/christopherpow/nes-test-roms
+- NES input data and registers: https://stackoverflow.com/questions/66406934/whats-an-elegant-way-to-read-controller-input-for-nes-6502-assembly-on-ca65

@@ -1,9 +1,10 @@
 #include "core_memory.h"
+#include <memory>
 
 /*
     This class handles the creation of new memory objects.
 */
 class MemoryFactory {
     public:
-        static CoreMemory* create(int mapper);
+        static std::unique_ptr<CoreMemory> create(int mapper);
 };

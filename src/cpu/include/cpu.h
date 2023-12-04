@@ -48,7 +48,7 @@ class CPU {
                 CPU& cpu;
         };
 
-        PPU* ppu;
+        std::shared_ptr<PPU> ppu;
         Logger logger;
 
         CPU();
@@ -83,7 +83,7 @@ class CPU {
                 BRK command (unused), unused, overflow, negative
             Also written: NVbbDIZC
         */
-        CoreMemory* memory;
+        std::shared_ptr<CoreMemory> memory;
         addr_t pc;
         uint8_t sp, a, x, y;
         uint16_t cache, precache;

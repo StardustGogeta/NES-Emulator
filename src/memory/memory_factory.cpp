@@ -5,12 +5,12 @@
 #include <stdexcept>
 #include <string>
 
-CoreMemory* MemoryFactory::create(int mapper) {
+std::unique_ptr<CoreMemory> MemoryFactory::create(int mapper) {
     switch (mapper) {
         case 000:
-            return new Mapper000();
+            return std::make_unique<Mapper000>();
         case 001:
-            return new Mapper001();
+            return std::make_unique<Mapper001>();
         default:
             throw std::runtime_error("Unsupported mapper " + std::to_string(mapper) + " encountered."); 
     }

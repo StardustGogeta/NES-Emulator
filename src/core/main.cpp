@@ -24,8 +24,8 @@ int main(int argc, char* argv[]) {
         std::string testType = argc > 2 ? argv[2] : "rectangle";
         runDisplayTest(testType);
     } else {
-        ROM* rom = new ROM(); // Prepare to load ROM file
-        rom->setPath(path); // Decode header into ROM object, parse header
+        ROM rom; // Prepare to load ROM file
+        rom.setPath(path); // Decode header into ROM object, parse header
         
         NES* nes = new NES();
         nes->loadROM(rom);

@@ -13,7 +13,7 @@ class ROM {
 
         void setPath(std::string path);
         void parseHeader();
-        CoreMemory* loadIntoMemory();
+        std::unique_ptr<CoreMemory> loadIntoMemory();
 
     private:
         uint8_t flags6, flags7, flags9, flags10;
