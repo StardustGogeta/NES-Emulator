@@ -10,6 +10,7 @@ Doxyfile
 
 # Editor files
 .vscode
+.vs
 
 # ROM files
 *.nes
