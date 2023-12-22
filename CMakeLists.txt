@@ -8,13 +8,20 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra -pedantic -static-libstdc++")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -pedantic -Werror -static-libstdc++")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Wall -Wextra -pedantic -Werror -static-libstdc++")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    message(STATUS "MSVC detected, adding compile flags")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /W4")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W4")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /W4")
 endif()
 
 set(BIN_DIR "${CMAKE_SOURCE_DIR}/bin")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR})
 
-add_executable(
-    main
+add_executable(main)
+
+target_sources(main
+    PUBLIC
     # Core
     src/core/main.cpp
     src/core/rom.cpp
@@ -41,7 +48,7 @@ target_include_directories(main PRIVATE
     src/memory/include
 )
 
-target_compile_features(main PRIVATE cxx_std_20)
+target_compile_features(main PRIVATE cxx_std_23)
 
 add_subdirectory(lib)
 
