@@ -46,7 +46,8 @@ target_compile_features(main PRIVATE cxx_std_20)
 add_subdirectory(lib)
 
 enable_testing()
-add_test(NAME nestest_execute COMMAND main CPU_TEST nestest)
+add_test(NAME nestest_execute COMMAND main CPU_TEST nestest
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set_tests_properties(nestest_execute PROPERTIES TIMEOUT 1)
 add_test(
     NAME nestest_match
@@ -55,11 +56,12 @@ add_test(
 )
 
 # Could also compare the first lines of each file using technique from https://superuser.com/a/511406
-add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5official)
+add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5official
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 1)
 add_test(
     NAME blargg_cpu_test5_official_match
-    COMMAND python ../test/logCompare.py
+    COMMAND python ${CMAKE_SOURCE_DIR}/test/logCompare.py
         ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
         ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
 )

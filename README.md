@@ -1,8 +1,11 @@
 # NES-Emulator
 
+![GitHub Top Language](https://img.shields.io/github/languages/top/StardustGogeta/NES-Emulator)
+![GitHub Issues](https://img.shields.io/github/issues/StardustGogeta/NES-Emulator)
 [![CodeFactor](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator/badge)](https://www.codefactor.io/repository/github/stardustgogeta/nes-emulator)
 [![CMake](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml)
 [![Microsoft C++ Code Analysis](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/StardustGogeta/NES-Emulator)
 
 An incomplete NES emulator made using SDL2 and C++20.
 
@@ -25,7 +28,7 @@ An incomplete NES emulator made using SDL2 and C++20.
 
 #### Prerequisites
 - cmake
-- gcc / MinGW (with C++20 standard)
+- gcc / MinGW / MSVC (with C++20 standard)
 
 In order to build this, create a folder named `build`, navigate to this folder, and run
 
