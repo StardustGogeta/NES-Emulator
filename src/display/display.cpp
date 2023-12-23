@@ -1,8 +1,7 @@
 #include "display.h"
 #include "SDL.h"
 #include <string>
-#include <iostream>
-#include <cmath>
+#include <print>
 
 const int NES_DISPLAY_WIDTH = 256, NES_DISPLAY_HEIGHT = 240;
 
@@ -24,7 +23,7 @@ void rectangleTest() {
         SDL_TEXTUREACCESS_TARGET, NES_DISPLAY_WIDTH * 2, NES_DISPLAY_HEIGHT * 2);
 
     if (window) {
-        std::cout << "SDL window creation worked!" << std::endl;
+        std::println("SDL window creation worked!");
         SDL_Event event;
 
         while (1) {
@@ -97,7 +96,9 @@ void noiseTest() {
         b = SDL_GetTicks64();
         delta = b - a;
         a = b;
-        std::cout << "FPS: " << 1000. / delta << std::endl;
+        // std::println here does not flush stdout
+        std::println("FPS: {:>7.3f}", 1000. / delta);
+        std::fflush(stdout);
 
         SDL_PollEvent(&event);
         if (event.type == SDL_QUIT) {
@@ -165,7 +166,8 @@ void rainbowTest() {
         b = SDL_GetTicks64();
         delta = b - a;
         a = b;
-        std::cout << "FPS: " << 1000. / delta << std::endl;
+        std::println("FPS: {:>7.3f}", 1000. / delta);
+        std::fflush(stdout);
 
         SDL_PollEvent(&event);
         if (event.type == SDL_QUIT) {

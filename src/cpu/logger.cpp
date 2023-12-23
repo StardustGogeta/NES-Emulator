@@ -1,128 +1,105 @@
 #include "cpu.h"
-#include <iostream>
-#include <iomanip>
+#include <print>
 
 CPU::Logger::Logger(CPU& cpu) : logging(false), reversePPU(false), cpu(cpu) { }
 
-void CPU::Logger::formatLogger() {
-    logFile << std::hex << std::uppercase << std::setfill('0');
-}
-
 void CPU::Logger::start(std::string path, bool reversePPU /* = false */) {
     logFile.open(path, std::ios::out);
-    formatLogger();
     logging = true;
     // Nintendulator and nestest seem to use reversed PPU cycle notations
     // Setting this to true will make it Nintendulator-compatible
     this->reversePPU = reversePPU;
-    std::cout << "Started CPU logging." << std::endl;
+    std::println("Started CPU logging.");
 }
 
 void CPU::Logger::stop() {
     logFile.close();
-    std::cout << "Stopped CPU logging." << std::endl;
+    std::println("Stopped CPU logging.");
 }
 
 void CPU::Logger::logOpcode(uint8_t opcode, addressingMode mode, instruction inst) {
-    logFile << PAD4 << cpu.pc - 1 << "  " << PAD2 << (int)opcode;
+    std::print(logFile, "{:04X}  {:02X}", cpu.pc - 1, opcode);
         
     // Write opcode arguments to log
     int count = addressingModeReadCount[mode];
     if (count) {
-        logFile << " " << PAD2 << (int)cpu.memory->read(cpu.pc);
+        std::print(logFile, " {:02X}", cpu.memory->read(cpu.pc));
         if (count > 1) {
-            logFile << " " << PAD2 << (int)cpu.memory->read(cpu.pc + 1);
+            std::print(logFile, " {:02X}", cpu.memory->read(cpu.pc + 1));
         } else {
-            logFile << "   ";
+            std::print(logFile, "   ");
         }
     } else {
-        logFile << "      ";
+        std::print(logFile, "      ");
     }
 
     // Write opcode name to log
     std::string opcodeName = opcodeNames[inst];
-    logFile << (isLegalOpcode(opcode) ? "  " : " *") + opcodeName + " ";
+    std::print(logFile, "{}", (isLegalOpcode(opcode) ? "  " : " *") + opcodeName + " ");
 }
 
 void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, addr_t addr, uint8_t argument) {
     switch (mode) {
         case IMM:
-            logFile << "#$" << PAD2 << (int)argument;
-            logFile << "                        ";
+            std::print(logFile, "#${:02X}                        ", argument);
             break;
         case ZPG:
-            logFile << "$" << PAD2 << addr << " = " << PAD2 << (int)argument;
-            logFile << "                    ";
+            std::print(logFile, "${:02X} = {:02X}                    ", addr, argument);
             break;
         case ZPX:
-            logFile << "$" << PAD2 << cpu.cache << ",X @ " << PAD2 << addr << " = " << PAD2 << (int)argument;
-            logFile << "             ";
+            std::print(logFile, "${:02X},X @ {:02X} = {:02X}             ", cpu.cache, addr, argument);
             break;
         case ZPY:
-            logFile << "$" << PAD2 << cpu.cache << ",Y @ " << PAD2 << addr << " = " << PAD2 << (int)argument;
-            logFile << "             ";
+            std::print(logFile, "${:02X},Y @ {:02X} = {:02X}             ", cpu.cache, addr, argument);
             break;
         case IZX:
-            logFile << "($" << PAD2 << cpu.precache << ",X) @ " << PAD2 << cpu.cache << " = " << PAD4 << addr << " = " << PAD2 << (int)argument;
-            logFile << "    ";
+            std::print(logFile, "(${:02X},X) @ {:02X} = {:04X} = {:02X}    ", cpu.precache, cpu.cache, addr, argument);
             break;
         case IZY:
-            logFile << "($" << PAD2 << cpu.precache << "),Y = " << PAD4 << cpu.cache << " @ " << PAD4 << addr << " = " << PAD2 << (int)argument;
-            logFile << "  ";
+            std::print(logFile, "(${:02X}),Y = {:04X} @ {:04X} = {:02X}  ", cpu.precache, cpu.cache, addr, argument);
             break;
         case ABS:
-            logFile << "$" << PAD4 << addr;
+            std::print(logFile, "${:04X}", addr);
             if (inst == JMP || inst == JSR) {
-                logFile << "                       ";
+                std::print(logFile, "                       ");
             } else {
-                logFile << " = " << PAD2 << (int)argument << "                  ";
+                std::print(logFile, " = {:02X}                  ", argument);
             }
             break;
         case ABX:
-            logFile << "$" << PAD4 << cpu.cache << ",X @ " << PAD4 << addr << " = " << PAD2 << (int)argument;
-            logFile << "         ";
+            std::print(logFile, "${:04X},X @ {:04X} = {:02X}         ", cpu.cache, addr, argument);
             break;
         case ABY:
-            logFile << "$" << PAD4 << cpu.cache << ",Y @ " << PAD4 << addr << " = " << PAD2 << (int)argument;
-            logFile << "         ";
+            std::print(logFile, "${:04X},Y @ {:04X} = {:02X}         ", cpu.cache, addr, argument);
             break;
         case IND:
-            logFile << "($" << PAD4 << cpu.cache << ") = " << PAD4 << addr;
-            logFile << "              ";
+            std::print(logFile, "(${:04X}) = {:04X}              ", cpu.cache, addr);
             break;
         case REL:
-            logFile << "$" << PAD4 << addr;
-            logFile << "                       ";
+            std::print(logFile, "${:04X}                       ", addr);
             break;
         case NUL:
             if (inst == ASL || inst == LSR || inst == ROL || inst == ROR) {
-                logFile << "A                           ";
+                std::print(logFile, "A                           ");
             } else {
-                logFile << "                            ";
+                std::print(logFile, "                            ");
             }
             break;
         default:
-            logFile << "ERROR                           ";
+            std::print(logFile, "ERROR                           ");
             break;
     }
 
-    logFile << "A:" << PAD2 << (int)cpu.a
-        << " X:" << PAD2 << (int)cpu.x
-        << " Y:" << PAD2 << (int)cpu.y
-        << " P:" << PAD2 << (int)cpu.processorStatus()
-        << " SP:" << PAD2 << (int)cpu.sp;
+    std::print(logFile, "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", cpu.a, cpu.x, cpu.y, cpu.processorStatus(), cpu.sp);
 }
 
 void CPU::Logger::logPPU(int scanline, int cyclesOnLine) {
     int first = reversePPU ? cyclesOnLine : scanline;
     int second = reversePPU ? scanline : cyclesOnLine;
 
-    logFile << std::dec << std::setfill(' ') << " PPU:" << std::setw(3) << first
-        << "," << std::setw(3) << second;
+    std::print(logFile, " PPU:{:3},{:3}", first, second);
 }
 
 void CPU::Logger::logCycles(int cyclesExecuted) {
-    logFile << " CYC:" << cyclesExecuted << std::endl;
-    // Reset the logger format for the next line.
-    formatLogger();
+    std::println(logFile, " CYC:{}", cyclesExecuted);
 }

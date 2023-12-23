@@ -1,8 +1,8 @@
 #include "nes.h"
 #include "display.h"
 #include "cpu_test.h"
-#include <iostream>
 #include <string>
+#include <print>
 
 #include "SDL.h"
 
@@ -11,10 +11,10 @@ int main(int argc, char* argv[]) {
     
     if (argc > 1) {
         path = argv[1];
-        std::cout << "Argument: " << path << std::endl;
+        std::println("Argument: {}", path);
     } else {
         path = "mario.nes";
-        std::cout << "Defaulting to " << path << std::endl;
+        std::println("Defaulting to {}", path);
     }
 
     if (path == "CPU_TEST") {

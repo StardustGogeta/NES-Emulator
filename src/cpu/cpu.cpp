@@ -1,7 +1,7 @@
 #include "cpu.h"
 #include <bit>
 #include <stdexcept>
-#include <iostream>
+#include <print>
 #include <cstring>
 
 CPU::CPU() : logger(*this) {
@@ -145,7 +145,7 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
     // std::thread ppuThread(&PPU::cycles, ppu, 3);
 
     #ifdef DEBUG
-    std::cout << "Trying to run opcode 0x" << std::hex << std::setfill('0') << PAD2 << (int)opcode << " at position 0x" << PAD4 << pc - 1 << std::dec << std::endl;
+    std::println("Trying to run opcode {:#04x} at position {:#06x}", opcode, pc - 1);
     #endif
 
     addressingMode mode = getAddressingMode(opcode);
@@ -220,9 +220,7 @@ bool CPU::waitForCycle() {
     notDone = cyclesExecuted < maxCycles || !maxCycles;
 
     #ifdef DEBUG
-    std::cout << "Executed " << cyclesExecuted
-        << " cycles of " << cyclesRequested
-        << " requested and max " << maxCycles << std::endl;
+    std::println("Executed {} cycles of {} requested and max {}", cyclesExecuted.load(), cyclesRequested, maxCycles);
     #endif
 
     if (running && caughtUp && notDone) {

@@ -1,8 +1,6 @@
 #include "core_memory.h"
 #include "rom.h"
 #include "ppu.h"
-#include <cstring>
-#include <iostream>
 
 /*
     Create a new generic memory object.
