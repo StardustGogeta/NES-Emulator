@@ -1,9 +1,8 @@
 #include "rom.h"
 #include "core_memory.h"
 #include "memory_factory.h"
-#include <cstring>
-#include <iostream>
 #include <fstream>
+#include <print>
 
 ROM::ROM() {
     persistentMemory = trainer = fourScreenVRAM = nes2 =
@@ -20,7 +19,7 @@ void ROM::parseHeader() {
     // Open the file and go straight to the end
     std::ifstream romFile(path, std::ios::ate | std::ios::binary);
     int romSize = romFile.tellg(); // Find file length
-    std::cout << "The file size is " << romSize << " bytes.\n";
+    std::println("The file size is {} bytes.", romSize);
     
     uint8_t header[16];
     romFile.seekg(0); // Reset to start of file
@@ -30,7 +29,7 @@ void ROM::parseHeader() {
 
     // Check that the first 4 characters are "NES\n"
     if (memcmp(header, "NES\x1A", 4) != 0) {
-        std::cerr << "The NES file header is invalid.\n";
+        std::println(stderr, "The NES file header is invalid.");
     } else {
         /*
             Header Format:
@@ -63,7 +62,7 @@ void ROM::parseHeader() {
         nes2                = (flags7 & 0b00001100) == 0b1000; // NES 2.0 not fully supported
         playchoice10        = (flags7 & 0b00000010) > 0;
         VS_unisystem        = (flags7 & 0b00000001) > 0;
-        std::cout << (int)PRG_ROM_size << " PRGROM\n" << (int)PRG_RAM_size << " PRGRAM\n" << (int)CHR_ROM_size << " CHRROM\n" << (int)mapper << " Mapper" << std::endl;
+        std::println("{} PRGROM\n{} PRGRAM\n{} CHRROM\n{} Mapper", PRG_ROM_size, PRG_RAM_size, CHR_ROM_size, mapper);
     }
 
     romFile.close();

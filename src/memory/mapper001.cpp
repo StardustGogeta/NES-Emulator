@@ -1,7 +1,5 @@
 #include "mapper001.h"
 #include "core_memory.h"
-#include <cstring>
-#include <iostream>
 
 Mapper001::Mapper001() {
     clear();

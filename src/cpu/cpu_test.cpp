@@ -1,5 +1,5 @@
 #include "nes.h"
-#include <iostream>
+#include <print>
 #include <chrono>
 
 const int DEFAULT_NESTEST_CASES = 26555;
@@ -14,7 +14,7 @@ auto awake_time() {
 }
 
 void runNesTest(int testCases) {
-    std::cout << "Running nestest...\n";
+    std::println("Running nestest...");
     if (!testCases) {
         testCases = DEFAULT_NESTEST_CASES;
     }
@@ -60,16 +60,16 @@ void runNesTest(int testCases) {
     #ifdef DEBUG
     auto end = now();
     std::chrono::duration<double> diff = end - start;
-    std::cout << "Finished in " << diff.count() << " seconds" << std::endl;
+    std::println("Finished in {} seconds", diff.count());
     #endif
 
-    std::cout << "Successfully ended execution." << std::endl;
+    std::println("Successfully ended execution.");
 
     nes->cpu->logger.stop();
 }
 
 void runBlarggCpuTest5Official() {
-    std::cout << "Running blargg CPU test 5 (official opcodes only)...\n";
+    std::println("Running blargg CPU test 5 (official opcodes only)...");
 
     ROM rom;
     rom.setPath("../test/blargg_cpu_test5_official.nes");
@@ -107,24 +107,24 @@ void runBlarggCpuTest5Official() {
     #ifdef DEBUG
     auto end = now();
     std::chrono::duration<double> diff = end - start;
-    std::cout << "Finished in " << diff.count() << " seconds" << std::endl;
+    std::println("Finished in {} seconds", diff.count());
     #endif
 
-    std::cout << "Successfully ended execution." << std::endl;
+    std::println("Successfully ended execution.");
 
-    std::cout << "Error log output:" << std::endl;
+    std::println("Error log output:");
     for (int i = 0; i < 20; i++) {
-        std::cout << std::hex << (int)nes->memory->read(0x6000 | i);
+        std::print("{:02x}", nes->memory->read(0x6000 | i));
     }
-    std::cout << std::endl;
+    std::println("");
 }
 
 void printOpcodeProperties(std::string mapping(int)) {
     for (int i = 0; i < 16; i++) {
         for (int j = 0; j < 16; j++) {
-            std::cout << mapping((i << 4) | j) << ", ";
+            std::print("{}", mapping((i << 4) | j) + ", ");
         }
-        std::cout << std::endl;
+        std::println("");
     }
 }
 
