@@ -37,7 +37,7 @@ addr_t CoreMemory::mapPPU(addr_t address) {
     if (0x2000 > address || address >= 0x4000) {
         throw std::runtime_error("Address is not in valid PPU register range!");
     }
-    return (address - 0x2000) % 8;
+    return address % 8;
 }
 
 /*
