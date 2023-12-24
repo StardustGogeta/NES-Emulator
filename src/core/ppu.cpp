@@ -5,7 +5,7 @@
 PPU::PPU(CPU& cpu) : cpu(cpu) {
     cyclesExecuted = scanline = cyclesOnLine = 0;
     running = false;
-    bg8sr0 = bg8sr1 = bg16sr0 = bg16sr1 = 0;
+    bg16sr0 = bg16sr1 = bg8sr0 = bg8sr1 = 0;
     
     // Set the PPU registers to 0xff
     memset(registers, 0xff, 8);

@@ -3,12 +3,12 @@
 
 CPU::Logger::Logger(CPU& cpu) : logging(false), reversePPU(false), cpu(cpu) { }
 
-void CPU::Logger::start(std::string path, bool reversePPU /* = false */) {
+void CPU::Logger::start(std::string path, bool newReversePPU /* = false */) {
     logFile.open(path, std::ios::out);
     logging = true;
     // Nintendulator and nestest seem to use reversed PPU cycle notations
     // Setting this to true will make it Nintendulator-compatible
-    this->reversePPU = reversePPU;
+    reversePPU = newReversePPU;
     std::println("Started CPU logging.");
 }
 

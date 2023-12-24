@@ -25,4 +25,4 @@ extern const addressingMode addressingModesByOpcode[];
 extern const instruction instructionsByOpcode[];
 extern const bool legalOpcodes[];
 extern const int cycleCounts[];
-extern const int extraCycles[];
+extern const int extraCycleCounts[];

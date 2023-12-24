@@ -57,7 +57,7 @@ void CoreMemory::writePPU(addr_t address, uint8_t data) {
 /*
     Sets the PRG-ROM size (in 16 KB units).
 */
-void CoreMemory::set_PRG_ROM_size(uint8_t PRG_ROM_size) {
-    this->PRG_ROM_size = PRG_ROM_size;
+void CoreMemory::set_PRG_ROM_size(uint8_t newPRG_ROM_size) {
+    PRG_ROM_size = newPRG_ROM_size;
 }
 

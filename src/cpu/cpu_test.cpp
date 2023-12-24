@@ -9,7 +9,7 @@ auto now() {
 }
  
 auto awake_time() {
-    using std::chrono::operator""us;
+    using namespace std::chrono_literals;
     return now() + 50us;
 }
 
@@ -26,7 +26,7 @@ void runNesTest(int testCases) {
     nes->loadROM(rom);
     
     for (int i = 0; i < 0x20; i++) { // Set APU registers to 0xff
-        nes->memory->write(0x4000 | i, 0xff);
+        nes->memory->write(static_cast<addr_t>(0x4000 | i), 0xff);
     }
 
     #ifdef DEBUG
@@ -114,7 +114,7 @@ void runBlarggCpuTest5Official() {
 
     std::println("Error log output:");
     for (int i = 0; i < 20; i++) {
-        std::print("{:02x}", nes->memory->read(0x6000 | i));
+        std::print("{:02x}", nes->memory->read(static_cast<addr_t>(0x6000 | i)));
     }
     std::println("");
 }

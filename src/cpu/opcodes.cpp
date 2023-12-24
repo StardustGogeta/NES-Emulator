@@ -99,7 +99,7 @@ const int cycleCounts[] = {
     2, 5, 0, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7, // fx
 };
 
-const int extraCycles[] = {
+const int extraCycleCounts[] = {
 /*  x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 xa xb xc xd xe xf  */
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0x
     1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, // 1x
@@ -122,9 +122,7 @@ const int extraCycles[] = {
 instruction CPU::getInstruction(uint8_t opcode) {
     instruction ret = instructionsByOpcode[opcode];
     if (ret == YYY) {
-        char buf[3];
-        sprintf(buf, "%02x", opcode);
-        throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getInstruction.");
+        throw std::runtime_error(std::format("Unsupported opcode #{:04x} in getInstruction.", opcode));
     } else {
         return ret;
     }
@@ -136,9 +134,7 @@ instruction CPU::getInstruction(uint8_t opcode) {
 addressingMode CPU::getAddressingMode(uint8_t opcode) {
     addressingMode ret = addressingModesByOpcode[opcode];
     if (ret == XXX) {
-        char buf[3];
-        sprintf(buf, "%02x", opcode);
-        throw std::runtime_error("Unsupported opcode 0x" + std::string(buf) + " in getAddressingMode.");
+        throw std::runtime_error(std::format("Unsupported opcode #{:04x} in getAddressingMode.", opcode));
     } else {
         return ret;
     }

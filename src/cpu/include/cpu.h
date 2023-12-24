@@ -82,7 +82,7 @@ class CPU {
         uint8_t sp, a, x, y;
         uint16_t cache, precache;
         struct processorFlags {
-            bool n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
+            uint8_t n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
         } p;
         
         addr_t getAddress(addressingMode mode);
