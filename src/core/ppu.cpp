@@ -37,10 +37,41 @@ void PPU::start() {
 
 void PPU::cycle() {
     if (cyclesOnLine) {
-        if (cyclesOnLine < 321) {
-            // TODO: Get nametable byte, attribute table byte, pattern table data as appropriate
-
-            // Output a pixel to the screen
+        // The first cycle is idle and should be ignored
+        if (cyclesOnLine < 257) {
+            /*
+                We perform four memory accesses, each one taking two cycles.
+                The PPU memory should not be accessed at this time, so we can just populate everything at once when needed.
+                The four accesses are:
+                - Nametable byte
+                - Attribute table byte
+                - Pattern table tile low
+                - Pattern table tile high
+            */
+        }
+        else if (cyclesOnLine < 321) {
+            /*
+                Now, we perform the following four memory accesses:
+                - Garbage nametable byte
+                - Garbage nametable byte
+                - Pattern table tile low
+                - Pattern table tile high
+                Each takes two cycles, and we repeat for each of the eight sprites.
+            */
+        }
+        else if (cyclesOnLine < 337) {
+            /*
+                We perform four memory accesses, each one taking two cycles, for two tiles.
+                - Nametable byte
+                - Attribute table byte
+                - Pattern table tile low
+                - Pattern table tile high
+            */
+        }
+        else {
+            /*
+                Two final nametable bytes are fetched. (Used for MMC5.)
+            */
         }
     }
 
