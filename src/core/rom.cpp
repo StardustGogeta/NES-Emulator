@@ -11,14 +11,14 @@ ROM::ROM() {
         flags6 = flags7 = flags9 = flags10 = 0;
 }
 
-void ROM::setPath(std::string path) {
-    this->path = path;
+void ROM::setPath(std::string newPath) {
+    path = newPath;
 }
 
 void ROM::parseHeader() {
     // Open the file and go straight to the end
     std::ifstream romFile(path, std::ios::ate | std::ios::binary);
-    int romSize = romFile.tellg(); // Find file length
+    std::streamoff romSize = romFile.tellg(); // Find file length
     std::println("The file size is {} bytes.", romSize);
     
     uint8_t header[16];

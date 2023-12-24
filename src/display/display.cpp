@@ -183,9 +183,9 @@ void rainbowTest() {
             int b_x = (int)(i + offset * 2.7183) % NES_DISPLAY_WIDTH;
             int g_x = (int)(i + offset * 2.3026) % NES_DISPLAY_WIDTH;
             double mult = 2 * M_PI / NES_DISPLAY_WIDTH;
-            uint8_t red =   (sin(mult * r_x) / 2 + .5) * 235 + 20,
-                    blue =  (sin(mult * b_x) / 2 + .5) * 235 + 20,
-                    green = (sin(mult * g_x) / 2 + .5) * 235 + 20;
+            uint8_t red = static_cast<uint8_t>((sin(mult * r_x) / 2 + .5) * 235 + 20),
+                    blue = static_cast<uint8_t>((sin(mult * b_x) / 2 + .5) * 235 + 20),
+                    green = static_cast<uint8_t>((sin(mult * g_x) / 2 + .5) * 235 + 20);
 
             uint32_t color = SDL_MapRGB(pixelFormat, red, green, blue);
             pixelData[i] = color;

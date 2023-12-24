@@ -36,8 +36,8 @@ void CPU::setPC(bool ignoreCycles /* = false */) {
     }
 }
 
-void CPU::setPC(addr_t pc) {
-    this->pc = pc;
+void CPU::setPC(addr_t newPc) {
+    pc = newPc;
 }
 
 /*
@@ -174,7 +174,7 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
         logger.logArgsAndRegisters(mode, inst, addr, argument);
     }
 
-    int cycleOffset = runInstruction(mode, inst, addr, argument, extraCycles[opcode]);
+    int cycleOffset = runInstruction(mode, inst, addr, argument, extraCycleCounts[opcode]);
 
     logger.logPPU(ppu->scanline, ppu->cyclesOnLine);
     logger.logCycles(cyclesExecuted);

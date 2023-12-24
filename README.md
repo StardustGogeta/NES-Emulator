@@ -32,6 +32,8 @@ An incomplete NES emulator made using SDL2 and C++23.
 - cmake
 - gcc / MinGW / MSVC (with C++23 standard)
 
+**Note - This project uses `<print>`, which will not be available in the GCC standard library until GCC 14. Currently, only the latest version of MSVC is supported.**
+
 In order to build this, create a folder named `build`, navigate to this folder, and run
 
     cmake .. -G "Unix Makefiles"
