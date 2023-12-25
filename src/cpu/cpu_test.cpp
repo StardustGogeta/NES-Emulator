@@ -83,6 +83,10 @@ void runBlarggCpuTest5Official() {
 
     nes->cpu->setPC();
 
+    /*
+        The reference logs to compare against were generated via Nintendulator's
+        CPU logging feature.
+    */
     nes->cpu->logger.start("../test/blargg5Log.txt", true);
 
     #ifdef DEBUG
@@ -96,7 +100,7 @@ void runBlarggCpuTest5Official() {
         std::this_thread::yield();
     }
 
-    for (int i = 0; i < 22650; i++) {
+    for (int i = 0; i < 100000; i++) {
         nes->cpu->cycle();
     }
 

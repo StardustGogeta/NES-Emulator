@@ -35,7 +35,8 @@ class CPU {
                     addr_t addr,
                     uint8_t argument
                 );
-                void logPPU(int scanline, int cyclesOnLine);
+                void logStr(const std::string& str);
+                std::string logPPUstring(int scanline, int cyclesOnLine);
                 void logCycles(int cyclesExecuted);
                 bool logging, reversePPU;
                 std::ofstream logFile;
@@ -82,7 +83,8 @@ class CPU {
         uint8_t sp, a, x, y;
         uint16_t cache, precache;
         struct processorFlags {
-            uint8_t n : 1, v : 1, b1 : 1, b2 : 1, d : 1, i : 1, z : 1, c : 1;
+            // These are stored in order from smallest to largest.
+            uint8_t c : 1, z : 1, i : 1, d : 1, b2 : 1, b1 : 1, v : 1, n : 1;
         } p;
         
         addr_t getAddress(addressingMode mode);
@@ -91,12 +93,16 @@ class CPU {
         void setNZ(uint8_t val);
         void stackPush(uint8_t val);
         uint8_t stackPop();
-        int runInstruction(
+        int getCycleCountOffset(
+            instruction inst,
+            addr_t addr,
+            bool extraCycles
+        );
+        void runInstruction(
             addressingMode mode,
             instruction inst,
             addr_t addr,
-            uint8_t argument,
-            bool extraCycles
+            uint8_t argument
         );
         bool waitForCycles(int n);
         bool waitForCycle();
