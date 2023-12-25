@@ -127,20 +127,17 @@ uint8_t CPU::stackPop() {
 }
 
 uint8_t CPU::processorStatus() {
-    return (((((((((((((p.n << 1) | p.v) << 1) | p.b1) << 1) | p.b2) << 1) | p.d) << 1) | p.i) << 1) | p.z) << 1) | p.c;
+    return std::bit_cast<uint8_t>(p);
 }
 
 void CPU::setProcessorStatus(uint8_t status) {
-    p.n = (status & 0x80) > 0;
-    p.v = (status & 0x40) > 0;
-    p.b1= (status & 0x20) > 0;
-    p.b2= (status & 0x10) > 0;
-    p.d = (status & 0x08) > 0;
-    p.i = (status & 0x04) > 0;
-    p.z = (status & 0x02) > 0;
-    p.c = (status & 0x01) > 0;
+    p = std::bit_cast<processorFlags>(status);
 }
 
+/*
+    Runs a specified opcode
+    ignoreCycles - true if the PPU should ignore the CPU cycles being run
+*/
 void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
     // std::thread ppuThread(&PPU::cycles, ppu, 3);
 
@@ -157,14 +154,27 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
     }
     
     addr_t addr = 0;
-    uint8_t argument;
-    
     if (mode != NUL) {
         addr = getAddress(mode);
+    }
+
+    int cycleOffset = getCycleCountOffset(inst, addr, extraCycleCounts[opcode]);
+    int cycleCount = getCycleCount(opcode, cycleOffset);
+
+    std::string ppuString = logger.logPPUstring(ppu->scanline, ppu->cyclesOnLine);
+
+    if (!ignoreCycles) {
+        // PPU does 3 cycles for every CPU cycle
+        ppu->cycles(cycleCount * 3);
+    }
+
+    uint8_t argument;
+    if (mode != NUL) {
         // Read up to two bytes at the given address
         // TODO: Optimize by only reading argument if specific instruction requires it
         argument = memory->read(addr);
-    } else {
+    }
+    else {
         // If an opcode normally takes arguments, then the no-arg instruction uses the accumulator
         argument = a;
     }
@@ -174,17 +184,13 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
         logger.logArgsAndRegisters(mode, inst, addr, argument);
     }
 
-    int cycleOffset = runInstruction(mode, inst, addr, argument, extraCycleCounts[opcode]);
+    runInstruction(mode, inst, addr, argument);
 
-    logger.logPPU(ppu->scanline, ppu->cyclesOnLine);
+    logger.logStr(ppuString);
+
     logger.logCycles(cyclesExecuted);
 
     if (!ignoreCycles) {
-        int cycleCount = getCycleCount(opcode, cycleOffset);
-
-        // PPU does 3 cycles for every CPU cycle
-        ppu->cycles(cycleCount * 3);
-
         // TODO: Get actual cycle count
         cyclesExecuted += cycleCount;
 

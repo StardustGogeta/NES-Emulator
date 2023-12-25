@@ -39,6 +39,10 @@ void CPU::Logger::logOpcode(uint8_t opcode, addressingMode mode, instruction ins
 }
 
 void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, addr_t addr, uint8_t argument) {
+    // Nintendulator prints out FF for all PPU registers, no matter their true value
+    if (addr >= 0x2000 && addr < 0x4000) {
+        argument = 0xff;
+    }
     switch (mode) {
         case IMM:
             std::print(logFile, "#${:02X}                        ", argument);
@@ -93,11 +97,21 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, add
     std::print(logFile, "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", cpu.a, cpu.x, cpu.y, cpu.processorStatus(), cpu.sp);
 }
 
-void CPU::Logger::logPPU(int scanline, int cyclesOnLine) {
+/*
+    Generates string for logging PPU cycle information.
+*/
+std::string CPU::Logger::logPPUstring(int scanline, int cyclesOnLine) {
     int first = reversePPU ? cyclesOnLine : scanline;
     int second = reversePPU ? scanline : cyclesOnLine;
 
-    std::print(logFile, " PPU:{:3},{:3}", first, second);
+    return std::format(" PPU:{:3},{:3}", first, second);
+}
+
+/*
+    Writes an arbitrary string to the current log file.
+*/
+void CPU::Logger::logStr(const std::string& str) {
+    std::print(logFile, "{}", str);
 }
 
 void CPU::Logger::logCycles(int cyclesExecuted) {

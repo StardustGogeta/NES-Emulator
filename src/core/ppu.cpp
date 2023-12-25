@@ -8,11 +8,21 @@ PPU::PPU(CPU& cpu) : cpu(cpu) {
     bg16sr0 = bg16sr1 = bg8sr0 = bg8sr1 = 0;
     
     // Set the PPU registers to 0xff
-    memset(registers, 0xff, 8);
+    memset(registers, 0x0, 8);
 }
 
 uint8_t PPU::readRegister(addr_t address) {
-    return registers[address];
+    uint8_t ret = registers[address];
+    if (address & 0x2) {
+        // TODO: Handle more special cases with PPU registers, especially VBL timing
+        // See https://www.nesdev.org/wiki/PPU_frame_timing for more details
+        
+        // Reading status register will change the value of bit 7
+        // TODO: Fix very precise timing constraints here
+        writeRegister(address, ret & ~0x80);
+        // printf("Cleared VBL value!\n");
+    }
+    return ret;
 }
 
 void PPU::writeRegister(addr_t address, uint8_t data) {
@@ -36,47 +46,62 @@ void PPU::start() {
 }
 
 void PPU::cycle() {
-    if (cyclesOnLine) {
-        // The first cycle is idle and should be ignored
-        if (cyclesOnLine < 257) {
-            /*
-                We perform four memory accesses, each one taking two cycles.
-                The PPU memory should not be accessed at this time, so we can just populate everything at once when needed.
-                The four accesses are:
-                - Nametable byte
-                - Attribute table byte
-                - Pattern table tile low
-                - Pattern table tile high
-            */
+    if (scanline < 240) {
+        if (cyclesOnLine > 0) {
+            // The first cycle is idle and should be ignored
+            if (cyclesOnLine < 257) {
+                /*
+                    We perform four memory accesses, each one taking two cycles.
+                    The PPU memory should not be accessed at this time, so we can just populate everything at once when needed.
+                    The four accesses are:
+                    - Nametable byte
+                    - Attribute table byte
+                    - Pattern table tile low
+                    - Pattern table tile high
+                */
+            }
+            else if (cyclesOnLine < 321) {
+                /*
+                    Now, we perform the following four memory accesses:
+                    - Garbage nametable byte
+                    - Garbage nametable byte
+                    - Pattern table tile low
+                    - Pattern table tile high
+                    Each takes two cycles, and we repeat for each of the eight sprites.
+                */
+            }
+            else if (cyclesOnLine < 337) {
+                /*
+                    We perform four memory accesses, each one taking two cycles, for two tiles.
+                    - Nametable byte
+                    - Attribute table byte
+                    - Pattern table tile low
+                    - Pattern table tile high
+                */
+            }
+            else {
+                /*
+                    Two final nametable bytes are fetched. (Used for MMC5.)
+                */
+            }
         }
-        else if (cyclesOnLine < 321) {
-            /*
-                Now, we perform the following four memory accesses:
-                - Garbage nametable byte
-                - Garbage nametable byte
-                - Pattern table tile low
-                - Pattern table tile high
-                Each takes two cycles, and we repeat for each of the eight sprites.
-            */
+    }
+    else if (scanline == 240) {
+        // Idle PPU
+        if (cyclesOnLine == 0) {
+            // printf("Idle PPU\n");
         }
-        else if (cyclesOnLine < 337) {
-            /*
-                We perform four memory accesses, each one taking two cycles, for two tiles.
-                - Nametable byte
-                - Attribute table byte
-                - Pattern table tile low
-                - Pattern table tile high
-            */
-        }
-        else {
-            /*
-                Two final nametable bytes are fetched. (Used for MMC5.)
-            */
+    }
+    else /* 241 to 261 */ {
+        // Vertical blanking
+        if (scanline == 241 && cyclesOnLine == 0) {
+            // printf("Set vblank value\n");
+            writeRegister(0x2, readRegister(0x2) | 0x80);
         }
     }
 
     cyclesExecuted++;
-    scanline = cyclesExecuted / 341;
+    scanline = (cyclesExecuted / 341) % 262;
     cyclesOnLine = cyclesExecuted % 341;
 }
 

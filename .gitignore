@@ -3,6 +3,7 @@ build
 /bin
 test/**
 !*.py
+Testing
 
 # Documentation files (may add later)
 Doxyfile
