@@ -43,6 +43,10 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, add
     if (addr >= 0x2000 && addr < 0x4000) {
         argument = 0xff;
     }
+    // Nintendulator also prints out FF for all APU registers, regardless of true value
+    else if (addr >= 0x4000 && addr < 0x4020) {
+        argument = 0xff;
+    }
     switch (mode) {
         case IMM:
             std::print(logFile, "#${:02X}                        ", argument);
@@ -110,7 +114,7 @@ std::string CPU::Logger::logPPUstring(int scanline, int cyclesOnLine) {
 /*
     Writes an arbitrary string to the current log file.
 */
-void CPU::Logger::logStr(const std::string& str) {
+void CPU::Logger::logStr(std::string_view str) {
     std::print(logFile, "{}", str);
 }
 

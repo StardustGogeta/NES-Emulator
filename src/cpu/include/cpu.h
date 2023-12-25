@@ -35,7 +35,7 @@ class CPU {
                     addr_t addr,
                     uint8_t argument
                 );
-                void logStr(const std::string& str);
+                void logStr(std::string_view str);
                 std::string logPPUstring(int scanline, int cyclesOnLine);
                 void logCycles(int cyclesExecuted);
                 bool logging, reversePPU;
