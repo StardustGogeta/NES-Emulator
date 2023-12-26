@@ -1,6 +1,5 @@
 #include "ppu.h"
 #include "cpu.h"
-#include <cstring>
 
 PPU::PPU(CPU& cpu) : cpu(cpu) {
     cyclesExecuted = scanline = cyclesOnLine = 0;
@@ -101,8 +100,21 @@ void PPU::cycle() {
     }
 
     cyclesExecuted++;
+    // If rendering is disabled, we skip this one particular PPU cycle
+    if (renderingEnabled()) {
+        if (scanline == 261 && cyclesOnLine == 339 && oddFrame) {
+            cyclesExecuted++;
+        }
+    }
     scanline = (cyclesExecuted / 341) % 262;
     cyclesOnLine = cyclesExecuted % 341;
+    // Maintain flag for frame parity check
+    oddFrame = cyclesExecuted / (341 * 262) % 2 > 0;
+}
+
+bool PPU::renderingEnabled() {
+    uint8_t mask = registers[1];
+    return (mask & 0b11000) != 0;
 }
 
 void PPU::cycles(int n) {
