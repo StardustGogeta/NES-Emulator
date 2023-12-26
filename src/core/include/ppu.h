@@ -20,6 +20,9 @@ class PPU {
         bool checkRunning();
         
     private:
+        bool renderingEnabled();
+        bool oddFrame = false;
+
         std::shared_ptr<CoreMemory> memory;
 
         /*
