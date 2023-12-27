@@ -79,3 +79,4 @@ This will create a `bin` folder in the repository and build the project from the
 - NES input data and registers: https://stackoverflow.com/questions/66406934/whats-an-elegant-way-to-read-controller-input-for-nes-6502-assembly-on-ca65
 - PPU registers: https://www.nesdev.org/wiki/PPU_registers
 - List of NES mappers: https://www.nesdev.org/wiki/Mapper
+- NES emulator in Rust: https://bugzmanov.github.io/nes_ebook/chapter_1.html

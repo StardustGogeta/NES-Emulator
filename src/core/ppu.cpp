@@ -8,6 +8,9 @@ PPU::PPU(CPU& cpu) : cpu(cpu) {
     
     // Set the PPU registers to 0xff
     memset(registers, 0x0, 8);
+    // Set initial state of 0x2002 register
+    // Note that 0xa0 would be used if we began with the pre-render scanline
+    writeRegister(0x2, 0x20);
 }
 
 uint8_t PPU::readRegister(addr_t address) {
