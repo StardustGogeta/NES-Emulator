@@ -1,6 +1,7 @@
 #pragma once
 #include "core_memory.h"
 #include <condition_variable>
+#include <array>
 
 class CPU;
 
