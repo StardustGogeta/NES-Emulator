@@ -79,7 +79,7 @@ jobs:
         -B ${{ github.workspace }}/build
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
         ${{ matrix.make-program.mingw && format('-G "{0}"', matrix.make-program.generator) || '' }}
-        ${{ matrix.make-program.mingw && '-DCMAKE_CXX_COMPILER="C:/msys64/mingw64/bin/g++.exe' || '' }}
+        ${{ matrix.make-program.mingw && '-DCMAKE_CXX_COMPILER="C:/msys64/mingw64/bin/g++.exe"' || '' }}
         # ${{ matrix.make-program.mingw && format('-DCMAKE_MAKE_PROGRAM="{0}"', matrix.make-program.location) || '' }}
 
     - name: Build
