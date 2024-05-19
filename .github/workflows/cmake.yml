@@ -54,9 +54,9 @@ jobs:
 
     name: Windows - ${{ matrix.make-program.name }}
 
-    #defaults:
-      #run:
-        #shell: msys2 {0}
+    defaults:
+      run:
+        shell: msys2 {0}
 
     strategy:
       fail-fast: false
@@ -65,12 +65,12 @@ jobs:
           - name: MinGW / Make
             package: mingw-w64-x86_64-make
             generator: MinGW Makefiles
-            location: C:/msys64/mingw64/bin/mingw32-make.exe
+            #location: /mingw64/bin/mingw32-make.exe
             mingw: true
           - name: MinGW / Ninja
             package: mingw-w64-x86_64-ninja
             generator: Ninja
-            location: C:/msys64/mingw64/bin/ninja.exe
+            #location: /mingw64/bin/ninja.exe
             mingw: true
           - name: MSVC / MSBuild
             generator: Visual Studio 17 2022
@@ -83,14 +83,15 @@ jobs:
         msystem: MINGW64
         update: true
         install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-ninja
+        path-type: inherit
       if: matrix.make-program.mingw
 
     - name: Configure CMake
       run: cmake
         -B ${{ github.workspace }}/build
         -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-        ${{ matrix.make-program.mingw && format('-G "{0}"', matrix.make-program.generator) || '' }}
-        ${{ matrix.make-program.mingw && '-DCMAKE_CXX_COMPILER="C:/msys64/mingw64/bin/g++.exe"' || '' }}
+        -G "${{ matrix.make-program.generator }}"
+        ${{ matrix.make-program.mingw && '-DCMAKE_CXX_COMPILER="/mingw64/bin/g++.exe"' || '' }}
         # ${{ matrix.make-program.mingw && format('-DCMAKE_MAKE_PROGRAM="{0}"', matrix.make-program.location) || '' }}
 
     - name: Build
