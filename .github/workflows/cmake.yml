@@ -75,7 +75,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install MSYS2 Packages
-      run: C:\msys64\msys2.exe pacman -Suy --noconfirm mingw-w64-x86_64-gcc ${{ matrix.make-program.package }}
+      run: C:/msys64/msys2.exe pacman -Suy --noconfirm mingw-w64-x86_64-gcc ${{ matrix.make-program.package }}
       if: matrix.make-program.mingw
 
     - name: Configure CMake
