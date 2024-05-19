@@ -6,8 +6,7 @@ PPU::PPU(CPU& cpu) : cpu(cpu) {
     running = false;
     bg16sr0 = bg16sr1 = bg8sr0 = bg8sr1 = 0;
     
-    // Set the PPU registers to 0xff
-    memset(registers, 0x0, 8);
+    // Set the PPU registers to 0xff?
     // Set initial state of 0x2002 register
     // Note that 0xa0 would be used if we began with the pre-render scanline
     writeRegister(0x2, 0x20);

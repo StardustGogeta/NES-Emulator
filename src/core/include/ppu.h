@@ -28,7 +28,7 @@ class PPU {
         /*
             Control and status registers for the PPU.
         */
-        uint8_t registers[8];
+        std::array<uint8_t, 8> registers {};
 
         // Background-rendering shift registers
         uint8_t bg8sr0, bg8sr1;

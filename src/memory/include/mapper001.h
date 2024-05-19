@@ -1,5 +1,6 @@
 #pragma once
 #include "core_memory.h"
+#include <array>
 
 class Mapper001 : public CoreMemory {
     public:
@@ -10,7 +11,8 @@ class Mapper001 : public CoreMemory {
         void clear();
 
     private:
-        uint8_t memory[0x48000], shiftReg, controlReg,
+        std::array<uint8_t, 0x48000> memory;
+        uint8_t shiftReg, controlReg,
             chrReg0, chrReg1, prgReg;
 
         exp_addr_t mapAddress(exp_addr_t address);

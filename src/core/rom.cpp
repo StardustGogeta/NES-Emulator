@@ -21,14 +21,14 @@ void ROM::parseHeader() {
     std::streamoff romSize = romFile.tellg(); // Find file length
     std::println("The file size is {} bytes.", romSize);
     
-    uint8_t header[16];
+    std::array<uint8_t, 16> header;
     romFile.seekg(0); // Reset to start of file
     for (int x = 0; x < 16; x++) {
         romFile >> std::hex >> header[x];
     }
 
     // Check that the first 4 characters are "NES\n"
-    if (memcmp(header, "NES\x1A", 4) != 0) {
+    if (!std::equal(header.begin(), header.begin() + 4, "NES\x1A")) {
         std::println(stderr, "The NES file header is invalid.");
     } else {
         /*
