@@ -54,6 +54,10 @@ jobs:
 
     name: Windows - ${{ matrix.make-program.name }}
 
+    defaults:
+      run:
+        shell: msys2 {0}
+
     strategy:
       matrix:
         make-program:
@@ -73,10 +77,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Install MSYS2 Packages
-      run: C:/msys64/msys2.exe pacman -Suy --noconfirm mingw-w64-x86_64-gcc ${{ matrix.make-program.package }}
-      if: matrix.make-program.mingw
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-ninja
 
     - name: Configure CMake
       run: cmake
