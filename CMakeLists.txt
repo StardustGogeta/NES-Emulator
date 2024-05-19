@@ -5,9 +5,9 @@ project("NES Emulator" CXX)
 # Set default compile flags for GCC, per https://stackoverflow.com/a/2274040
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "GCC detected, adding compile flags")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra -pedantic -static-libstdc++")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -pedantic -Werror -static-libstdc++")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Wall -Wextra -pedantic -Werror -static-libstdc++")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG -Wall -Wextra -pedantic")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Wall -Wextra -pedantic -Werror")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Wall -Wextra -pedantic -Werror")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     message(STATUS "MSVC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DDEBUG /W4 /WX")
@@ -49,6 +49,7 @@ target_include_directories(main PRIVATE
 )
 
 target_compile_features(main PRIVATE cxx_std_23)
+target_link_libraries(main PRIVATE stdc++exp) # For <print>
 
 add_subdirectory(lib)
 

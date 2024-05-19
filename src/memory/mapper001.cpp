@@ -52,7 +52,7 @@ void Mapper001::resetShift() {
 
 
 void Mapper001::clear() {
-    memset(memory, 0, sizeof(memory)); // Set array elements to zero
+    memory.fill(0); // Set array elements to zero
     controlReg = 0x0c; // Reset control register
     chrReg0 = chrReg1 = prgReg = 0; // Clear ROM registers
     resetShift();

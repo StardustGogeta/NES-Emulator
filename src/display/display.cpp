@@ -2,6 +2,7 @@
 #include "SDL.h"
 #include <string>
 #include <print>
+#include <cmath>
 
 const int NES_DISPLAY_WIDTH = 256, NES_DISPLAY_HEIGHT = 240;
 
