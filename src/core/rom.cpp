@@ -3,6 +3,7 @@
 #include "memory_factory.h"
 #include <fstream>
 #include <print>
+#include <array>
 
 ROM::ROM() {
     persistentMemory = trainer = fourScreenVRAM = nes2 =

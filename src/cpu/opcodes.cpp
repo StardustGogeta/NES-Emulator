@@ -210,6 +210,9 @@ int CPU::getCycleCountOffset(instruction inst, addr_t addr, bool extraCycles) {
         // Account for crossing page boundary
         ret = (cache / 0x100 != addr / 0x100) * extraCycles;
         break;
+    default:
+        // No cycles to add
+        break;
     }
     return ret;
 }
@@ -492,11 +495,14 @@ void CPU::runInstruction(addressingMode mode, instruction inst, addr_t addr, uin
             p.b1 = oldP.b1;
             p.b2 = oldP.b2;
             p.i = oldP.i;
-            pc = stackPop() | (stackPop() << 8);
+            uint8_t first = stackPop();
+            pc = first | (stackPop() << 8);
             }
             break;
-        case RTS:
-            pc = (stackPop() | (stackPop() << 8)) + 1;
+        case RTS: {
+            uint8_t first = stackPop();
+            pc = (first | (stackPop() << 8)) + 1;
+            }
             break;
         case SAX:
             memory->write(addr, a & x);
