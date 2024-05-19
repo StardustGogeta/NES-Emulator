@@ -26,71 +26,65 @@ jobs:
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{ github.workspace }}/build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
       env:
         CC:   gcc-14
         CXX:  g++-14
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }}
       env:
         CC:   gcc-14
         CXX:  g++-14
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{ github.workspace }}/build
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+      run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure
       env:
         CC:   gcc-14
         CXX:  g++-14
 
-  build-windows-mingw-make:
+  build-windows:
     runs-on: windows-latest
+
+    strategy:
+      matrix:
+        make-program:
+          - name: Make
+            package: mingw-w64-x86_64-make
+            generator: MinGW Makefiles
+            location: C:/msys64/mingw64/bin/mingw32-make.exe
+            mingw: true
+          - name: Ninja
+            package: mingw-w64-x86_64-ninja
+            generator: Ninja
+            location: C:/msys64/mingw64/bin/ninja.exe
+            mingw: true
+          - name: MSBuild
+            generator: Visual Studio 17 2022
+            mingw: false
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Configure CMake
-      run: cmake -G "MinGW Makefiles" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
-
-  build-windows-mingw-ninja:
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v3
+    - name: Install MSYS2 Packages
+      run: C:\msys64\msys2.exe pacman -Suy --no-confirm mingw-w64-x86_64-gcc ${{ matrix.make-program.package }}
+      if: matrix.make-program.mingw
 
     - name: Configure CMake
-      run: cmake -G "Ninja" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_MAKE_PROGRAM="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+      run: cmake
+        -B ${{ github.workspace }}/build
+        -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+        ${{ matrix.make-program.mingw && format('-G "{0}"', matrix.make-program.generator) || '' }}
+        ${{ matrix.make-program.mingw && '-DCMAKE_CXX_COMPILER="C:/msys64/mingw64/bin/g++.exe' || '' }}
+        # ${{ matrix.make-program.mingw && format('-DCMAKE_MAKE_PROGRAM="{0}"', matrix.make-program.location) || '' }}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build ${{ github.workspace }}/build --config ${{ env.BUILD_TYPE }}
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
-
-  build-windows-msvc:
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}} --output-on-failure
+      working-directory: ${{ github.workspace }}/build
+      run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure
