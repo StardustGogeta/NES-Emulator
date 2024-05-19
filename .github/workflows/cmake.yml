@@ -17,6 +17,8 @@ jobs:
   build-linux-gcc:
     runs-on: ubuntu-24.04
 
+    name: "Linux - GCC / Make"
+
     steps:
     - uses: actions/checkout@v3
 
@@ -50,20 +52,22 @@ jobs:
   build-windows:
     runs-on: windows-latest
 
+    name: Windows - ${{ matrix.make-program.name }}
+
     strategy:
       matrix:
         make-program:
-          - name: Make
+          - name: MinGW / Make
             package: mingw-w64-x86_64-make
             generator: MinGW Makefiles
             location: C:/msys64/mingw64/bin/mingw32-make.exe
             mingw: true
-          - name: Ninja
+          - name: MinGW / Ninja
             package: mingw-w64-x86_64-ninja
             generator: Ninja
             location: C:/msys64/mingw64/bin/ninja.exe
             mingw: true
-          - name: MSBuild
+          - name: MSVC / MSBuild
             generator: Visual Studio 17 2022
             mingw: false
 
@@ -71,7 +75,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install MSYS2 Packages
-      run: C:\msys64\msys2.exe pacman -Suy --no-confirm mingw-w64-x86_64-gcc ${{ matrix.make-program.package }}
+      run: C:\msys64\msys2.exe pacman -Suy --noconfirm mingw-w64-x86_64-gcc ${{ matrix.make-program.package }}
       if: matrix.make-program.mingw
 
     - name: Configure CMake
