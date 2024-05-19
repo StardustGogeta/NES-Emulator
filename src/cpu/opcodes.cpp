@@ -210,6 +210,9 @@ int CPU::getCycleCountOffset(instruction inst, addr_t addr, bool extraCycles) {
         // Account for crossing page boundary
         ret = (cache / 0x100 != addr / 0x100) * extraCycles;
         break;
+    default:
+        // No cycles to add
+        break;
     }
     return ret;
 }
