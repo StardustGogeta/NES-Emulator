@@ -2,11 +2,11 @@
 #include <cstdint>
 #include <memory>
 
-typedef uint16_t addr_t; // Allows addresses in the 64 KB range
+using addr_t = uint16_t; // Allows addresses in the 64 KB range
 
 // Allows expanded addresses for larger memory spaces due to mappers
 // This should be much larger than necessary for any NES ROMs
-typedef uint32_t exp_addr_t;
+using exp_addr_t = uint32_t;
 
 class PPU;
 
