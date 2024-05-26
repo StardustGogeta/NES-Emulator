@@ -41,6 +41,15 @@
         "cacheVariables": {
             "CMAKE_CXX_COMPILER": "g++-14"
         }
+      },
+      {
+        "name": "docker",
+        "displayName": "Docker",
+        "description": "Docker (Linux build using GCC and Ninja generator)",
+        "generator": "Ninja",
+        "cacheVariables": {
+            "CMAKE_CXX_COMPILER": "g++"
+        }
       }
     ]
   }
