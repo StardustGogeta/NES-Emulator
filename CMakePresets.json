@@ -16,7 +16,7 @@
         "name": "windows-mingw-base",
         "hidden": true,
         "cacheVariables": {
-            "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
+            "CMAKE_CXX_COMPILER": "/mingw64/bin/g++.exe"
         }
       },
       {

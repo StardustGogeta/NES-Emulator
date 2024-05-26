@@ -36,6 +36,10 @@ jobs:
 
     name: Windows - ${{ matrix.make-program.name }}
 
+    defaults:
+      run:
+        shell: msys2 {0}
+
     strategy:
       fail-fast: false
       matrix:
@@ -54,8 +58,7 @@ jobs:
         msystem: MINGW64
         update: true
         install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-ninja
-        location: C:/msys64
-      if: matrix.make-program.name != 'MSVC / MSBuild'
+        path-type: inherit
 
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
