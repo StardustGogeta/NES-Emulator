@@ -64,6 +64,7 @@ add_test(
     NAME nestest_match
     COMMAND diff    ${CMAKE_SOURCE_DIR}/test/nestestLog.txt
                     ${CMAKE_SOURCE_DIR}/test/nestest.log
+                    --strip-trailing-cr
 )
 
 # Could also compare the first lines of each file using technique from https://superuser.com/a/511406
