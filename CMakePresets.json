@@ -1,0 +1,46 @@
+{
+    "version": 5,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 24,
+      "patch": 0
+    },
+    "configurePresets": [
+      {
+        "name": "windows-msvc",
+        "displayName": "MSVC / MSBuild",
+        "description": "Windows build using MSVC and Visual Studio 2022 generator",
+        "generator": "Visual Studio 17 2022"
+      },
+      {
+        "name": "windows-mingw-base",
+        "hidden": true,
+        "cacheVariables": {
+            "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
+        }
+      },
+      {
+        "name": "windows-mingw-make",
+        "inherits": "windows-mingw-base",
+        "displayName": "MinGW / Make",
+        "description": "Windows build using MinGW and Make generator",
+        "generator": "MinGW Makefiles"
+      },
+      {
+        "name": "windows-mingw-ninja",
+        "inherits": "windows-mingw-base",
+        "displayName": "MinGW / Ninja",
+        "description": "Windows build using MinGW and Ninja generator",
+        "generator": "Ninja"
+      },
+      {
+        "name": "linux-gcc-make",
+        "displayName": "Linux / GCC",
+        "description": "Linux build using GCC and Make generator",
+        "generator": "Unix Makefiles",
+        "cacheVariables": {
+            "CMAKE_CXX_COMPILER": "g++-14"
+        }
+      }
+    ]
+  }
