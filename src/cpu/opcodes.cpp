@@ -259,7 +259,6 @@ void CPU::runInstruction(addressingMode mode, instruction inst, addr_t addr, uin
             }
             break;
         case BIT:
-            printf("Argument value is 0x%x\n", argument);
             p.n = (argument & 0x80) > 0;
             p.v = (argument & 0x40) > 0;
             p.z = (a & argument) == 0;
