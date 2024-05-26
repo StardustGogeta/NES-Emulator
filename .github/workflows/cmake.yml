@@ -62,7 +62,7 @@ jobs:
 
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-        --preset="${{ matrix.preset }}"
+        --preset="${{ matrix.make-program.preset }}"
 
     - name: Build
       run: cmake --build build --config ${{ env.BUILD_TYPE }}
