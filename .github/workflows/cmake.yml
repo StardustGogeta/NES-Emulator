@@ -59,11 +59,10 @@ jobs:
         update: true
         install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-ninja
         path-type: inherit
-        location: C:/
 
     - name: Configure CMake
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-        --preset="${{ matrix.make-program.preset }}"
+      # Must override the compiler from the preset in order to get the right root path (ignored for MSVC build)
+      run: cmake -B build --preset="${{ matrix.make-program.preset }}" -DCMAKE_CXX_COMPILER="/mingw64/bin/g++.exe"
 
     - name: Build
       run: cmake --build build --config ${{ env.BUILD_TYPE }}
