@@ -16,7 +16,7 @@ jobs:
     name: "Linux - GCC / Make"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout
 
     - name: Download SDL2
       run: sudo apt-get install libsdl2-dev
@@ -52,7 +52,7 @@ jobs:
             preset: windows-msvc
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout
     - uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW64
