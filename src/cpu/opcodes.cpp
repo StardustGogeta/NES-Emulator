@@ -430,7 +430,6 @@ void CPU::runInstruction(addressingMode mode, instruction inst, addr_t addr, uin
             setProcessorStatus(stackPop());
             p.b1 = oldP.b1;
             p.b2 = oldP.b2;
-            p.i = oldP.i;
             }
             break;
         case RLA: {// ROL + AND

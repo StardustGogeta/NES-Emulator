@@ -28,6 +28,8 @@ uint8_t PPU::readRegister(addr_t address) {
 
 void PPU::writeRegister(addr_t address, uint8_t data) {
     registers[address] = data;
+    // Write to the PPU open bus
+    registers[0x2] = (registers[0x2] & 0xf0) | (data & 0x0f);
 }
 
 void PPU::start() {

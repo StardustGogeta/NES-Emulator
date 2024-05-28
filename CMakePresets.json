@@ -5,51 +5,94 @@
       "minor": 24,
       "patch": 0
     },
-    "configurePresets": [
-      {
-        "name": "windows-msvc",
-        "displayName": "MSVC / MSBuild",
-        "description": "Windows build using MSVC and Visual Studio 2022 generator",
-        "generator": "Visual Studio 17 2022"
-      },
-      {
-        "name": "windows-mingw-base",
-        "hidden": true,
-        "cacheVariables": {
-            "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
-        }
-      },
-      {
-        "name": "windows-mingw-make",
-        "inherits": "windows-mingw-base",
-        "displayName": "MinGW / Make",
-        "description": "Windows build using MinGW and Make generator",
-        "generator": "MinGW Makefiles"
-      },
-      {
-        "name": "windows-mingw-ninja",
-        "inherits": "windows-mingw-base",
-        "displayName": "MinGW / Ninja",
-        "description": "Windows build using MinGW and Ninja generator",
-        "generator": "Ninja"
-      },
-      {
-        "name": "linux-gcc-make",
-        "displayName": "Linux / GCC",
-        "description": "Linux build using GCC and Make generator",
-        "generator": "Unix Makefiles",
-        "cacheVariables": {
-            "CMAKE_CXX_COMPILER": "g++-14"
-        }
-      },
-      {
-        "name": "docker",
-        "displayName": "Docker",
-        "description": "Docker (Linux build using GCC and Ninja generator)",
-        "generator": "Ninja",
-        "cacheVariables": {
-            "CMAKE_CXX_COMPILER": "g++"
-        }
+  "configurePresets": [
+    {
+      "name": "windows-msvc-base",
+      "hidden": true,
+      "generator": "Visual Studio 17 2022"
+    },
+    {
+      "name": "windows-msvc-debug",
+      "displayName": "MSVC / MSBuild (Debug)",
+      "inherits": "windows-msvc-base",
+      "description": "Windows debug build using MSVC and Visual Studio 2022 generator",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
       }
-    ]
-  }
+    },
+    {
+      "name": "windows-msvc-reldebinfo",
+      "displayName": "MSVC / MSBuild (RelWithDebInfo)",
+      "inherits": "windows-msvc-base",
+      "description": "Windows release-with-debug-info build using MSVC and Visual Studio 2022 generator",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "windows-msvc-release",
+      "displayName": "MSVC / MSBuild (Release)",
+      "inherits": "windows-msvc-base",
+      "description": "Windows release build using MSVC and Visual Studio 2022 generator",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "windows-mingw-base",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
+      }
+    },
+    {
+      "name": "windows-mingw-make",
+      "inherits": "windows-mingw-base",
+      "displayName": "MinGW / Make",
+      "description": "Windows build using MinGW and Make generator",
+      "generator": "MinGW Makefiles"
+    },
+    {
+      "name": "windows-mingw-ninja",
+      "inherits": "windows-mingw-base",
+      "displayName": "MinGW / Ninja",
+      "description": "Windows build using MinGW and Ninja generator",
+      "generator": "Ninja"
+    },
+    {
+      "name": "linux-gcc-make",
+      "displayName": "Linux / GCC",
+      "description": "Linux build using GCC and Make generator",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++-14"
+      }
+    },
+    {
+      "name": "docker",
+      "displayName": "Docker",
+      "description": "Docker (Linux build using GCC and Ninja generator)",
+      "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "MSVC - Debug",
+      "configuration": "Debug",
+      "configurePreset": "windows-msvc-debug"
+    },
+    {
+      "name": "MSVC - RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "configurePreset": "windows-msvc-reldebinfo"
+    },
+    {
+      "name": "MSVC - Release",
+      "configuration": "Release",
+      "configurePreset": "windows-msvc-release"
+    }
+  ]
+}

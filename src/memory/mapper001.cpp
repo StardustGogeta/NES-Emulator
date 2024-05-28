@@ -34,7 +34,7 @@ void Mapper001::write(addr_t address, uint8_t data) {
             shiftReg = (shiftReg >> 1) | ((data & 1) << 4);
             if (lowBit) {
                 // The low bit was set, so the shift register is full
-                int regId = address & 0x6000;
+                int regId = (address & 0x6000) >> 13;
                 uint8_t* registers[] = {&controlReg, &chrReg0, &chrReg1, &prgReg};
                 *registers[regId] = shiftReg;
                 resetShift();
