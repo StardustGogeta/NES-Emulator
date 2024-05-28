@@ -21,6 +21,15 @@
       }
     },
     {
+      "name": "windows-msvc-reldebinfo",
+      "displayName": "MSVC / MSBuild (RelWithDebInfo)",
+      "inherits": "windows-msvc-base",
+      "description": "Windows release-with-debug-info build using MSVC and Visual Studio 2022 generator",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
       "name": "windows-msvc-release",
       "displayName": "MSVC / MSBuild (Release)",
       "inherits": "windows-msvc-base",
@@ -74,6 +83,11 @@
       "name": "MSVC - Debug",
       "configuration": "Debug",
       "configurePreset": "windows-msvc-debug"
+    },
+    {
+      "name": "MSVC - RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "configurePreset": "windows-msvc-reldebinfo"
     },
     {
       "name": "MSVC - Release",
