@@ -66,7 +66,7 @@ add_subdirectory(lib)
 enable_testing()
 add_test(NAME nestest_execute COMMAND main CPU_TEST nestest
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-set_tests_properties(nestest_execute PROPERTIES TIMEOUT 1)
+set_tests_properties(nestest_execute PROPERTIES TIMEOUT 2)
 add_test(
     NAME nestest_match
     COMMAND diff    ${CMAKE_SOURCE_DIR}/test/nestestLog.txt

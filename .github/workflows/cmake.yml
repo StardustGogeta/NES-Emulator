@@ -65,7 +65,7 @@ jobs:
       run: cmake -B build --preset="${{ matrix.make-program.preset }}" -DCMAKE_CXX_COMPILER="/mingw64/bin/g++.exe"
 
     - name: Build
-      run: cmake --build build
+      run: cmake --build build --config ${{ env.BUILD_TYPE }}
 
     - name: Test
       working-directory: build
