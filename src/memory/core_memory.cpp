@@ -44,14 +44,14 @@ addr_t CoreMemory::mapPPU(addr_t address) {
     Reads a byte of data from one of the PPU registers.
 */
 uint8_t CoreMemory::readPPU(addr_t address) {
-    return ppu->readRegister(address);
+    return ppu->readRegister(address & 0xf);
 }
 
 /*
     Writes a byte of data to one of the PPU registers.
 */
 void CoreMemory::writePPU(addr_t address, uint8_t data) {
-    return ppu->writeRegister(address, data);
+    return ppu->writeRegister(address & 0xf, data);
 }
 
 /*
