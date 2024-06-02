@@ -80,7 +80,7 @@ add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5off
 set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 20)
 add_test(
     NAME blargg_cpu_test5_official_match
-    COMMAND python ${CMAKE_SOURCE_DIR}/test/logCompare.py
-        ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
-        ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
+    COMMAND diff    ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
+                    ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
+                    --strip-trailing-cr
 )

@@ -97,11 +97,11 @@ void PPU::cycle() {
     }
     else /* 241 to 261 */ {
         // Vertical blanking
-        if (scanline == 241 && cyclesOnLine == 1) {
+        if (scanline == 241 && cyclesOnLine == 0) {
             // Set the vblank value on the second cycle of this line
             writeRegister(0x2, readRegister(0x2) | 0x80);
         }
-        if (scanline == 261 && cyclesOnLine == 1) {
+        if (scanline == 261 && cyclesOnLine == 0) {
             // Clear the vblank value on the second cycle of this line
             writeRegister(0x2, readRegister(0x2) & ~0x80);
         }

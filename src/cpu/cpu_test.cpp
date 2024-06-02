@@ -2,7 +2,11 @@
 #include <print>
 #include <chrono>
 
-const int DEFAULT_NESTEST_CASES = 26555;
+struct TestCases {
+    static const int NINTENDULATOR_OFFSET = 14; // This is how many cycles get added to the CPU in Nintendulator
+    static const int NESTEST = 26555;
+    static const int BLARGG_TEST5_OFFICIAL = 3294894;
+};
 
 auto now() {
     return std::chrono::high_resolution_clock::now();
@@ -16,7 +20,7 @@ auto awake_time() {
 void runNesTest(int testCases) {
     std::println("Running nestest...");
     if (!testCases) {
-        testCases = DEFAULT_NESTEST_CASES;
+        testCases = TestCases::NESTEST;
     }
 
     ROM rom;
@@ -100,7 +104,7 @@ void runBlarggCpuTest5Official() {
         std::this_thread::yield();
     }
 
-    for (int i = 0; i < 2320490; i++) {
+    for (int i = 0; i < TestCases::BLARGG_TEST5_OFFICIAL - TestCases::NINTENDULATOR_OFFSET; i++) {
         nes->cpu->cycle();
     }
 
