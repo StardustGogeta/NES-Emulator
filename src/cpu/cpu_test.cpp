@@ -100,7 +100,7 @@ void runBlarggCpuTest5Official() {
         std::this_thread::yield();
     }
 
-    for (int i = 0; i < 368380; i++) {
+    for (int i = 0; i < 2320490; i++) {
         nes->cpu->cycle();
     }
 

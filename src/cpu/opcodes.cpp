@@ -202,6 +202,7 @@ int CPU::getCycleCountOffset(instruction inst, addr_t addr, bool extraCycles) {
             ret = 1 + (pc / 0x100 != addr / 0x100);
         }
         break;
+    case CMP:
     case LAX: // LDA + LDX
     case LDA:
     case LDX:
@@ -415,16 +416,16 @@ void CPU::runInstruction(addressingMode mode, instruction inst, addr_t addr, uin
             stackPush(a);
             break;
         case PHP:
-            // The B and I flags must be set to 1 in the copy on the stack
+            // Bits 5 and 6 be set to 1 in the copy on the stack
             // See https://www.masswerk.at/6502/6502_instruction_set.html#PHP
-            stackPush(processorStatus() | 0x34);
+            stackPush(processorStatus() | 0x30);
             break;
         case PLA:
             a = stackPop();
             setNZ(a);
             break;
         case PLP: {
-            // We ignore changes to the B and I flags
+            // We ignore changes to bits 5 and 6
             // See https://www.masswerk.at/6502/6502_instruction_set.html#PLP
             processorFlags oldP = p;
             setProcessorStatus(stackPop());

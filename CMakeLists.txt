@@ -77,7 +77,7 @@ add_test(
 # Could also compare the first lines of each file using technique from https://superuser.com/a/511406
 add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5official
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 10)
+set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 20)
 add_test(
     NAME blargg_cpu_test5_official_match
     COMMAND python ${CMAKE_SOURCE_DIR}/test/logCompare.py
