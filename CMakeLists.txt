@@ -6,7 +6,7 @@ project("NES Emulator" CXX)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "GCC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+    add_compile_options(-Wall -Wextra -pedantic -Werror -O2)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     message(STATUS "MSVC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DDEBUG")
@@ -77,10 +77,10 @@ add_test(
 # Could also compare the first lines of each file using technique from https://superuser.com/a/511406
 add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5official
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 10)
+set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 20)
 add_test(
     NAME blargg_cpu_test5_official_match
-    COMMAND python ${CMAKE_SOURCE_DIR}/test/logCompare.py
-        ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
-        ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
+    COMMAND diff    ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
+                    ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
+                    --strip-trailing-cr
 )

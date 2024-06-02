@@ -82,3 +82,4 @@ Examples of these are shown in the GitHub Actions automated builds.
 - PPU registers: https://www.nesdev.org/wiki/PPU_registers
 - List of NES mappers: https://www.nesdev.org/wiki/Mapper
 - NES emulator in Rust: https://bugzmanov.github.io/nes_ebook/chapter_1.html
+- CPU / PPU synchronization discussion: https://www.reddit.com/r/EmuDev/comments/10m9had/cpu_ppu_timing_catch_up_method/

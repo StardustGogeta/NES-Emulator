@@ -22,7 +22,7 @@ jobs:
       run: sudo apt-get install libsdl2-dev
 
     - name: Configure CMake
-      run: cmake -B build --preset=linux-gcc-make
+      run: cmake -B build --preset=linux-gcc-make -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
       run: cmake --build build
@@ -62,7 +62,7 @@ jobs:
 
     - name: Configure CMake
       # Must override the compiler from the preset in order to get the right root path (ignored for MSVC build)
-      run: cmake -B build --preset="${{ matrix.make-program.preset }}" -DCMAKE_CXX_COMPILER="/mingw64/bin/g++.exe"
+      run: cmake -B build --preset="${{ matrix.make-program.preset }}" -DCMAKE_CXX_COMPILER="/mingw64/bin/g++.exe" -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
       run: cmake --build build --config ${{ env.BUILD_TYPE }}
