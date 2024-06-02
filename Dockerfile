@@ -15,7 +15,7 @@ COPY src src/
 COPY test test/
 
 WORKDIR /main
-RUN cmake -B /main/build --preset=docker
+RUN cmake -B /main/build --preset=docker -DCMAKE_BUILD_TYPE=Release
 RUN cmake --build build --config Release
 
 WORKDIR /main/build

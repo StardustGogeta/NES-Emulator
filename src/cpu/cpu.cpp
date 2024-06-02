@@ -141,9 +141,8 @@ void CPU::setProcessorStatus(uint8_t status) {
 void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
     // std::thread ppuThread(&PPU::cycles, ppu, 3);
 
-    #ifdef DEBUG
-    std::println("Trying to run opcode {:#04x} at position {:#06x}", opcode, pc - 1);
-    #endif
+    // This slows things down a lot:
+    // std::println("Trying to run opcode {:#04x} at position {:#06x}", opcode, pc - 1);
 
     addressingMode mode = getAddressingMode(opcode);
     instruction inst = getInstruction(opcode);
@@ -225,9 +224,8 @@ bool CPU::waitForCycle() {
     bool caughtUp = cyclesRequested <= cyclesExecuted;
     notDone = cyclesExecuted < maxCycles || !maxCycles;
 
-    #ifdef DEBUG
-    std::println("Executed {} cycles of {} requested and max {}", cyclesExecuted.load(), cyclesRequested, maxCycles);
-    #endif
+    // This slows things down a lot:
+    // std::println("Executed {} cycles of {} requested and max {}", cyclesExecuted.load(), cyclesRequested, maxCycles);
 
     if (running && caughtUp && notDone) {
         // We are caught up, so we need to wait until the next cycle is requested.
