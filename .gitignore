@@ -4,6 +4,7 @@ build*
 test/**
 !*.py
 Testing
+run-clang-tidy.py
 
 # Documentation files (may add later)
 Doxyfile
