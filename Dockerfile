@@ -8,6 +8,18 @@ RUN apt-get update && apt-get install -y \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*
 
+# Add "unstable" packages to Debian release to allow clang-tidy-18
+RUN sed -i -e 's/updates/updates unstable/' /etc/apt/sources.list.d/debian.sources
+RUN apt-get update && apt-get install -y \
+    clang-tidy-18 \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/*
+
+WORKDIR /main
+RUN curl https://raw.githubusercontent.com/llvm/llvm-project/main/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py > run-clang-tidy.py
+# Invoke like so:
+# python run-clang-tidy.py -clang-tidy-binary clang-tidy-18 src/**/*.cpp -p out/build/docker/
+
 WORKDIR /main
 COPY CMake* ./
 COPY lib lib/
