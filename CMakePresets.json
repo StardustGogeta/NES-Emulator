@@ -36,8 +36,7 @@
       "inherits": "windows-msvc-base",
       "description": "Windows release build using MSVC and Visual Studio 2022 generator",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS": "/D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR"
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
