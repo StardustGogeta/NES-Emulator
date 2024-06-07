@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28.0)
 
 project("NES Emulator" CXX)
 
+# Something about module-scanning seems to be broken for Ninja on Windows
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 # Set default compile flags for GCC, per https://stackoverflow.com/a/2274040

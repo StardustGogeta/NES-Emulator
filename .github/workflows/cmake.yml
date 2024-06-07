@@ -25,7 +25,7 @@ jobs:
       run: cmake -B build --preset=linux-gcc-make -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
-      run: cmake --build build
+      run: cmake --build build --parallel
 
     - name: Test
       working-directory: build
@@ -65,7 +65,7 @@ jobs:
       run: cmake -B build --preset="${{ matrix.make-program.preset }}" -DCMAKE_CXX_COMPILER="/mingw64/bin/g++.exe" -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
-      run: cmake --build build --config ${{ env.BUILD_TYPE }}
+      run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
 
     - name: Test
       working-directory: build
