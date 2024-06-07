@@ -28,7 +28,7 @@ COPY test test/
 
 WORKDIR /main
 RUN cmake -B /main/build --preset=docker -DCMAKE_BUILD_TYPE=Release
-RUN cmake --build build --config Release
+RUN cmake --build build --config Release --parallel
 
 WORKDIR /main/build
 CMD ctest -C Release
