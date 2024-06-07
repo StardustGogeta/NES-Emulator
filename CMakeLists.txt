@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28.0)
 
 project("NES Emulator" CXX)
 
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 # Set default compile flags for GCC, per https://stackoverflow.com/a/2274040
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     message(STATUS "GCC detected, adding compile flags")
