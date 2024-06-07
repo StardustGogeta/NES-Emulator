@@ -10,7 +10,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     message(STATUS "MSVC detected, adding compile flags")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DDEBUG")
-    add_compile_options(/W4 /WX)
+    add_compile_options(/W4 /WX /MP)
 endif()
 
 set(BIN_DIR "${CMAKE_SOURCE_DIR}/bin")
