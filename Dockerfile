@@ -1,7 +1,6 @@
 FROM gcc:14.1
 
 RUN apt-get update && apt-get install -y \
-    cmake \
     libsdl2-dev \
     ninja-build \
     python-is-python3 \
@@ -12,6 +11,7 @@ RUN apt-get update && apt-get install -y \
 RUN sed -i -e 's/updates/updates unstable/' /etc/apt/sources.list.d/debian.sources
 RUN apt-get update && apt-get install -y \
     clang-tidy-18 \
+    cmake \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*
 
