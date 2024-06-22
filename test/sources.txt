@@ -13,7 +13,7 @@ Log files for blargg tests generated from Nintendulator via following process:
 - Press "Power", then "Reset", then "Start Log"
 - Run CPU until completion, then stop
 - Press "Stop Log" and retrieve log file
-When file is too large to store in one piece, broken into segments via `split <log file> -b 95M -d segment` and rejoined with `cat segment* > joined`.
+When file is too large, compressed using xz.
 
 blargg_instr_test-v5 - From https://web.archive.org/web/20190319194832/http://blargg.8bitalley.com/nes-tests/instr_test-v5.zip
 

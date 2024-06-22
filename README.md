@@ -6,7 +6,7 @@
 [![CMake](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml)
 [![Microsoft C++ Code Analysis](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml)
 ![GitHub Repo Size](https://img.shields.io/github/repo-size/StardustGogeta/NES-Emulator)
-![CMake Version](https://img.shields.io/badge/CMake-3.24.0-red)
+![CMake Version](https://img.shields.io/badge/CMake-3.28.0-red)
 ![C++ Version](https://img.shields.io/badge/C++-23-white)
 
 An incomplete NES emulator made using SDL2 and C++23.
