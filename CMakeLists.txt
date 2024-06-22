@@ -65,10 +65,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 endif()
 
 add_custom_command(
-   OUTPUT blargg_cpu_test5_official.log
+   OUTPUT ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
    COMMAND xz -kd ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log.xz
 )
-add_custom_target(blargg_cpu_test5_official DEPENDS blargg_cpu_test5_official.log)
+add_custom_target(blargg_cpu_test5_official DEPENDS ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log)
 
 add_dependencies(main blargg_cpu_test5_official)
 
