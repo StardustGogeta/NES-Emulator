@@ -64,6 +64,14 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_link_libraries(main PRIVATE stdc++exp) # For <print>
 endif()
 
+add_custom_command(
+   OUTPUT blargg_cpu_test5_official.log
+   COMMAND xz -kd ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log.xz
+)
+add_custom_target(blargg_cpu_test5_official DEPENDS blargg_cpu_test5_official.log)
+
+add_dependencies(main blargg_cpu_test5_official)
+
 add_subdirectory(lib)
 
 enable_testing()
@@ -83,7 +91,7 @@ add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5off
 set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 20)
 add_test(
     NAME blargg_cpu_test5_official_match
-    COMMAND diff    ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
-                    ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
-                    --strip-trailing-cr
+    COMMAND python ${CMAKE_SOURCE_DIR}/test/logCompare.py
+        ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
+        ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
 )

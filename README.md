@@ -16,7 +16,7 @@ An incomplete NES emulator made using SDL2 and C++23.
 - ~~Basic source code layout~~
 - ~~ROM file input and processing~~
 - ~~Continuous integration / static analysis tool setup~~
-- ~~Official CPU opcode emulation~~
+- Official CPU opcode emulation
 - Full unofficial CPU opcode emulation
 - ~~Finish nestest support~~
 - Additional CPU tests

@@ -20,6 +20,8 @@ Doxyfile
 !test/blargg_instr_test-v5/rom_singles
 !test/**/*.nes
 !test/**/*.log
+!test/**/*.xz
+!test/sources.txt
 
 # SDL files
 lib/SDL2/docs

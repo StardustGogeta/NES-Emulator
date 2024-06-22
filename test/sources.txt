@@ -1,0 +1,19 @@
+nestest.nes - 
+	From http://nickmass.com/images/nestest.nes
+	Found at https://www.nesdev.org/wiki/Emulator_tests
+nestest.log -
+	From https://www.qmtpro.com/~nes/misc/nestest.log
+	Found at https://www.nesdev.org/wiki/Emulator_tests
+
+blargg_cpu_test5_official.nes - From https://github.com/christopherpow/nes-test-roms/tree/master/blargg_nes_cpu_test5
+blargg_cpu_test5.nes - From https://github.com/christopherpow/nes-test-roms/tree/master/blargg_nes_cpu_test5
+Log files for blargg tests generated from Nintendulator via following process:
+- Load ROM
+- Open CPU debugger window
+- Press "Power", then "Reset", then "Start Log"
+- Run CPU until completion, then stop
+- Press "Stop Log" and retrieve log file
+When file is too large to store in one piece, broken into segments via `split <log file> -b 95M -d segment` and rejoined with `cat segment* > joined`.
+
+blargg_instr_test-v5 - From https://web.archive.org/web/20190319194832/http://blargg.8bitalley.com/nes-tests/instr_test-v5.zip
+
