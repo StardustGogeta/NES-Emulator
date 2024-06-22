@@ -9,7 +9,8 @@
     {
       "name": "windows-msvc-base",
       "hidden": true,
-      "generator": "Visual Studio 17 2022"
+      "generator": "Visual Studio 17 2022",
+      "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe"
     },
     {
       "name": "windows-msvc-debug",

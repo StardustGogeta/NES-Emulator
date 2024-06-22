@@ -5,7 +5,7 @@
 struct TestCases {
     static const int NINTENDULATOR_OFFSET = 14; // This is how many cycles get added to the CPU in Nintendulator
     static const int NESTEST = 26555;
-    static const int BLARGG_TEST5_OFFICIAL = 3294894;
+    static const int BLARGG_TEST5_OFFICIAL = 3294894; // TODO: Update this to the full value
 };
 
 auto now() {
@@ -104,7 +104,7 @@ void runBlarggCpuTest5Official() {
         std::this_thread::yield();
     }
 
-    for (int i = 0; i < TestCases::BLARGG_TEST5_OFFICIAL - TestCases::NINTENDULATOR_OFFSET; i++) {
+    for (int i = 0; i < 3698351 - TestCases::NINTENDULATOR_OFFSET; i++) {
         nes->cpu->cycle();
     }
 

@@ -102,7 +102,8 @@ void PPU::cycle() {
             writeRegister(0x2, readRegister(0x2) | 0x80);
         }
         if (scanline == 261 && cyclesOnLine == 0) {
-            // Clear the vblank value on the second cycle of this line
+            // Clear the vblank bit on the second cycle of this line
+            // TODO: Also clear sprite overflow bit?
             writeRegister(0x2, readRegister(0x2) & ~0x80);
         }
     }
