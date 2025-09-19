@@ -66,7 +66,7 @@ endif()
 
 add_custom_command(
    OUTPUT ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
-   COMMAND xz -kd ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log.xz
+   COMMAND xz -kdf ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log.xz
 )
 add_custom_target(blargg_cpu_test5_official DEPENDS ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log)
 
