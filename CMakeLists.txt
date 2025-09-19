@@ -4,6 +4,7 @@ project("NES Emulator" CXX)
 
 # Something about module-scanning seems to be broken for Ninja on Windows
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Set default compile flags for GCC, per https://stackoverflow.com/a/2274040
@@ -90,9 +91,16 @@ add_test(
 add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5official
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 20)
+
+if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(PYTHON python)
+else()
+    set(PYTHON python3)
+endif()
+
 add_test(
     NAME blargg_cpu_test5_official_match
-    COMMAND python3 ${CMAKE_SOURCE_DIR}/test/logCompare.py
+    COMMAND ${PYTHON} ${CMAKE_SOURCE_DIR}/test/logCompare.py
         ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
         ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
 )
