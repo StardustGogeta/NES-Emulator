@@ -19,7 +19,6 @@ Doxyfile
 !test/blargg_instr_test-v5
 !test/blargg_instr_test-v5/rom_singles
 !test/**/*.nes
-!test/**/*.log
 !test/**/*.xz
 !test/sources.txt
 

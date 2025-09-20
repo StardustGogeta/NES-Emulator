@@ -1,5 +1,6 @@
 #include "opcodes.h"
 #include "cpu.h"
+#include <format>
 
 const std::string addressingModeNames[] = {
     "IMM", "ZPG", "ZPX", "ZPY", "IZX", "IZY", "ABS", "ABX", "ABY", "IND", "REL", "NUL", "XXX"

@@ -14,7 +14,6 @@
 				"ms-vscode.cpptools",
 				"ms-vscode.cpptools-extension-pack",
 				"ms-vscode.cmake-tools",
-				"twxs.cmake",
 				"SteveBushResearch.BuildOutputColorizer",
 				"github.vscode-github-actions"
 			]

@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <ostream>
 #include <print>
 
 CPU::Logger::Logger(CPU& cpu) : logging(false), reversePPU(false), cpu(cpu) { }
