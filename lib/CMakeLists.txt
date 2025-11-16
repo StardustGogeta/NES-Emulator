@@ -15,5 +15,5 @@ target_link_libraries(main PRIVATE ${SDL2_LIBRARIES})
 
 # Add SDL2.dll to the executables folder if on Windows
 if(CMAKE_HOST_WIN32)
-    file(COPY "${SDL2_BINDIR}/SDL2.dll" DESTINATION ${BIN_DIR})
+    file(COPY "${SDL2_BINDIR}/SDL2.dll" DESTINATION ${CMAKE_BINARY_DIR})
 endif()
