@@ -6,7 +6,9 @@
 		// Sets the run context to one level up instead of the .devcontainer folder.
 		"context": "..",
 		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-		"dockerfile": "../Dockerfile"
+		"dockerfile": "../Dockerfile",
+		// The Dockerfile is multi-stage, so choose the stage for the dev container
+		"target": "development"
 	},
 	"customizations": {
 		"vscode": {
@@ -18,8 +20,14 @@
 				"github.vscode-github-actions"
 			]
 		}
+	},
+	"mounts": [
+		// Persist bash history: https://code.visualstudio.com/remote/advancedcontainers/persist-bash-history
+		"source=projectname-bashhistory,target=/commandhistory,type=volume"
+	],
+	"postCreateCommand": {
+		"Add Git Bash Completions": "echo \"source /usr/share/bash-completion/completions/git\" >> ~/.bashrc"
 	}
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 

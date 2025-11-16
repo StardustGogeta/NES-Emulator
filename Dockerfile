@@ -1,21 +1,31 @@
-FROM gcc:15.2
+# Fedora has a small footprint and the latest package versions
+ARG FEDORA_VERSION=latest
+FROM fedora:${FEDORA_VERSION} as base
 
-# Add "experimental" packages to Debian release to allow clang-tidy-21
-RUN sed -i -e 's/updates/updates experimental/' /etc/apt/sources.list.d/debian.sources
-RUN apt-get update && apt-get install -y \
-    clang-tidy-21 \
+# Install base packages used by all stages
+RUN dnf install -y \
+    clang-tools-extra \
     cmake \
-    libsdl2-dev \
+    gcc-c++ \
     ninja-build \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/*
+    SDL2-devel \
+    && dnf clean all
 
-WORKDIR /main
-RUN curl https://raw.githubusercontent.com/llvm/llvm-project/main/clang-tools-extra/clang-tidy/tool/run-clang-tidy.py > run-clang-tidy.py
-# Invoke like so:
-# python3 run-clang-tidy.py -clang-tidy-binary clang-tidy-21 src/**/*.cpp -p out/build/docker/
-# (change the final directory path to the directory containing compile_commands.json)
+# Development stage
+FROM base as development
+RUN dnf install -y \
+    git \
+    procps-ng \
+    gdb \
+    && dnf clean all
 
+# Retain bash history for the dev container
+# See https://code.visualstudio.com/remote/advancedcontainers/persist-bash-history
+RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+    && echo "$SNIPPET" >> "/root/.bashrc"
+
+# Build stage
+FROM base as build
 WORKDIR /main
 COPY CMake* ./
 COPY lib lib/
