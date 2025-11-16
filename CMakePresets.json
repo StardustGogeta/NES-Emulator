@@ -1,99 +1,276 @@
 {
-    "version": 5,
-    "cmakeMinimumRequired": {
-      "major": 3,
-      "minor": 24,
-      "patch": 0
-    },
+  "$schema": "https://raw.githubusercontent.com/Kitware/CMake/refs/heads/master/Help/manual/presets/schema.json",
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 31,
+    "patch": 0
+  },
   "configurePresets": [
     {
-      "name": "windows-msvc-base",
+      "name": "cmake-pedantic",
+      "description": "Enables pedantic CMake warnings for package developers.",
+      "$comment": "Inspired by https://github.com/friendlyanon/cmake-init-executable/blob/master/CMakePresets.json",
+      "hidden": true,
+      "warnings": {
+        "dev": true,
+        "deprecated": true,
+        "uninitialized": true,
+        "unusedCli": true,
+        "systemVars": false
+      },
+      "errors": {
+        "dev": true,
+        "deprecated": true
+      }
+    },
+    {
+      "name": "base",
+      "description": "Set up a common build folder and compilation database for other presets.",
+      "hidden": true,
+      "inherits": "cmake-pedantic",
+      "binaryDir": "build",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+      }
+    },
+    {
+      "name": "ninja",
+      "description": "CMake options for the Ninja generator",
+      "hidden": true,
+      "generator": "Ninja"
+    },
+    {
+      "name": "gcc",
+      "description": "Flags and CMake options for GCC toolchains",
+      "hidden": true,
+      "environment": {
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -pedantic -Werror"
+      },
+      "$comment": "TODO: check if we need linker flag for stdc++exp (from the CMake file)",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++",
+        "CMAKE_CXX_FLAGS_DEBUG": "$env{CMAKE_CXX_FLAGS} -Og -DDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS} -O2"
+      }
+    },
+    {
+      "name": "msvc",
+      "description": "Flags and CMake options for MSVC toolchains",
       "hidden": true,
       "generator": "Visual Studio 17 2022",
-      "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe"
-    },
-    {
-      "name": "windows-msvc-debug",
-      "displayName": "MSVC / MSBuild (Debug)",
-      "inherits": "windows-msvc-base",
-      "description": "Windows debug build using MSVC and Visual Studio 2022 generator",
+      "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe",
+      "environment": {
+        "CMAKE_CXX_FLAGS": "/W4 /WX"
+      },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_CXX_FLAGS_DEBUG": "$env{CMAKE_CXX_FLAGS} -DDEBUG",
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS}"
       }
     },
     {
-      "name": "windows-msvc-reldebinfo",
-      "displayName": "MSVC / MSBuild (RelWithDebInfo)",
-      "inherits": "windows-msvc-base",
-      "description": "Windows release-with-debug-info build using MSVC and Visual Studio 2022 generator",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-      }
-    },
-    {
-      "name": "windows-msvc-release",
-      "displayName": "MSVC / MSBuild (Release)",
-      "inherits": "windows-msvc-base",
-      "description": "Windows release build using MSVC and Visual Studio 2022 generator",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "windows-mingw-base",
+      "name": "mingw",
+      "description": "Flags and CMake options for MinGW toolchains",
       "hidden": true,
+      "inherits": "gcc",
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
       }
     },
     {
+      "name": "mingw-ci",
+      "description": "MinGW with remapped executable path for CI environments.",
+      "hidden": true,
+      "inherits": "mingw",
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "/mingw64/bin/g++.exe"
+      }
+    },
+    {
+      "name": "windows-base",
+      "description": "Base preset for all Windows builds",
+      "hidden": true,
+      "$comment": "Something about module-scanning seems to be broken for Ninja on Windows, so we disable it.",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_CXX_SCAN_FOR_MODULES": false
+      }
+    },
+    {
+      "name": "linux-gcc-base",
+      "description": "Base preset for all Linux GCC builds",
+      "hidden": true,
+      "inherits": [
+        "base",
+        "gcc"
+      ]
+    },
+    {
+      "name": "debug",
+      "description": "Base preset for all debug builds",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release",
+      "description": "Base preset for all release builds",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "rel-with-deb-info",
+      "description": "Base preset for all release-with-debug-info builds",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "windows-msvc-debug",
+      "displayName": "MSVC / MSBuild / Debug",
+      "description": "Windows debug build using MSVC and Visual Studio 2022 generator",
+      "inherits": [
+        "windows-base",
+        "msvc",
+        "debug"
+      ]
+    },
+    {
+      "name": "windows-msvc-release",
+      "displayName": "MSVC / MSBuild / Release",
+      "description": "Windows release build using MSVC and Visual Studio 2022 generator",
+      "inherits": [
+        "windows-base",
+        "msvc",
+        "release"
+      ]
+    },
+    {
+      "name": "windows-msvc-reldebinfo",
+      "displayName": "MSVC / MSBuild / RelWithDebInfo",
+      "description": "Windows release-with-debug-info build using MSVC and Visual Studio 2022 generator",
+      "inherits": [
+        "windows-base",
+        "msvc",
+        "rel-with-deb-info"
+      ]
+    },
+    {
+      "name": "windows-mingw-ninja-debug",
+      "displayName": "MinGW / Ninja / Debug",
+      "description": "Windows debug build using MinGW and Ninja generator",
+      "inherits": [
+        "windows-base",
+        "mingw",
+        "ninja",
+        "debug"
+      ]
+    },
+    {
+      "name": "windows-mingw-ninja-release",
+      "displayName": "MinGW / Ninja / Release",
+      "description": "Windows release build using MinGW and Ninja generator",
+      "inherits": [
+        "windows-base",
+        "mingw",
+        "ninja",
+        "release"
+      ]
+    },
+    {
+      "name": "windows-mingw-ninja-release-ci",
+      "displayName": "MinGW / Ninja / Release (CI)",
+      "description": "Windows release build using MinGW and Ninja generator for CI",
+      "inherits": [
+        "windows-mingw-ninja-release",
+        "mingw-ci"
+      ]
+    },
+    {
       "name": "windows-mingw-make",
-      "inherits": "windows-mingw-base",
-      "displayName": "MinGW / Make",
       "description": "Windows build using MinGW and Make generator",
+      "hidden": true,
+      "inherits": [
+        "windows-base",
+        "mingw"
+      ],
       "generator": "MinGW Makefiles"
     },
     {
-      "name": "windows-mingw-ninja",
-      "inherits": "windows-mingw-base",
-      "displayName": "MinGW / Ninja",
-      "description": "Windows build using MinGW and Ninja generator",
-      "generator": "Ninja"
+      "name": "windows-mingw-make-debug",
+      "displayName": "MinGW / Ninja / Debug",
+      "description": "Windows debug build using MinGW and Make generator",
+      "inherits": [
+        "windows-mingw-make",
+        "debug"
+      ]
+    },
+    {
+      "name": "windows-mingw-make-release",
+      "displayName": "MinGW / Make / Release",
+      "description": "Windows release build using MinGW and Make generator",
+      "inherits": [
+        "windows-mingw-make",
+        "release"
+      ]
+    },
+    {
+      "name": "windows-mingw-make-release-ci",
+      "displayName": "MinGW / Make / Release (CI)",
+      "description": "Windows release build using MinGW and Make generator for CI.",
+      "inherits": [
+        "windows-mingw-make-release",
+        "mingw-ci"
+      ]
+    },
+    {
+      "name": "linux-gcc-ninja-debug",
+      "displayName": "Linux / GCC / Ninja / Debug",
+      "description": "Linux debug build using GCC and Ninja generator",
+      "inherits": [
+        "linux-gcc-base",
+        "ninja",
+        "debug"
+      ]
+    },
+    {
+      "name": "linux-gcc-ninja-release",
+      "displayName": "Linux / GCC / Ninja / Release",
+      "description": "Linux release build using GCC and Ninja generator",
+      "inherits": [
+        "linux-gcc-base",
+        "ninja",
+        "release"
+      ]
     },
     {
       "name": "linux-gcc-make",
-      "displayName": "Linux / GCC",
       "description": "Linux build using GCC and Make generator",
-      "generator": "Unix Makefiles",
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "g++-14"
-      }
+      "hidden": true,
+      "inherits": "linux-gcc-base",
+      "generator": "Unix Makefiles"
     },
     {
-      "name": "docker",
-      "displayName": "Docker",
-      "description": "Docker (Linux build using GCC and Ninja generator)",
-      "generator": "Ninja",
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "g++"
-      }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "MSVC - Debug",
-      "configuration": "Debug",
-      "configurePreset": "windows-msvc-debug"
+      "name": "linux-gcc-make-debug",
+      "displayName": "Linux / GCC / Make / Debug",
+      "description": "Linux debug build using GCC and Make generator",
+      "inherits": [
+        "linux-gcc-make",
+        "debug"
+      ]
     },
     {
-      "name": "MSVC - RelWithDebInfo",
-      "configuration": "RelWithDebInfo",
-      "configurePreset": "windows-msvc-reldebinfo"
-    },
-    {
-      "name": "MSVC - Release",
-      "configuration": "Release",
-      "configurePreset": "windows-msvc-release"
+      "name": "linux-gcc-make-release",
+      "displayName": "Linux / GCC / Make / Release",
+      "description": "Linux release build using GCC and Make generator",
+      "inherits": [
+        "linux-gcc-make",
+        "release"
+      ]
     }
   ]
 }
