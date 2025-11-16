@@ -33,11 +33,11 @@ COPY src src/
 COPY test test/
 
 WORKDIR /main
-RUN cmake -B /main/build --preset=docker -DCMAKE_BUILD_TYPE=Release
-RUN cmake --build build --config Release --parallel
+RUN cmake --preset=linux-gcc-ninja-release
+RUN cmake --build build --parallel
 
 WORKDIR /main/build
-CMD ctest -C Release
+CMD ctest
 # --output-on-failure
 
 # For interactive ability:
