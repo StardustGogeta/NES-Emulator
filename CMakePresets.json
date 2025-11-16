@@ -45,14 +45,12 @@
       "description": "Flags and CMake options for GCC toolchains",
       "hidden": true,
       "environment": {
-        "CMAKE_CXX_FLAGS": "-Wall -Wextra -pedantic -Werror"
+        "CMAKE_CXX_FLAGS": "-Wall -Wextra -pedantic -Werror -lstdc++exp"
       },
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_CXX_FLAGS_DEBUG": "$env{CMAKE_CXX_FLAGS} -Og -DDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS} -O2",
-        "CMAKE_EXE_LINKER_FLAGS": "-lstdc++exp",
-        "CMAKE_SHARED_LIB_LINKER_FLAGS": "-lstdc++exp"
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS} -O2"
       }
     },
     {
