@@ -82,7 +82,7 @@
       "hidden": true,
       "inherits": "mingw",
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "D:/a/_temp/mingw64/bin/g++.exe"
+        "CMAKE_CXX_COMPILER": "/d/a/_temp/mingw64/bin/g++.exe"
       }
     },
     {
