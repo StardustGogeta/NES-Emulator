@@ -34,6 +34,10 @@ target_include_directories(main PRIVATE
 
 target_compile_features(main PRIVATE cxx_std_23)
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_link_libraries(main PRIVATE stdc++exp) # For <print>
+endif()
+
 add_custom_command(
    OUTPUT ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
    COMMAND xz -kdf ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log.xz
