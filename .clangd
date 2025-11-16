@@ -1,0 +1,5 @@
+CompileFlags:
+  # Clangd requires compiler options to be understandable by clang, even if
+  # a different compiler is used in compile_commands.json. We can simply ignore
+  # them here.
+  Remove: [-fmodule*, -fdeps*]
