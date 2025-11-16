@@ -253,7 +253,7 @@
       "hidden": true,
       "inherits": [
         "base",
-        "gcc-ci"
+        "gcc"
       ],
       "generator": "Unix Makefiles"
     },
@@ -274,6 +274,32 @@
         "linux-gcc-make",
         "release"
       ]
+    },
+    {
+      "name": "linux-gcc-make-release-ci",
+      "displayName": "Linux / GCC / Make / Release (CI)",
+      "description": "Linux release build using GCC and Make generator for CI",
+      "inherits": [
+        "gcc-ci",
+        "linux-gcc-make-release"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "MSVC - Debug",
+      "configuration": "Debug",
+      "configurePreset": "windows-msvc-debug"
+    },
+    {
+      "name": "MSVC - RelWithDebInfo",
+      "configuration": "RelWithDebInfo",
+      "configurePreset": "windows-msvc-reldebinfo"
+    },
+    {
+      "name": "MSVC - Release",
+      "configuration": "Release",
+      "configurePreset": "windows-msvc-release"
     }
   ]
 }
