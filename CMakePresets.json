@@ -187,8 +187,8 @@
       "displayName": "MinGW / Ninja / Release (CI)",
       "description": "Windows release build using MinGW and Ninja generator for CI",
       "inherits": [
-        "windows-mingw-ninja-release",
-        "mingw-ci"
+        "mingw-ci",
+        "windows-mingw-ninja-release"
       ]
     },
     {
@@ -224,8 +224,8 @@
       "displayName": "MinGW / Make / Release (CI)",
       "description": "Windows release build using MinGW and Make generator for CI.",
       "inherits": [
-        "windows-mingw-make-release",
-        "mingw-ci"
+        "mingw-ci",
+        "windows-mingw-make-release"
       ]
     },
     {
