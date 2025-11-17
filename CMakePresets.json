@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/Kitware/CMake/refs/heads/master/Help/manual/presets/schema.json",
-  "version": 10,
+  "version": 9,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 31,
@@ -9,8 +9,7 @@
   "configurePresets": [
     {
       "name": "cmake-pedantic",
-      "description": "Enables pedantic CMake warnings for package developers.",
-      "$comment": "Inspired by https://github.com/friendlyanon/cmake-init-executable/blob/master/CMakePresets.json",
+      "description": "Enables pedantic CMake warnings for package developers. Inspired by https://github.com/friendlyanon/cmake-init-executable/blob/master/CMakePresets.json",
       "hidden": true,
       "warnings": {
         "dev": true,
@@ -65,7 +64,7 @@
       "name": "msvc",
       "description": "Flags and CMake options for MSVC toolchains",
       "hidden": true,
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2026",
       "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe",
       "environment": {
         "CMAKE_CXX_FLAGS": "/W4 /WX"
@@ -95,12 +94,27 @@
     },
     {
       "name": "windows-base",
-      "description": "Base preset for all Windows builds",
+      "description": "Base preset for all Windows builds. Note: Something about module-scanning seems to be broken for Ninja on Windows, so we disable it.",
       "hidden": true,
-      "$comment": "Something about module-scanning seems to be broken for Ninja on Windows, so we disable it.",
       "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
       "cacheVariables": {
         "CMAKE_CXX_SCAN_FOR_MODULES": false
+      }
+    },
+    {
+      "name": "linux-gcc-base",
+      "description": "Base preset for all Linux GCC builds",
+      "hidden": true,
+      "inherits": "base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
       }
     },
     {
@@ -130,7 +144,7 @@
     {
       "name": "windows-msvc-debug",
       "displayName": "MSVC / MSBuild / Debug",
-      "description": "Windows debug build using MSVC and Visual Studio 2022 generator",
+      "description": "Windows debug build using MSVC and Visual Studio generator",
       "inherits": [
         "windows-base",
         "msvc",
@@ -140,7 +154,7 @@
     {
       "name": "windows-msvc-release",
       "displayName": "MSVC / MSBuild / Release",
-      "description": "Windows release build using MSVC and Visual Studio 2022 generator",
+      "description": "Windows release build using MSVC and Visual Studio generator",
       "inherits": [
         "windows-base",
         "msvc",
@@ -150,7 +164,7 @@
     {
       "name": "windows-msvc-reldebinfo",
       "displayName": "MSVC / MSBuild / RelWithDebInfo",
-      "description": "Windows release-with-debug-info build using MSVC and Visual Studio 2022 generator",
+      "description": "Windows release-with-debug-info build using MSVC and Visual Studio generator",
       "inherits": [
         "windows-base",
         "msvc",
@@ -230,8 +244,7 @@
       "displayName": "Linux / GCC / Ninja / Debug",
       "description": "Linux debug build using GCC and Ninja generator",
       "inherits": [
-        "base",
-        "gcc",
+        "linux-gcc-base",
         "ninja",
         "debug"
       ]
@@ -241,8 +254,7 @@
       "displayName": "Linux / GCC / Ninja / Release",
       "description": "Linux release build using GCC and Ninja generator",
       "inherits": [
-        "base",
-        "gcc",
+        "linux-gcc-base",
         "ninja",
         "release"
       ]
@@ -251,10 +263,7 @@
       "name": "linux-gcc-make",
       "description": "Linux build using GCC and Make generator",
       "hidden": true,
-      "inherits": [
-        "base",
-        "gcc"
-      ],
+      "inherits": "linux-gcc-base",
       "generator": "Unix Makefiles"
     },
     {
