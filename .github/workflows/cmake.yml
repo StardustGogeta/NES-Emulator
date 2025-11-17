@@ -49,7 +49,7 @@ jobs:
           - name: MinGW / Ninja
             preset: windows-mingw-ninja-release-ci
           - name: MSVC / MSBuild
-            preset: windows-msvc-release
+            preset: windows-msvc-release-ci
 
     steps:
     - uses: actions/checkout@v4
