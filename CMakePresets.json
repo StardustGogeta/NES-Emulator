@@ -172,6 +172,17 @@
       ]
     },
     {
+      "name": "windows-msvc-release-ci",
+      "displayName": "MSVC / MSBuild / Release (CI)",
+      "description": "Windows release build using MSVC and Visual Studio generator. Uses a different generator version due to CI limitations.",
+      "inherits": [
+        "windows-base",
+        "msvc",
+        "release"
+      ],
+      "generator": "Visual Studio 17 2022"
+    },
+    {
       "name": "windows-mingw-ninja-debug",
       "displayName": "MinGW / Ninja / Debug",
       "description": "Windows debug build using MinGW and Ninja generator",
