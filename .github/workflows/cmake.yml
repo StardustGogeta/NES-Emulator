@@ -22,7 +22,7 @@ jobs:
       run: sudo apt-get install libsdl2-dev
 
     - name: Configure CMake
-      run: cmake -B build --preset=linux-gcc-make -DCMAKE_BUILD_TYPE=Release
+      run: cmake --preset=linux-gcc-make-release-ci
 
     - name: Build
       run: cmake --build build --parallel
@@ -45,11 +45,11 @@ jobs:
       matrix:
         make-program:
           - name: MinGW / Make
-            preset: windows-mingw-make
+            preset: windows-mingw-make-release-ci
           - name: MinGW / Ninja
-            preset: windows-mingw-ninja
+            preset: windows-mingw-ninja-release-ci
           - name: MSVC / MSBuild
-            preset: windows-msvc-release
+            preset: windows-msvc-release-ci
 
     steps:
     - uses: actions/checkout@v4
@@ -61,12 +61,13 @@ jobs:
         path-type: inherit
 
     - name: Configure CMake
-      # Must override the compiler from the preset in order to get the right root path (ignored for MSVC build)
-      run: cmake -B build --preset="${{ matrix.make-program.preset }}" -DCMAKE_CXX_COMPILER="/mingw64/bin/g++.exe" -DCMAKE_BUILD_TYPE=Release
+      run: cmake --preset="${{ matrix.make-program.preset }}"
 
     - name: Build
+      # Build type required for multi-configuration generators
       run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel
 
     - name: Test
       working-directory: build
+      # Build type required for multi-configuration generators
       run: ctest -C ${{ env.BUILD_TYPE }} --output-on-failure

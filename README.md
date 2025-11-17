@@ -6,7 +6,7 @@
 [![CMake](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/cmake.yml)
 [![Microsoft C++ Code Analysis](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml/badge.svg)](https://github.com/StardustGogeta/NES-Emulator/actions/workflows/msvc.yml)
 ![GitHub Repo Size](https://img.shields.io/github/repo-size/StardustGogeta/NES-Emulator)
-![CMake Version](https://img.shields.io/badge/CMake-3.28.0-red)
+![CMake Version](https://img.shields.io/badge/CMake-3.31.0-red)
 ![C++ Version](https://img.shields.io/badge/C++-23-white)
 
 An incomplete NES emulator made using SDL2 and C++23.
@@ -33,12 +33,14 @@ An incomplete NES emulator made using SDL2 and C++23.
 - gcc / MinGW / MSVC (with C++23 standard)
 - libsdl2-dev (if on Linux)
 
-In order to build this, create a folder named `build`, navigate to this folder, and run
+In order to build the project, run
 
-    cmake .. -G "Unix Makefiles"
-    make
+```bash
+cmake --preset=<target-preset> # See available presets with --list-presets
+cmake --build build
+```
 
-This will create a `bin` folder in the repository and build the project from the source.
+This will create a `build` folder in the repository and build the project from the source.
 
 Alternatively, building should be possible with the `Ninja`, `MinGW Makefiles`, and `Visual Studio 17 2022` generators, as well.
 Examples of these are shown in the GitHub Actions automated builds.
