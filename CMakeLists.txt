@@ -64,11 +64,11 @@ add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5off
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 20)
 
-set(PYTHON python3)
+find_package(Python REQUIRED)
 
 add_test(
     NAME blargg_cpu_test5_official_match
-    COMMAND ${PYTHON} ${CMAKE_SOURCE_DIR}/test/logCompare.py
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/logCompare.py
         ${CMAKE_SOURCE_DIR}/test/blargg5Log.txt
         ${CMAKE_SOURCE_DIR}/test/blargg_cpu_test5_official.log
 )
