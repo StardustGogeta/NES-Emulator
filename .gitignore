@@ -6,6 +6,9 @@ test/**
 Testing
 run-clang-tidy.py
 
+# Clangd
+.cache
+
 # Documentation files (may add later)
 Doxyfile
 /doc
