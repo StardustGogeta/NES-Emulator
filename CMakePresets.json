@@ -65,7 +65,6 @@
       "description": "Flags and CMake options for MSVC toolchains",
       "hidden": true,
       "generator": "Visual Studio 18 2026",
-      "cmakeExecutable": "C:/Program Files/CMake/bin/cmake.exe",
       "environment": {
         "CMAKE_CXX_FLAGS": "/W4 /WX"
       },
