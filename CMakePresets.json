@@ -30,7 +30,8 @@
       "inherits": "cmake-pedantic",
       "binaryDir": "build",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_CXX_SCAN_FOR_MODULES": false
       }
     },
     {
@@ -75,16 +76,13 @@
     },
     {
       "name": "windows-base",
-      "description": "Base preset for all Windows builds. Note: Something about module-scanning seems to be broken for Ninja on Windows, so we disable it.",
+      "description": "Base preset for all Windows builds.",
       "hidden": true,
       "inherits": "base",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
-      },
-      "cacheVariables": {
-        "CMAKE_CXX_SCAN_FOR_MODULES": false
       }
     },
     {
