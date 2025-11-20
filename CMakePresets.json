@@ -74,24 +74,6 @@
       }
     },
     {
-      "name": "mingw",
-      "description": "Flags and CMake options for MinGW toolchains",
-      "hidden": true,
-      "inherits": "gcc",
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
-      }
-    },
-    {
-      "name": "mingw-ci",
-      "description": "MinGW with remapped executable path for CI environments.",
-      "hidden": true,
-      "inherits": "mingw",
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "D:/a/_temp/msys64/mingw64/bin/g++.exe"
-      }
-    },
-    {
       "name": "windows-base",
       "description": "Base preset for all Windows builds. Note: Something about module-scanning seems to be broken for Ninja on Windows, so we disable it.",
       "hidden": true,
@@ -184,74 +166,6 @@
       "generator": "Visual Studio 17 2022"
     },
     {
-      "name": "windows-mingw-ninja-debug",
-      "displayName": "MinGW / Ninja / Debug",
-      "description": "Windows debug build using MinGW and Ninja generator",
-      "inherits": [
-        "windows-base",
-        "mingw",
-        "ninja",
-        "debug"
-      ]
-    },
-    {
-      "name": "windows-mingw-ninja-release",
-      "displayName": "MinGW / Ninja / Release",
-      "description": "Windows release build using MinGW and Ninja generator",
-      "inherits": [
-        "windows-base",
-        "mingw",
-        "ninja",
-        "release"
-      ]
-    },
-    {
-      "name": "windows-mingw-ninja-release-ci",
-      "displayName": "MinGW / Ninja / Release (CI)",
-      "description": "Windows release build using MinGW and Ninja generator for CI",
-      "inherits": [
-        "mingw-ci",
-        "windows-mingw-ninja-release"
-      ]
-    },
-    {
-      "name": "windows-mingw-make",
-      "description": "Windows build using MinGW and Make generator",
-      "hidden": true,
-      "inherits": [
-        "windows-base",
-        "mingw"
-      ],
-      "generator": "MinGW Makefiles"
-    },
-    {
-      "name": "windows-mingw-make-debug",
-      "displayName": "MinGW / Ninja / Debug",
-      "description": "Windows debug build using MinGW and Make generator",
-      "inherits": [
-        "windows-mingw-make",
-        "debug"
-      ]
-    },
-    {
-      "name": "windows-mingw-make-release",
-      "displayName": "MinGW / Make / Release",
-      "description": "Windows release build using MinGW and Make generator",
-      "inherits": [
-        "windows-mingw-make",
-        "release"
-      ]
-    },
-    {
-      "name": "windows-mingw-make-release-ci",
-      "displayName": "MinGW / Make / Release (CI)",
-      "description": "Windows release build using MinGW and Make generator for CI.",
-      "inherits": [
-        "mingw-ci",
-        "windows-mingw-make-release"
-      ]
-    },
-    {
       "name": "linux-gcc-ninja-debug",
       "displayName": "Linux / GCC / Ninja / Debug",
       "description": "Linux debug build using GCC and Ninja generator",
@@ -304,23 +218,6 @@
         "gcc-ci",
         "linux-gcc-make-release"
       ]
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "MSVC - Debug",
-      "configuration": "Debug",
-      "configurePreset": "windows-msvc-debug"
-    },
-    {
-      "name": "MSVC - RelWithDebInfo",
-      "configuration": "RelWithDebInfo",
-      "configurePreset": "windows-msvc-reldebinfo"
-    },
-    {
-      "name": "MSVC - Release",
-      "configuration": "Release",
-      "configurePreset": "windows-msvc-release"
     }
   ]
 }
