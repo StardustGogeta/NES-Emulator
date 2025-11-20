@@ -22,7 +22,7 @@ jobs:
       run: sudo apt-get install libsdl2-dev
 
     - name: Configure CMake
-      run: cmake --preset=linux-gcc-ninja-release
+      run: cmake --preset=linux-gcc-ninja-release-ci
 
     - name: Build
       run: cmake --build build --parallel
