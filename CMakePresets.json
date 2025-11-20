@@ -70,7 +70,7 @@
       },
       "cacheVariables": {
         "CMAKE_CXX_FLAGS_DEBUG": "$env{CMAKE_CXX_FLAGS} -DDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS}"
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS} /O2"
       }
     },
     {
