@@ -13,7 +13,7 @@ jobs:
   build-linux-gcc:
     runs-on: ubuntu-24.04
 
-    name: "Linux - GCC / Make"
+    name: "Linux - GCC / Ninja"
 
     steps:
     - uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
       run: sudo apt-get install libsdl2-dev
 
     - name: Configure CMake
-      run: cmake --preset=linux-gcc-make-release-ci
+      run: cmake --preset=linux-gcc-ninja-release
 
     - name: Build
       run: cmake --build build --parallel

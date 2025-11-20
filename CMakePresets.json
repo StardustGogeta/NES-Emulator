@@ -184,40 +184,6 @@
         "ninja",
         "release"
       ]
-    },
-    {
-      "name": "linux-gcc-make",
-      "description": "Linux build using GCC and Make generator",
-      "hidden": true,
-      "inherits": "linux-gcc-base",
-      "generator": "Unix Makefiles"
-    },
-    {
-      "name": "linux-gcc-make-debug",
-      "displayName": "Linux / GCC / Make / Debug",
-      "description": "Linux debug build using GCC and Make generator",
-      "inherits": [
-        "linux-gcc-make",
-        "debug"
-      ]
-    },
-    {
-      "name": "linux-gcc-make-release",
-      "displayName": "Linux / GCC / Make / Release",
-      "description": "Linux release build using GCC and Make generator",
-      "inherits": [
-        "linux-gcc-make",
-        "release"
-      ]
-    },
-    {
-      "name": "linux-gcc-make-release-ci",
-      "displayName": "Linux / GCC / Make / Release (CI)",
-      "description": "Linux release build using GCC and Make generator for CI",
-      "inherits": [
-        "gcc-ci",
-        "linux-gcc-make-release"
-      ]
     }
   ]
 }
