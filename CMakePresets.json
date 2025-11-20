@@ -30,7 +30,8 @@
       "inherits": "cmake-pedantic",
       "binaryDir": "build",
       "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": true
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_CXX_SCAN_FOR_MODULES": false
       }
     },
     {
@@ -66,43 +67,22 @@
       "hidden": true,
       "generator": "Visual Studio 18 2026",
       "environment": {
-        "CMAKE_CXX_FLAGS": "/W4 /WX"
+        "CMAKE_CXX_FLAGS": "/W4 /WX /MP"
       },
       "cacheVariables": {
         "CMAKE_CXX_FLAGS_DEBUG": "$env{CMAKE_CXX_FLAGS} -DDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS}"
-      }
-    },
-    {
-      "name": "mingw",
-      "description": "Flags and CMake options for MinGW toolchains",
-      "hidden": true,
-      "inherits": "gcc",
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe"
-      }
-    },
-    {
-      "name": "mingw-ci",
-      "description": "MinGW with remapped executable path for CI environments.",
-      "hidden": true,
-      "inherits": "mingw",
-      "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "D:/a/_temp/msys64/mingw64/bin/g++.exe"
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS} /O2"
       }
     },
     {
       "name": "windows-base",
-      "description": "Base preset for all Windows builds. Note: Something about module-scanning seems to be broken for Ninja on Windows, so we disable it.",
+      "description": "Base preset for all Windows builds.",
       "hidden": true,
       "inherits": "base",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
-      },
-      "cacheVariables": {
-        "CMAKE_CXX_SCAN_FOR_MODULES": false
       }
     },
     {
@@ -121,7 +101,8 @@
       "description": "Base preset for all debug builds",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CONFIGURATION_TYPES": "Debug"
       }
     },
     {
@@ -129,7 +110,8 @@
       "description": "Base preset for all release builds",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CONFIGURATION_TYPES": "Release"
       }
     },
     {
@@ -182,74 +164,6 @@
       "generator": "Visual Studio 17 2022"
     },
     {
-      "name": "windows-mingw-ninja-debug",
-      "displayName": "MinGW / Ninja / Debug",
-      "description": "Windows debug build using MinGW and Ninja generator",
-      "inherits": [
-        "windows-base",
-        "mingw",
-        "ninja",
-        "debug"
-      ]
-    },
-    {
-      "name": "windows-mingw-ninja-release",
-      "displayName": "MinGW / Ninja / Release",
-      "description": "Windows release build using MinGW and Ninja generator",
-      "inherits": [
-        "windows-base",
-        "mingw",
-        "ninja",
-        "release"
-      ]
-    },
-    {
-      "name": "windows-mingw-ninja-release-ci",
-      "displayName": "MinGW / Ninja / Release (CI)",
-      "description": "Windows release build using MinGW and Ninja generator for CI",
-      "inherits": [
-        "mingw-ci",
-        "windows-mingw-ninja-release"
-      ]
-    },
-    {
-      "name": "windows-mingw-make",
-      "description": "Windows build using MinGW and Make generator",
-      "hidden": true,
-      "inherits": [
-        "windows-base",
-        "mingw"
-      ],
-      "generator": "MinGW Makefiles"
-    },
-    {
-      "name": "windows-mingw-make-debug",
-      "displayName": "MinGW / Ninja / Debug",
-      "description": "Windows debug build using MinGW and Make generator",
-      "inherits": [
-        "windows-mingw-make",
-        "debug"
-      ]
-    },
-    {
-      "name": "windows-mingw-make-release",
-      "displayName": "MinGW / Make / Release",
-      "description": "Windows release build using MinGW and Make generator",
-      "inherits": [
-        "windows-mingw-make",
-        "release"
-      ]
-    },
-    {
-      "name": "windows-mingw-make-release-ci",
-      "displayName": "MinGW / Make / Release (CI)",
-      "description": "Windows release build using MinGW and Make generator for CI.",
-      "inherits": [
-        "mingw-ci",
-        "windows-mingw-make-release"
-      ]
-    },
-    {
       "name": "linux-gcc-ninja-debug",
       "displayName": "Linux / GCC / Ninja / Debug",
       "description": "Linux debug build using GCC and Ninja generator",
@@ -270,55 +184,13 @@
       ]
     },
     {
-      "name": "linux-gcc-make",
-      "description": "Linux build using GCC and Make generator",
-      "hidden": true,
-      "inherits": "linux-gcc-base",
-      "generator": "Unix Makefiles"
-    },
-    {
-      "name": "linux-gcc-make-debug",
-      "displayName": "Linux / GCC / Make / Debug",
-      "description": "Linux debug build using GCC and Make generator",
-      "inherits": [
-        "linux-gcc-make",
-        "debug"
-      ]
-    },
-    {
-      "name": "linux-gcc-make-release",
-      "displayName": "Linux / GCC / Make / Release",
-      "description": "Linux release build using GCC and Make generator",
-      "inherits": [
-        "linux-gcc-make",
-        "release"
-      ]
-    },
-    {
-      "name": "linux-gcc-make-release-ci",
-      "displayName": "Linux / GCC / Make / Release (CI)",
-      "description": "Linux release build using GCC and Make generator for CI",
+      "name": "linux-gcc-ninja-release-ci",
+      "displayName": "Linux / GCC / Ninja / Release",
+      "description": "Linux release build using GCC and Ninja generator",
       "inherits": [
         "gcc-ci",
-        "linux-gcc-make-release"
+        "linux-gcc-ninja-release"
       ]
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "MSVC - Debug",
-      "configuration": "Debug",
-      "configurePreset": "windows-msvc-debug"
-    },
-    {
-      "name": "MSVC - RelWithDebInfo",
-      "configuration": "RelWithDebInfo",
-      "configurePreset": "windows-msvc-reldebinfo"
-    },
-    {
-      "name": "MSVC - Release",
-      "configuration": "Release",
-      "configurePreset": "windows-msvc-release"
     }
   ]
 }

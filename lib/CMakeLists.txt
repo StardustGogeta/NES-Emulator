@@ -1,10 +1,6 @@
-# If on Windows, grab SDL2 from the local folder
-if (CMAKE_HOST_WIN32)
-    if (MSVC) # Get the Visual C++ version
-        set(SDL2_DIR SDL2-VC/cmake)
-    else() # Get the MinGW version
-        set(SDL2_DIR SDL2/cmake)
-    endif()
+# If using Windows MSVC, grab SDL2 from the local folder
+if (MSVC)
+    set(SDL2_DIR SDL2-VC/cmake)
 endif()
 
 find_package(SDL2 CONFIG REQUIRED)
