@@ -9,12 +9,12 @@ PPU::PPU(CPU& cpu) : cpu(cpu) {
     // Set the PPU registers to 0xff?
     // Set initial state of 0x2002 register
     // Note that 0xa0 would be used if we began with the pre-render scanline
-    writeRegister(0x2, 0x20);
+    writeRegister(PPUSTATUS, 0x20);
 }
 
 uint8_t PPU::readRegister(addr_t address) {
     uint8_t ret = registers[address];
-    if (address & 0x2) {
+    if (address & PPUSTATUS) {
         // TODO: Handle more special cases with PPU registers, especially VBL timing
         // See https://www.nesdev.org/wiki/PPU_frame_timing for more details
         
@@ -29,7 +29,7 @@ uint8_t PPU::readRegister(addr_t address) {
 void PPU::writeRegister(addr_t address, uint8_t data) {
     registers[address] = data;
     // Write to the PPU open bus
-    registers[0x2] = (registers[0x2] & 0xf0) | (data & 0x0f);
+    registers[PPUSTATUS] = (registers[PPUSTATUS] & 0xf0) | (data & 0x0f);
 }
 
 void PPU::start() {
@@ -99,12 +99,12 @@ void PPU::cycle() {
         // Vertical blanking
         if (scanline == 241 && cyclesOnLine == 0) {
             // Set the vblank value on the second cycle of this line
-            writeRegister(0x2, readRegister(0x2) | 0x80);
+            writeRegister(PPUSTATUS, readRegister(PPUSTATUS) | 0x80);
         }
         if (scanline == 261 && cyclesOnLine == 0) {
             // Clear the vblank bit on the second cycle of this line
             // TODO: Also clear sprite overflow bit?
-            writeRegister(0x2, readRegister(0x2) & ~0x80);
+            writeRegister(PPUSTATUS, readRegister(PPUSTATUS) & ~0x80);
         }
     }
 
@@ -122,8 +122,7 @@ void PPU::cycle() {
 }
 
 bool PPU::renderingEnabled() {
-    uint8_t mask = registers[1];
-    return (mask & 0b11000) != 0;
+    return (registers[PPUMASK] & 0b11000) != 0;
 }
 
 void PPU::cycles(int n) {
