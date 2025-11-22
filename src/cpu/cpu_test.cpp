@@ -104,7 +104,7 @@ void runBlarggCpuTest5Official() {
         std::this_thread::yield();
     }
 
-    for (int i = 0; i < 3698351 - TestCases::NINTENDULATOR_OFFSET; i++) {
+    for (int i = 0; i < TestCases::BLARGG_TEST5_OFFICIAL - TestCases::NINTENDULATOR_OFFSET; i++) {
         nes->cpu->cycle();
     }
 
