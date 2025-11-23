@@ -254,7 +254,21 @@ void CPU::start() {
     lck.unlock();
 
     while (running && notDone) {
+        if (ppu->checkNmiFlag()) {
+            // See https://www.nesdev.org/wiki/NMI
+            pc += 1;
+            stackPush((pc & 0xff00) >> 8);
+            stackPush(pc & 0xff);
+            stackPush(processorStatus());
+            uint16_t nmiHandlerAddress = memory->readWord(0xfffa);
+            p.b1 = p.b2 = 0;
+            ppu->clearNmiFlag();
+            pc = nmiHandlerAddress;
+
+        }
+        else {
         runOpcode(read());
+        }
     }
 }
 

@@ -1,5 +1,12 @@
 #include "ppu.h"
 #include "cpu.h"
+#include <cassert>
+#include <cstdint>
+
+namespace {
+    constexpr uint16_t PPUCTRL_NMI_OUTPUT = 0x80;
+    constexpr uint16_t PPUSTATUS_VBLANK = 0x80;
+};
 
 PPU::PPU(CPU& cpu) : cpu(cpu) {
     cyclesExecuted = scanline = cyclesOnLine = 0;
@@ -13,23 +20,35 @@ PPU::PPU(CPU& cpu) : cpu(cpu) {
 }
 
 uint8_t PPU::readRegister(addr_t address) {
+    assert(address <= PPUDATA);
     uint8_t ret = registers[address];
-    if (address & PPUSTATUS) {
+    if (address == PPUSTATUS) {
         // TODO: Handle more special cases with PPU registers, especially VBL timing
         // See https://www.nesdev.org/wiki/PPU_frame_timing for more details
         
         // Reading status register will change the value of bit 7
         // TODO: Fix very precise timing constraints here
-        writeRegister(address, ret & ~0x80);
+        writeRegister(PPUSTATUS, ret & ~PPUSTATUS_VBLANK);
         // printf("Cleared VBL value!\n");
     }
     return ret;
 }
 
 void PPU::writeRegister(addr_t address, uint8_t data) {
+    // TODO: figure out how to ignore writes before reaching the pre-render
+    // scanline of the next frame (after 33132 PAL cycles)
+
     registers[address] = data;
     // Write to the PPU open bus
     registers[PPUSTATUS] = (registers[PPUSTATUS] & 0xf0) | (data & 0x0f);
+
+    // PPU should turn on an non-maskable interrupt if and only if the
+    // vblank flag is high and NMI output is high
+    if ((address == PPUCTRL || address == PPUSTATUS) && 
+        (registers[PPUCTRL] & PPUCTRL_NMI_OUTPUT) &&
+        (registers[PPUSTATUS] & PPUSTATUS_VBLANK)) {
+        nmiState = true;
+    }
 }
 
 void PPU::start() {
@@ -99,12 +118,12 @@ void PPU::cycle() {
         // Vertical blanking
         if (scanline == 241 && cyclesOnLine == 0) {
             // Set the vblank value on the second cycle of this line
-            writeRegister(PPUSTATUS, readRegister(PPUSTATUS) | 0x80);
+            writeRegister(PPUSTATUS, readRegister(PPUSTATUS) | PPUSTATUS_VBLANK);
         }
         if (scanline == 261 && cyclesOnLine == 0) {
             // Clear the vblank bit on the second cycle of this line
             // TODO: Also clear sprite overflow bit?
-            writeRegister(PPUSTATUS, readRegister(PPUSTATUS) & ~0x80);
+            writeRegister(PPUSTATUS, readRegister(PPUSTATUS) & ~PPUSTATUS_VBLANK);
         }
     }
 
@@ -133,4 +152,12 @@ void PPU::cycles(int n) {
 
 bool PPU::checkRunning() {
     return running;
+}
+
+bool PPU::checkNmiFlag() const noexcept {
+    return nmiState;
+}
+
+void PPU::clearNmiFlag() {
+    nmiState = false;
 }

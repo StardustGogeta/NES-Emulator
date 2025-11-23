@@ -19,6 +19,8 @@ class PPU {
         void cycle();
         void cycles(int n);
         bool checkRunning();
+        bool checkNmiFlag() const noexcept;
+        void clearNmiFlag();
         
     private:
         bool renderingEnabled();
@@ -56,4 +58,7 @@ class PPU {
         int cyclesExecuted, scanline, cyclesOnLine;
         CPU& cpu;
         bool running;
+
+        /* Whether a Non-Maskable Interrupt is ready */
+        bool nmiState;
 };
