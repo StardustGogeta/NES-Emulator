@@ -120,7 +120,5 @@ void CPU::Logger::logStr(std::string_view str) {
 }
 
 void CPU::Logger::logCycles(int cyclesExecuted) {
-    // Nintendulator prints out with \r\n, always. To ensure byte-for-byte
-    // equivalency, we have to do the same.
-    std::print(logFile, " CYC:{}\r\n", cyclesExecuted);
+    std::println(logFile, " CYC:{}", cyclesExecuted);
 }
