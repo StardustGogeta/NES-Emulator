@@ -35,7 +35,8 @@ void PPU::writeRegister(addr_t address, uint8_t data) {
 
     registers[address] = data;
     // Write to the PPU open bus
-    registers[PPUSTATUS] = (registers[PPUSTATUS] & 0xf0) | (data & 0x0f);
+    // TODO: match all the behaviors listed here: https://www.nesdev.org/wiki/Open_bus_behavior#PPU_open_bus
+    registers[PPUSTATUS] = (registers[PPUSTATUS] & 0xe0) | (data & 0x1f);
 
     // PPU should turn on an non-maskable interrupt if and only if the
     // vblank flag is high and NMI output is high
