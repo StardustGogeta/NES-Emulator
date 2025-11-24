@@ -4,8 +4,11 @@
 #include <cstdint>
 
 namespace {
-    constexpr uint16_t PPUCTRL_NMI_OUTPUT = 0x80;
-    constexpr uint16_t PPUSTATUS_VBLANK = 0x80;
+    constexpr uint8_t PPUCTRL_NMI_OUTPUT = 0x80;
+    constexpr uint8_t PPUSTATUS_VBLANK = 0x80;
+    constexpr uint8_t PPUSTATUS_SPRITE0_HIT = 0x40;
+    constexpr uint8_t PPUSTATUS_SPRITE_OVERFLOW = 0x20;
+    constexpr uint8_t PPUSTATUS_OPEN_BUS = 0x1f;
 };
 
 PPU::PPU(CPU& cpu) : cpu(cpu) {
@@ -30,13 +33,13 @@ uint8_t PPU::readRegister(addr_t address) {
 }
 
 void PPU::writeRegister(addr_t address, uint8_t data) {
-    // TODO: figure out how to ignore writes before reaching the pre-render
-    // scanline of the next frame (after 33132 PAL cycles)
+    // TODO: Figure out how to ignore writes before reaching the first pre-render
+    // scanline (https://www.nesdev.org/wiki/PPU_registers)
 
     registers[address] = data;
     // Write to the PPU open bus
-    // TODO: match all the behaviors listed here: https://www.nesdev.org/wiki/Open_bus_behavior#PPU_open_bus
-    registers[PPUSTATUS] = (registers[PPUSTATUS] & 0xe0) | (data & 0x1f);
+    // TODO: Match all the behaviors listed here: https://www.nesdev.org/wiki/Open_bus_behavior#PPU_open_bus
+    registers[PPUSTATUS] = (registers[PPUSTATUS] & ~PPUSTATUS_OPEN_BUS) | (data & PPUSTATUS_OPEN_BUS);
 
     // PPU should turn on an non-maskable interrupt if and only if the
     // vblank flag is high and NMI output is high
@@ -113,12 +116,12 @@ void PPU::cycle() {
     else /* 241 to 261 */ {
         // Vertical blanking
         if (scanline == 241 && cyclesOnLine == 0) {
-            // Set the vblank flag on the dot 1 of this line
+            // Set the vblank flag on dot 1 of this line
             writeRegister(PPUSTATUS, registers[PPUSTATUS] | PPUSTATUS_VBLANK);
         }
         if (scanline == 261 && cyclesOnLine == 0) {
-            // TODO: understand why cyclesOnLine == 0 occurs on dot 1
-            // Clear all PPUSTATUS flags bit on the dot 1 of the pre-render scanline
+            // TODO: Understand why cyclesOnLine == 0 occurs on dot 1
+            // Clear all PPUSTATUS flags bit on dot 1 of the pre-render scanline
             writeRegister(PPUSTATUS, registers[PPUSTATUS] & 0b00011111);
         }
     }
