@@ -203,6 +203,11 @@ int CPU::getCycleCountOffset(instruction inst, addr_t addr, bool extraCycles) {
             ret = 1 + (pc / 0x100 != addr / 0x100);
         }
         break;
+    case ADC:
+    case AND:
+    case SBC:
+    case ORA:
+    case EOR:
     case CMP:
     case LAX: // LDA + LDX
     case LDA:
