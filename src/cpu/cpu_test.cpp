@@ -5,7 +5,7 @@
 struct TestCases {
     static const int NINTENDULATOR_OFFSET = 14; // This is how many cycles get added to the CPU in Nintendulator
     static const int NESTEST = 26555;
-    static const int BLARGG_TEST5_OFFICIAL = 9887046; // TODO: Update this to the full value
+    static const int BLARGG_TEST5_OFFICIAL = 11760930; // TODO: Update this to the full value
 };
 
 auto now() {
