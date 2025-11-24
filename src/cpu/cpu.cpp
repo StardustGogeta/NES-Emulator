@@ -260,6 +260,7 @@ void CPU::start() {
 
     while (running && notDone) {
         if (ppu->checkNmiFlag()) {
+            // TODO: test this is correct
             // See https://www.nesdev.org/wiki/NMI
             stackPushU16(pc);
             p.b1 = 0;
@@ -269,10 +270,9 @@ void CPU::start() {
             uint16_t nmiHandlerAddress = memory->readWord(0xfffa);
             ppu->clearNmiFlag();
             pc = nmiHandlerAddress;
-
         }
         else {
-        runOpcode(read());
+            runOpcode(read());
         }
     }
 }
