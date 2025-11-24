@@ -12,11 +12,6 @@ PPU::PPU(CPU& cpu) : cpu(cpu) {
     cyclesExecuted = scanline = cyclesOnLine = 0;
     running = false;
     bg16sr0 = bg16sr1 = bg8sr0 = bg8sr1 = 0;
-    
-    // Set the PPU registers to 0xff?
-    // Set initial state of 0x2002 register
-    // Note that 0xa0 would be used if we began with the pre-render scanline
-    writeRegister(PPUSTATUS, 0x20);
 }
 
 uint8_t PPU::readRegister(addr_t address) {
