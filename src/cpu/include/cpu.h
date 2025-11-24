@@ -92,6 +92,7 @@ class CPU {
         void setProcessorStatus(uint8_t status);
         void setNZ(uint8_t val);
         void stackPush(uint8_t val);
+        void stackPushU16(uint16_t val);
         uint8_t stackPop();
         int getCycleCountOffset(
             instruction inst,

@@ -118,6 +118,11 @@ void CPU::setNZ(uint8_t val) {
     p.z = val == 0;
 }
 
+void CPU::stackPushU16(uint16_t val) {
+    stackPush((val & 0xFF00) >> 8);
+    stackPush(val & 0xFF);
+}
+
 void CPU::stackPush(uint8_t val) {
     memory->write(0x100 + (sp--), val);
 }
@@ -256,12 +261,12 @@ void CPU::start() {
     while (running && notDone) {
         if (ppu->checkNmiFlag()) {
             // See https://www.nesdev.org/wiki/NMI
-            pc += 1;
-            stackPush((pc & 0xff00) >> 8);
-            stackPush(pc & 0xff);
+            stackPushU16(pc);
+            p.b1 = 0;
+            p.b2 = 1;
             stackPush(processorStatus());
+            p.i = 1;
             uint16_t nmiHandlerAddress = memory->readWord(0xfffa);
-            p.b1 = p.b2 = 0;
             ppu->clearNmiFlag();
             pc = nmiHandlerAddress;
 

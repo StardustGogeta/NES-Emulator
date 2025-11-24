@@ -283,8 +283,7 @@ void CPU::runInstruction(addressingMode mode, instruction inst, addr_t addr, uin
         case BRK:
             // TODO: Make sure this all works as intended
             pc += 2;
-            stackPush((pc & 0xff00) >> 8);
-            stackPush(pc & 0xff);
+            stackPushU16(pc);
             p.b1 = p.b2 = 1;
             stackPush(processorStatus());
             p.i = 1;
