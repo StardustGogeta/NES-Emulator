@@ -260,16 +260,7 @@ void CPU::start() {
 
     while (running && notDone) {
         if (ppu->checkNmiFlag()) {
-            // TODO: test this is correct
-            // See https://www.nesdev.org/wiki/NMI
-            stackPushU16(pc);
-            p.b1 = 0;
-            p.b2 = 1;
-            stackPush(processorStatus());
-            p.i = 1;
-            uint16_t nmiHandlerAddress = memory->readWord(0xfffa);
-            ppu->clearNmiFlag();
-            pc = nmiHandlerAddress;
+            handleNonMaskableInterrupt();
         }
         else {
             runOpcode(read());
@@ -324,4 +315,17 @@ void CPU::cycle() {
     std::unique_lock lck(cycleStatusMutex);
     cyclesRequested++;
     cycleStatusCV.notify_all();
+}
+
+void CPU::handleNonMaskableInterrupt() {
+    // TODO: Test this is correct
+    // See https://www.nesdev.org/wiki/NMI
+    stackPushU16(pc);
+    p.b1 = 0;
+    p.b2 = 1;
+    stackPush(processorStatus());
+    p.i = 1;
+    uint16_t nmiHandlerAddress = memory->readWord(0xfffa);
+    ppu->clearNmiFlag();
+    pc = nmiHandlerAddress;
 }

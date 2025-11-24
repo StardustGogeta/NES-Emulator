@@ -107,6 +107,7 @@ class CPU {
         );
         bool waitForCycles(int n);
         bool waitForCycle();
+        void handleNonMaskableInterrupt();
         std::atomic<bool> running;
         std::atomic<bool> notDone;
 
