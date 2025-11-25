@@ -19,12 +19,29 @@ class PPU {
         void cycle();
         void cycles(int n);
         bool checkRunning();
+        bool checkNmiFlag() const noexcept;
+        void clearNmiFlag();
         
     private:
         bool renderingEnabled();
         bool oddFrame = false;
 
         std::shared_ptr<CoreMemory> memory;
+        
+        /*
+            PPU special register addresses. All enum values 
+            are relative to the base address of $2000
+        */
+        enum PPURegister {
+            PPUCTRL = 0,
+            PPUMASK = 1,
+            PPUSTATUS = 2,
+            OAMADDR = 3,
+            OAMDATA = 4,
+            PPUSCROLL = 5,
+            PPUADDR = 6,
+            PPUDATA = 7
+        };
 
         /*
             Control and status registers for the PPU.
@@ -41,4 +58,7 @@ class PPU {
         int cyclesExecuted, scanline, cyclesOnLine;
         CPU& cpu;
         bool running;
+
+        /* Whether a Non-Maskable Interrupt is ready */
+        bool nmiState;
 };
