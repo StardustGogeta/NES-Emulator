@@ -49,22 +49,23 @@ add_dependencies(main blargg_cpu_test5_official)
 add_subdirectory(lib)
 
 enable_testing()
+
+find_package(Python REQUIRED)
+
 add_test(NAME nestest_execute COMMAND main CPU_TEST nestest
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 set_tests_properties(nestest_execute PROPERTIES TIMEOUT 2)
 add_test(
     NAME nestest_match
-    COMMAND diff    ${CMAKE_SOURCE_DIR}/test/nestestLog.txt
-                    ${CMAKE_SOURCE_DIR}/test/nestest.log
-                    --strip-trailing-cr
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/logCompare.py
+        ${CMAKE_SOURCE_DIR}/test/nestestLog.txt
+        ${CMAKE_SOURCE_DIR}/test/nestest.log
 )
 
 # Could also compare the first lines of each file using technique from https://superuser.com/a/511406
 add_test(NAME blargg_cpu_test5_official_execute COMMAND main CPU_TEST blargg5official
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 set_tests_properties(blargg_cpu_test5_official_execute PROPERTIES TIMEOUT 20)
-
-find_package(Python REQUIRED)
 
 add_test(
     NAME blargg_cpu_test5_official_match
