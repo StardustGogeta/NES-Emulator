@@ -187,13 +187,13 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
 
     runInstruction(mode, inst, addr, argument);
 
-    if (!ignoreCycles) {
-        cyclesExecuted += cycleCount;
-    }
-
     if (logger.logging) {
         logger.logPPUInfo(ppuScanLine, ppuCyclesOnLine);
         logger.logCycles(cyclesExecuted);
+    }
+
+    if (!ignoreCycles) {
+        cyclesExecuted += cycleCount;
     }
 }
 
