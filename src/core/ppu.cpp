@@ -11,7 +11,7 @@ namespace {
     constexpr uint8_t PPUSTATUS_OPEN_BUS = 0x1f;
 };
 
-PPU::PPU(CPU& cpu) : cpu(cpu) {
+PPU::PPU(CPU& cpu) : cpu(cpu), nmiState(false) {
     cyclesExecuted = scanline = cyclesOnLine = 0;
     bg16sr0 = bg16sr1 = bg8sr0 = bg8sr1 = 0;
 }
