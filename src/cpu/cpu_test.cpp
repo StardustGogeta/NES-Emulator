@@ -45,21 +45,12 @@ void runNesTest(int testCases) {
 
     nes->cpu->logger.start("../test/nestestLog.txt");
 
-    std::thread cpuThread(&CPU::start, nes->cpu.get());
-    
-    // Wait until the CPU starts up.
-    while (!nes->cpu->checkRunning()) {
-        std::this_thread::yield();
-    }
-
-    for (int i = 0; i < testCases; i++) {
+    while (nes->cpu->getCyclesExecuted() < testCases) {
         nes->cpu->cycle();
         
         // We can artificially limit processor speed by sleeping the main thread:
         // std::this_thread::sleep_until(awake_time());
     }
-
-    nes->cpu->stop(cpuThread);
 
     #ifdef DEBUG
     auto end = now();
@@ -97,18 +88,9 @@ void runBlarggCpuTest5Official() {
     auto start = now();
     #endif
 
-    std::thread cpuThread(&CPU::start, nes->cpu.get());
-    
-    // Wait until the CPU starts up.
-    while (!nes->cpu->checkRunning()) {
-        std::this_thread::yield();
-    }
-
-    for (int i = 0; i < TestCases::BLARGG_TEST5_OFFICIAL - TestCases::NINTENDULATOR_OFFSET; i++) {
+    while (nes->cpu->getCyclesExecuted() < TestCases::BLARGG_TEST5_OFFICIAL) {
         nes->cpu->cycle();
     }
-
-    nes->cpu->stop(cpuThread);
 
     nes->cpu->logger.stop();
 

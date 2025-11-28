@@ -1,6 +1,5 @@
 #pragma once
 #include "core_memory.h"
-#include <condition_variable>
 #include <array>
 
 class CPU;
@@ -15,7 +14,6 @@ class PPU {
         uint8_t readRegister(addr_t address);
         void writeRegister(addr_t address, uint8_t data);
 
-        void start();
         void cycle();
         void cycles(int n);
         bool checkRunning();
@@ -53,11 +51,8 @@ class PPU {
         uint16_t bg16sr0, bg16sr1;
 
         // For synchronizing with CPU clock
-        std::condition_variable cpuToPpuCV;
-        std::mutex cpuToPpuMutex;
         int cyclesExecuted, scanline, cyclesOnLine;
         CPU& cpu;
-        bool running;
 
         /* Whether a Non-Maskable Interrupt is ready */
         bool nmiState;
