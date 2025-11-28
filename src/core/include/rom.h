@@ -1,5 +1,6 @@
 #pragma once
 #include "core_memory.h"
+#include <filesystem>
 #include <string>
 #include <cstdint>
 
@@ -11,11 +12,11 @@ class ROM {
             playchoice10, VS_unisystem;
         uint8_t mapper, PRG_ROM_size, CHR_ROM_size, PRG_RAM_size;
 
-        void setPath(std::string path);
+        void setPath(const std::filesystem::path& path);
         void parseHeader();
         std::unique_ptr<CoreMemory> loadIntoMemory();
 
     private:
         uint8_t flags6, flags7, flags9, flags10;
-        std::string path;
+        std::filesystem::path path;
 };

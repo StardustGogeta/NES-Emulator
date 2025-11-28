@@ -1,6 +1,7 @@
 #include "rom.h"
 #include "core_memory.h"
 #include "memory_factory.h"
+#include <filesystem>
 #include <fstream>
 #include <print>
 #include <array>
@@ -12,7 +13,7 @@ ROM::ROM() {
         flags6 = flags7 = flags9 = flags10 = 0;
 }
 
-void ROM::setPath(std::string newPath) {
+void ROM::setPath(const std::filesystem::path& newPath) {
     path = newPath;
 }
 
