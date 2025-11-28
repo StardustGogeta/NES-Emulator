@@ -4,6 +4,17 @@ nestest.nes -
 nestest.log -
 	From https://www.qmtpro.com/~nes/misc/nestest.log
 	Found at https://www.nesdev.org/wiki/Emulator_tests
+nestest_mesen.log
+Generated with Mesen 2.1.1 via the following process:
+- Load ROM
+- "Reset" (CTRL-R), then "Power cycle" (CTRL-T), then change PC to C000, then "Log to file"
+- Run CPU until completion, then stop
+- Stop logging and retrieve log file
+Using these options:
+- Format string:
+	[Align,6][ByteCode][Align,16][Disassembly] [MemoryValue,h][Align,47] A:[A,2h] X:[X,2h] Y:[Y,2h] P:[P,h] SP:[SP,2h] PPU:[Scanline,3],[Cycle,3] CYC:[CycleCount]
+- "Use labels" disabled
+	
 
 blargg_cpu_test5_official.nes - From https://github.com/christopherpow/nes-test-roms/tree/master/blargg_nes_cpu_test5
 blargg_cpu_test5.nes - From https://github.com/christopherpow/nes-test-roms/tree/master/blargg_nes_cpu_test5
