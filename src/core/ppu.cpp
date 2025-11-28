@@ -103,7 +103,6 @@ void PPU::cycle() {
             writeRegister(PPUSTATUS, registers[PPUSTATUS] | PPUSTATUS_VBLANK);
         }
         if (scanline == 261 && cyclesOnLine == 0) {
-            // TODO: Understand why cyclesOnLine == 0 occurs on dot 1
             // Clear all PPUSTATUS flags bit on dot 1 of the pre-render scanline
             writeRegister(PPUSTATUS, registers[PPUSTATUS] & 0b00011111);
         }
