@@ -142,8 +142,6 @@ void CPU::setProcessorStatus(uint8_t status) {
     ignoreCycles - true if the PPU should ignore the CPU cycles being run
 */
 void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
-    // std::thread ppuThread(&PPU::cycles, ppu, 3);
-
     // This slows things down a lot:
     // std::println("Trying to run opcode {:#04x} at position {:#06x}", opcode, pc - 1);
 
@@ -163,7 +161,8 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
     int cycleOffset = getCycleCountOffset(inst, addr, extraCycleCounts[opcode]);
     int cycleCount = getCycleCount(opcode, cycleOffset);
 
-    std::string ppuString = logger.logPPUstring(ppu->scanline, ppu->cyclesOnLine);
+    int ppuScanLine = ppu->scanline;
+    int ppuCyclesOnLine = ppu->cyclesOnLine;
 
     if (!ignoreCycles) {
         // PPU does 3 cycles for every CPU cycle
@@ -188,12 +187,13 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
 
     runInstruction(mode, inst, addr, argument);
 
-    logger.logStr(ppuString);
-
-    logger.logCycles(cyclesExecuted);
-
     if (!ignoreCycles) {
         cyclesExecuted += cycleCount;
+    }
+
+    if (logger.logging) {
+        logger.logPPUInfo(ppuScanLine, ppuCyclesOnLine);
+        logger.logCycles(cyclesExecuted);
     }
 }
 
