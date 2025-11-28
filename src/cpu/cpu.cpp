@@ -198,7 +198,7 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
 }
 
 /*
-    Runs 1 CPU instruction one cycle of the CPU.
+    Runs 1 CPU instruction (potentially taking multiple cycles)
 */
 void CPU::cycle() {
     if (ppu->checkNmiFlag()) {
