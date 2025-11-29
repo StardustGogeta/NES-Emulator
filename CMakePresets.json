@@ -67,7 +67,7 @@
       "hidden": true,
       "generator": "Visual Studio 18 2026",
       "environment": {
-        "CMAKE_CXX_FLAGS": "/W4 /WX /MP"
+        "CMAKE_CXX_FLAGS": "/W4 /WX /MP /wd4996"
       },
       "cacheVariables": {
         "CMAKE_CXX_FLAGS_DEBUG": "$env{CMAKE_CXX_FLAGS} -DDEBUG",
