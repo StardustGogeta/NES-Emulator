@@ -50,7 +50,7 @@
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "g++",
         "CMAKE_CXX_FLAGS_DEBUG": "$env{CMAKE_CXX_FLAGS} -Og -DDEBUG",
-        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS} -O2"
+        "CMAKE_CXX_FLAGS_RELEASE": "$env{CMAKE_CXX_FLAGS} -O3"
       }
     },
     {
