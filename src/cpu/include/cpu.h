@@ -36,7 +36,7 @@ class CPU {
                     uint8_t argument
                 );
                 void logStr(std::string_view str);
-                std::string logPPUstring(int scanline, int cyclesOnLine);
+                void logPPUInfo(int scanline, int cyclesOnLine);
                 void logCycles(int cyclesExecuted);
                 bool logging, reversePPU;
                 std::ofstream logFile;
@@ -50,15 +50,12 @@ class CPU {
         void reset();
         void setPC(bool ignoreCycles=false);
         void setPC(addr_t pc);
-        void start();
-        void stop(std::thread& t);
-        void kill(std::thread& t);
-        void cycle();
+        void runNextInstruction();
+        [[nodiscard]] int getCyclesExecuted() const noexcept { return cyclesExecuted; }
         uint8_t peek();
         uint16_t peekWord();
         uint8_t read();
         uint16_t readWord();
-        bool checkRunning();
         void runOpcode(uint8_t opcode, bool ignoreCycles=false);
 
         static addressingMode getAddressingMode(uint8_t opcode);
@@ -105,21 +102,9 @@ class CPU {
             addr_t addr,
             uint8_t argument
         );
-        bool waitForCycles(int n);
-        bool waitForCycle();
         void handleNonMaskableInterrupt();
-        std::atomic<bool> running;
-        std::atomic<bool> notDone;
 
-        int maxCycles;
-        int cyclesRequested; // uses cycleStatusMutex
-        std::atomic<int> cyclesExecuted;
-        std::mutex cycleStatusMutex;
-        std::condition_variable cycleStatusCV;
-
-        // For synchronizing with PPU clock
-        std::condition_variable ppuToCpuCV;
-        std::mutex ppuToCpuMutex;
+        int cyclesExecuted;
 
         CPU(const CPU&) = delete;
         CPU& operator=(const CPU&) = delete;

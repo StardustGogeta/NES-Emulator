@@ -103,13 +103,13 @@ void CPU::Logger::logArgsAndRegisters(addressingMode mode, instruction inst, add
 }
 
 /*
-    Generates string for logging PPU cycle information.
+    Logs PPU cycle information.
 */
-std::string CPU::Logger::logPPUstring(int scanline, int cyclesOnLine) {
+void CPU::Logger::logPPUInfo(int scanline, int cyclesOnLine) {
     int first = reversePPU ? cyclesOnLine : scanline;
     int second = reversePPU ? scanline : cyclesOnLine;
 
-    return std::format(" PPU:{:3},{:3}", first, second);
+    std::print(logFile, " PPU:{:3},{:3}", first, second);
 }
 
 /*

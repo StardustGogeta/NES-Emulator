@@ -26,11 +26,11 @@ void runNesTest(int testCases) {
     ROM rom;
     rom.setPath("../test/nestest.nes");
 
-    std::unique_ptr<NES> nes = std::make_unique<NES>();
-    nes->loadROM(rom);
+    NES nes;
+    nes.loadROM(rom);
     
     for (int i = 0; i < 0x20; i++) { // Set APU registers to 0xff
-        nes->memory->write(static_cast<addr_t>(0x4000 | i), 0xff);
+        nes.memory->write(static_cast<addr_t>(0x4000 | i), 0xff);
     }
 
     #ifdef DEBUG
@@ -38,28 +38,19 @@ void runNesTest(int testCases) {
     #endif
 
     // We queue up a couple NOPs at the beginning to synchronize clocks with nestest
-    nes->cpu->runOpcode(0x64);
-    nes->cpu->runOpcode(0x74);
+    nes.cpu->runOpcode(0x64);
+    nes.cpu->runOpcode(0x74);
 
-    nes->cpu->setPC((addr_t)0xc000); // Override initial program counter
+    nes.cpu->setPC((addr_t)0xc000); // Override initial program counter
 
-    nes->cpu->logger.start("../test/nestestLog.txt");
+    nes.cpu->logger.start("../test/nestestLog.txt");
 
-    std::thread cpuThread(&CPU::start, nes->cpu.get());
-    
-    // Wait until the CPU starts up.
-    while (!nes->cpu->checkRunning()) {
-        std::this_thread::yield();
-    }
-
-    for (int i = 0; i < testCases; i++) {
-        nes->cpu->cycle();
+    while (nes.cpu->getCyclesExecuted() < testCases) {
+        nes.cpu->runNextInstruction();
         
         // We can artificially limit processor speed by sleeping the main thread:
         // std::this_thread::sleep_until(awake_time());
     }
-
-    nes->cpu->stop(cpuThread);
 
     #ifdef DEBUG
     auto end = now();
@@ -69,7 +60,7 @@ void runNesTest(int testCases) {
 
     std::println("Successfully ended execution.");
 
-    nes->cpu->logger.stop();
+    nes.cpu->logger.stop();
 }
 
 void runBlarggCpuTest5Official() {
@@ -78,39 +69,30 @@ void runBlarggCpuTest5Official() {
     ROM rom;
     rom.setPath("../test/blargg_cpu_test5_official.nes");
 
-    NES* nes = new NES();
-    nes->loadROM(rom);
+    NES nes;
+    nes.loadROM(rom);
 
-    nes->cpu->runOpcode(0x48, true); // Execute PHA x 3
-    nes->cpu->runOpcode(0x48, true); // Synchronizes stack pointer with Nintendulator
-    nes->cpu->runOpcode(0x48, true); // Must keep PPU cycles from logging
+    nes.cpu->runOpcode(0x48, true); // Execute PHA x 3
+    nes.cpu->runOpcode(0x48, true); // Synchronizes stack pointer with Nintendulator
+    nes.cpu->runOpcode(0x48, true); // Must keep PPU cycles from logging
 
-    nes->cpu->setPC();
+    nes.cpu->setPC();
 
     /*
         The reference logs to compare against were generated via Nintendulator's
         CPU logging feature.
     */
-    nes->cpu->logger.start("../test/blargg5Log.txt", true);
+    nes.cpu->logger.start("../test/blargg5Log.txt", true);
 
     #ifdef DEBUG
     auto start = now();
     #endif
 
-    std::thread cpuThread(&CPU::start, nes->cpu.get());
-    
-    // Wait until the CPU starts up.
-    while (!nes->cpu->checkRunning()) {
-        std::this_thread::yield();
+    while (nes.cpu->getCyclesExecuted() < TestCases::BLARGG_TEST5_OFFICIAL) {
+        nes.cpu->runNextInstruction();
     }
 
-    for (int i = 0; i < TestCases::BLARGG_TEST5_OFFICIAL - TestCases::NINTENDULATOR_OFFSET; i++) {
-        nes->cpu->cycle();
-    }
-
-    nes->cpu->stop(cpuThread);
-
-    nes->cpu->logger.stop();
+    nes.cpu->logger.stop();
 
     #ifdef DEBUG
     auto end = now();
@@ -122,7 +104,7 @@ void runBlarggCpuTest5Official() {
 
     std::println("Error log output:");
     for (int i = 0; i < 20; i++) {
-        std::print("{:02x}", nes->memory->read(static_cast<addr_t>(0x6000 | i)));
+        std::print("{:02x}", nes.memory->read(static_cast<addr_t>(0x6000 | i)));
     }
     std::println("");
 }
