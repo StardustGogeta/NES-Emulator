@@ -184,6 +184,16 @@
       ]
     },
     {
+      "name": "linux-gcc-ninja-reldebinfo",
+      "displayName": "Linux / GCC / Ninja / RelWithDebInfo",
+      "description": "Linux release build with debug info using GCC and Ninja generator",
+      "inherits": [
+        "linux-gcc-base",
+        "ninja",
+        "rel-with-deb-info"
+      ]
+    },
+    {
       "name": "linux-gcc-ninja-release-ci",
       "displayName": "Linux / GCC / Ninja / Release",
       "description": "Linux release build using GCC and Ninja generator",
