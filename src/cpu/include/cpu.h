@@ -24,6 +24,7 @@ class CPU {
 
             private:
                 Logger(CPU& cpu);
+                ~Logger();
                 void logOpcode(
                     uint8_t opcode,
                     addressingMode mode, 
@@ -39,7 +40,7 @@ class CPU {
                 void logPPUInfo(int scanline, int cyclesOnLine);
                 void logCycles(int cyclesExecuted);
                 bool logging, reversePPU;
-                std::ofstream logFile;
+                FILE* logFile;
                 CPU& cpu;
         };
 
