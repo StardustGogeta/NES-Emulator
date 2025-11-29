@@ -161,6 +161,7 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
     int cycleOffset = getCycleCountOffset(inst, addr, extraCycleCounts[opcode]);
     int cycleCount = getCycleCount(opcode, cycleOffset);
 
+    // Grab the old PPU values before cycling
     int ppuScanLine = ppu->scanline;
     int ppuCyclesOnLine = ppu->cyclesOnLine;
 
@@ -200,7 +201,7 @@ void CPU::runOpcode(uint8_t opcode, bool ignoreCycles /* = false */) {
 /*
     Runs 1 CPU instruction (potentially taking multiple cycles)
 */
-void CPU::cycle() {
+void CPU::runNextInstruction() {
     if (ppu->checkNmiFlag()) {
         handleNonMaskableInterrupt();
     }

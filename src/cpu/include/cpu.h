@@ -50,7 +50,7 @@ class CPU {
         void reset();
         void setPC(bool ignoreCycles=false);
         void setPC(addr_t pc);
-        void cycle();
+        void runNextInstruction();
         [[nodiscard]] int getCyclesExecuted() const noexcept { return cyclesExecuted; }
         uint8_t peek();
         uint16_t peekWord();

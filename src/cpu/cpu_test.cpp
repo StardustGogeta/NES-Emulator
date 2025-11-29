@@ -46,7 +46,7 @@ void runNesTest(int testCases) {
     nes.cpu->logger.start("../test/nestestLog.txt");
 
     while (nes.cpu->getCyclesExecuted() < testCases) {
-        nes.cpu->cycle();
+        nes.cpu->runNextInstruction();
         
         // We can artificially limit processor speed by sleeping the main thread:
         // std::this_thread::sleep_until(awake_time());
@@ -89,7 +89,7 @@ void runBlarggCpuTest5Official() {
     #endif
 
     while (nes.cpu->getCyclesExecuted() < TestCases::BLARGG_TEST5_OFFICIAL) {
-        nes.cpu->cycle();
+        nes.cpu->runNextInstruction();
     }
 
     nes.cpu->logger.stop();
